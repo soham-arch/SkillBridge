@@ -1,0 +1,39 @@
+general_settings:
+  disable_auth: true
+  drop_params: true
+
+litellm_settings:
+  drop_params: true
+
+model_list:
+  # Map claude-opus-5
+  - model_name: claude-opus-5
+    litellm_params:
+      model: openai/nvidia/nemotron-3-ultra-550b-a55b
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: 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
+
+  # Map claude-3-7-sonnet
+  - model_name: claude-3-7-sonnet-20250219
+    litellm_params:
+      model: openai/nvidia/nemotron-3-ultra-550b-a55b
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: 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
+
+  # Map claude-3-5-haiku
+  - model_name: claude-3-5-haiku-20241022
+    litellm_params:
+      model: openai/nvidia/nemotron-3-ultra-550b-a55b
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: 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
+
+  # Wildcard fallback for any other Claude model string
+  - model_name: "*"
+    litellm_params:
+      model: openai/nvidia/nemotron-3-ultra-550b-a55b
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: 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
+
+router_settings:
+  num_retries: 3
+  timeout: 60
