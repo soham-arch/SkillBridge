@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const NVIDIA_API_KEY = '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';
-const NVIDIA_ENDPOINT = 'https://integrate.api.nvidia.com/v1/chat/completions';
-const MODEL = 'nvidia/nemotron-3-ultra-550b-a55b';
+const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || '';
+const NVIDIA_ENDPOINT = process.env.NVIDIA_ENDPOINT || 'https://integrate.api.nvidia.com/v1/chat/completions';
+const MODEL = process.env.NVIDIA_MODEL || 'nvidia/nemotron-3-ultra-550b-a55b';
 
 export async function POST(req: NextRequest) {
   try {

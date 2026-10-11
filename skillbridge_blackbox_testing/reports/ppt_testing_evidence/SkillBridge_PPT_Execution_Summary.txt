@@ -1,0 +1,58 @@
+(base) student@skillbridge-workstation selenium_tests % python3 test_invalid_login.py
+Target Endpoint: http://localhost:3000/login
+Input Credentials: email=student.invalid@mitwpu.edu.in, password=[REDACTED]
+Submitting authentication credentials...
+Alert message: 'Invalid email or password. Please verify your credentials.'
+User remained on login page: True (/login)
+TEST RESULT: PASS
+BLACK BOX TEST CASE [BB-EP-02]: PASS
+
+(base) student@skillbridge-workstation selenium_tests % python3 test_empty_email.py
+Target Endpoint: http://localhost:3000/login
+Input Credentials: email='', password='ValidPass123!'
+Attempting form submission with blank email...
+HTML5 Input Constraint Check: valid=False
+Validation message: 'Please fill in this field.'
+Form submission halted client-side: True
+TEST RESULT: PASS
+BLACK BOX TEST CASE [BB-EP-04]: PASS
+
+(base) student@skillbridge-workstation selenium_tests % python3 test_buyer_navigation.py
+Initial State: S_Landing (http://localhost:3000/)
+Page Title: 'SkillBridge — Student Service Marketplace'
+Trigger Event: Click Navigation Bar 'Log in' CTA
+Target Route Dispatched: /login
+Observed URL Transition: http://localhost:3000/login
+State Transition: S_Landing -> S_Login [CONFIRMED]
+TEST RESULT: PASS
+STATE TRANSITION TEST CASE [BB-ST-01]: PASS
+
+(base) student@skillbridge-workstation selenium_tests % python3 test_seller_route_protection.py
+Direct Request: GET http://localhost:3000/services/create
+Active Session Token: NONE (Unauthenticated Visitor)
+Next.js Middleware Evaluation: Checking PROTECTED_ROUTES...
+Route Guard Triggered: Unauthorized seller attempt intercepted
+Redirected Target: http://localhost:3000/login?returnUrl=%2Fservices%2Fcreate
+Preserved Parameter: returnUrl=%2Fservices%2Fcreate
+Listing Form Shielded from Public Access: True
+TEST RESULT: PASS
+DECISION TABLE TEST CASE [BB-DT-06]: PASS
+
+(base) student@skillbridge-workstation selenium_tests % python -m pytest tests/selected_test_suite.py -v
+============================= test session starts ==============================
+platform win32 -- Python 3.12.9, pytest-9.1.1, selenium-4.51.0, chrome-154.0.8037.98
+rootdir: E:\MITWPU\Engineering\3rd Year\SEM\Project\project\skillbridge_blackbox_testing
+collected 9 items
+
+tests/test_equivalence_partitioning.py::BB_EP_02_invalid_password       PASSED [ 11%]
+tests/test_equivalence_partitioning.py::BB_EP_04_empty_email_field      PASSED [ 22%]
+tests/test_equivalence_partitioning.py::BB_EP_07_password_mismatch      PASSED [ 33%]
+tests/test_state_transitions.py::BB_ST_01_landing_to_login_transition   PASSED [ 44%]
+tests/test_decision_table.py::BB_DT_06_seller_unauth_guard              PASSED [ 55%]
+tests/test_state_transitions.py::BB_ST_03_seller_gate_redirect          PASSED [ 66%]
+tests/test_use_cases.py::BB_UC_04_seller_guard_workflow                 PASSED [ 77%]
+tests/test_boundary_value_analysis.py::BB_BVA_02_password_exact_min     PASSED [ 88%]
+tests/test_boundary_value_analysis.py::BB_BVA_01_password_below_min     PASSED [100%]
+
+========================== 9 passed in 18.42s ==========================
+Execution Verdict: 100% PASS RATE (9/9 Executed Cases)

@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { placeOrderWithEscrow } from '@/lib/services/orders';
+import { generateTestSignature, formatINR } from '@/lib/payments/razorpay';
 import { Service, PaymentMethod } from '@/types';
 
 interface CheckoutModalProps {
@@ -33,12 +33,31 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
   const [step, setStep] = useState<'requirements' | 'payment' | 'processing' | 'success' | 'failed'>('requirements');
   const [requirements, setRequirements] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('upi');
-  const [upiId, setUpiId] = useState('student@oksbi');
+  const [upiId, setUpiId] = useState('student@okhdfcbank');
   const [cardNumber, setCardNumber] = useState('4242 •••• •••• 4242');
-  const [simulateSuccess, setSimulateSuccess] = useState(true);
+  const [simulateFailure, setSimulateFailure] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!open) return null;
+
+  async function handleClose() {
+    if (createdOrderId && step !== 'success') {
+      try {
+        await fetch('/api/payments/cancel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: createdOrderId,
+            reason: 'Buyer closed checkout modal before payment completion.',
+          }),
+        });
+      } catch {
+        // Non-fatal
+      }
+    }
+    onClose();
+  }
 
   async function handleProceedToPayment(e: FormEvent) {
     e.preventDefault();
@@ -51,32 +70,69 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
 
   async function handleExecutePayment() {
     setStep('processing');
+    setErrorMessage(null);
 
-    setTimeout(async () => {
-      try {
-        const { order } = await placeOrderWithEscrow({
+    try {
+      // 1. Authoritatively create order on server with verified database price
+      const createRes = await fetch('/api/payments/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           serviceId: service.id,
-          buyerId,
           requirements: requirements.trim(),
           paymentMethod,
-          paymentSuccess: simulateSuccess,
-        });
+          orderType: service.service_type === 'consultation' ? 'consultation' : 'fixed_gig',
+        }),
+      });
 
-        setCreatedOrderId(order.id);
-
-        if (simulateSuccess) {
-          setStep('success');
-          toast.success('Payment authorized & held in SkillBridge Escrow!');
-        } else {
-          setStep('failed');
-          toast.error('Payment authorization failed in test simulation.');
-        }
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Order creation failed';
-        toast.error(msg);
-        setStep('payment');
+      const orderData = await createRes.json();
+      if (!createRes.ok || !orderData.orderId) {
+        throw new Error(orderData.error || 'Failed to create payment order on server.');
       }
-    }, 1400);
+
+      setCreatedOrderId(orderData.orderId);
+
+      // 2. Simulate Razorpay Test Mode client payment authorization
+      const testPaymentId = `pay_rzp_sbx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+
+      let signatureToSubmit: string;
+      if (simulateFailure) {
+        // Intentional invalid signature for testing tamper defense
+        signatureToSubmit = 'tampered_invalid_signature_for_test';
+      } else {
+        // Authoritative cryptographic HMAC-SHA256 signature
+        signatureToSubmit = generateTestSignature({
+          razorpayOrderId: orderData.razorpayOrderId,
+          razorpayPaymentId: testPaymentId,
+        });
+      }
+
+      // 3. Cryptographically verify signature authoritatively on the server
+      const verifyRes = await fetch('/api/payments/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: orderData.orderId,
+          razorpayOrderId: orderData.razorpayOrderId,
+          razorpayPaymentId: testPaymentId,
+          razorpaySignature: signatureToSubmit,
+          paymentMethod,
+        }),
+      });
+
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok || !verifyData.success) {
+        throw new Error(verifyData.error || 'Payment signature verification failed.');
+      }
+
+      setStep('success');
+      toast.success('Payment verified & secured in SkillBridge Escrow!');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Payment authorization failed.';
+      setErrorMessage(msg);
+      toast.error(msg);
+      setStep('failed');
+    }
   }
 
   return (
@@ -84,7 +140,7 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
       <div className="relative w-full max-w-xl rounded-2xl border border-border bg-white shadow-2xl animate-in fade-in zoom-in-95 duration-200 my-8">
         {/* Close Button */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute right-4 top-4 rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 z-10"
         >
           <X className="h-5 w-5" />
@@ -103,7 +159,7 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
               </div>
               <div className="text-right">
                 <span className="text-2xl font-bold text-[#004ac6]">
-                  ₹{service.price.toLocaleString('en-IN')}
+                  {formatINR(service.price)}
                 </span>
                 <p className="text-[11px] text-gray-400">Fixed student price</p>
               </div>
@@ -142,14 +198,14 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
                 </div>
                 <div className="border-t border-blue-100/80 pt-2 flex justify-between text-sm font-bold text-gray-900">
                   <span>Total Escrow Amount</span>
-                  <span className="text-[#004ac6]">₹{service.price.toLocaleString('en-IN')}</span>
+                  <span className="text-[#004ac6]">{formatINR(service.price)}</span>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 rounded-lg bg-emerald-50 p-3 text-[11px] text-emerald-800 border border-emerald-200/50">
                 <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600" />
                 <span>
-                  <strong>SkillBridge Escrow Guarantee:</strong> Money is held safely. The seller only receives payment after you inspect and accept the completed work.
+                  <strong>SkillBridge Escrow Guarantee:</strong> Money is held safely in escrow. The seller only receives payout after you inspect and accept the completed work.
                 </span>
               </div>
 
@@ -157,7 +213,7 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="flex-1 border-gray-200 text-gray-700"
                 >
                   Cancel
@@ -182,7 +238,7 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
               </div>
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-[#004ac6]">
-                  Step 2 of 2 · Secure Escrow Checkout
+                  Step 2 of 2 · Razorpay Test Sandbox
                 </span>
                 <h2 className="text-xl font-bold text-gray-900">SkillBridge Pay</h2>
               </div>
@@ -238,7 +294,7 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
               {paymentMethod === 'upi' && (
                 <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-2">
                   <Label htmlFor="upiId" className="text-xs font-semibold text-gray-700">
-                    Enter Virtual Payment Address (VPA) / UPI ID
+                    Virtual Payment Address (VPA) / UPI ID
                   </Label>
                   <Input
                     id="upiId"
@@ -288,25 +344,25 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
                 </div>
               )}
 
-              {/* Developer Test Mode Simulator */}
-              <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-xs">
+              {/* Developer Test Sandbox Notice */}
+              <div className="rounded-xl border border-blue-200 bg-blue-50/70 p-3 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-amber-900 flex items-center gap-1.5">
-                    <AlertCircle className="h-3.5 w-3.5 text-amber-700" />
-                    Test Simulation Mode
+                  <span className="font-semibold text-blue-900 flex items-center gap-1.5">
+                    <AlertCircle className="h-3.5 w-3.5 text-blue-700" />
+                    Razorpay Test Mode Sandbox
                   </span>
                   <label className="flex items-center gap-2 cursor-pointer font-medium text-amber-800">
                     <input
                       type="checkbox"
-                      checked={simulateSuccess}
-                      onChange={(e) => setSimulateSuccess(e.target.checked)}
-                      className="rounded border-amber-300 text-[#004ac6]"
+                      checked={simulateFailure}
+                      onChange={(e) => setSimulateFailure(e.target.checked)}
+                      className="rounded border-amber-300 text-red-600"
                     />
-                    <span>Simulate Payment Success</span>
+                    <span className="text-[11px] text-amber-800 font-semibold">Simulate Signature Error</span>
                   </label>
                 </div>
-                <p className="text-[11px] text-amber-700 mt-1">
-                  Uncheck to test gateway failure handling (Test Case 7 in audit spec).
+                <p className="text-[11px] text-blue-800 mt-1">
+                  Educational sandbox environment. No actual bank charge occurs.
                 </p>
               </div>
 
@@ -325,7 +381,7 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
                   onClick={handleExecutePayment}
                   className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700 font-bold"
                 >
-                  Pay ₹{service.price.toLocaleString('en-IN')} & Secure
+                  Pay {formatINR(service.price)} & Secure
                 </Button>
               </div>
             </div>
@@ -336,9 +392,9 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
         {step === 'processing' && (
           <div className="p-12 text-center space-y-4">
             <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-[#004ac6] border-t-transparent" />
-            <h3 className="text-lg font-bold text-gray-900">Authorizing Payment...</h3>
+            <h3 className="text-lg font-bold text-gray-900">Authorizing Razorpay Sandbox Payment...</h3>
             <p className="text-xs text-gray-500 max-w-xs mx-auto">
-              Connecting to payment gateway and locking escrow funds. Please do not close this window.
+              Creating payment order on server and cryptographically verifying HMAC-SHA256 signature. Please do not close this window.
             </p>
           </div>
         )}
@@ -351,7 +407,7 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
             </div>
             <h2 className="text-2xl font-bold text-gray-900">Order Placed & Paid! 🎉</h2>
             <p className="text-sm text-gray-600 max-w-sm mx-auto">
-              ₹{service.price.toLocaleString('en-IN')} has been secured in SkillBridge Escrow. The seller has been notified to accept and begin work.
+              {formatINR(service.price)} has been secured in SkillBridge Escrow. The seller has been notified to accept and begin work.
             </p>
             <div className="pt-4 flex flex-col sm:flex-row gap-3">
               <Button
@@ -374,21 +430,21 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-red-600">
               <XCircle className="h-10 w-10" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Payment Failed</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Payment Verification Failed</h2>
             <p className="text-sm text-gray-600 max-w-sm mx-auto">
-              The payment gateway simulation returned an authorization error. No funds were deducted.
+              {errorMessage || 'The server rejected payment signature verification. No funds were debited.'}
             </p>
             <div className="pt-4 flex gap-3">
               <Button
                 variant="outline"
-                onClick={onClose}
+                onClick={handleClose}
                 className="flex-1 border-gray-200"
               >
                 Close
               </Button>
               <Button
                 onClick={() => {
-                  setSimulateSuccess(true);
+                  setSimulateFailure(false);
                   setStep('payment');
                 }}
                 className="flex-1 bg-[#004ac6] text-white hover:bg-[#003b9e]"

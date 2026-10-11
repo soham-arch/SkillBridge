@@ -1,0 +1,72 @@
+{
+  "application": {
+    "base_url": "http://localhost:3000",
+    "name": "SkillBridge",
+    "tagline": "AI-Powered Student Skill Marketplace"
+  },
+  "credentials": {
+    "unconfirmed_student": {
+      "email": "skillbridge.test.student99@gmail.com",
+      "password": "Password123!",
+      "expected_error": "Email not confirmed"
+    },
+    "invalid_password_user": {
+      "email": "skillbridge.test.student99@gmail.com",
+      "password": "WrongPassword999!",
+      "expected_error": "Invalid login credentials"
+    },
+    "unregistered_user": {
+      "email": "unregistered.candidate9912@mitwpu.edu.in",
+      "password": "SecurePassword123!",
+      "expected_error": "Invalid login credentials"
+    },
+    "malformed_email": {
+      "email": "notanemailformat",
+      "password": "Password123!"
+    }
+  },
+  "registration": {
+    "valid_candidate": {
+      "full_name": "Arjun Sharma",
+      "college": "MIT World Peace University",
+      "student_id": "MITWPU-2024-CS-0842",
+      "email_prefix": "arjun.sharma.test",
+      "password": "CollegePass2026!"
+    },
+    "short_password": "12345",
+    "valid_boundary_password": "123456",
+    "mismatched_confirm": "MismatchedPass123!"
+  },
+  "search_and_discovery": {
+    "keywords": {
+      "matching_nextjs": "Next.js",
+      "matching_python": "Python",
+      "matching_tutoring": "Tutoring",
+      "zero_match": "zzxyqrandomnonexistentstring99"
+    },
+    "categories": [
+      "Web & App Development",
+      "Graphic Design & Branding",
+      "Academic Tutoring",
+      "Video & Content Creation",
+      "Event & Photography"
+    ],
+    "price_ranges": {
+      "mid_tier": {
+        "min": "500",
+        "max": "1200"
+      },
+      "exact_boundary": {
+        "min": "500",
+        "max": "500"
+      }
+    }
+  },
+  "protected_routes": [
+    "/services/create",
+    "/my-services",
+    "/my-services/availability",
+    "/orders",
+    "/admin"
+  ]
+}

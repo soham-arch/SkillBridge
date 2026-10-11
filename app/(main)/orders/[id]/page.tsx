@@ -16,6 +16,9 @@ import {
   User,
   AlertCircle,
   Sparkles,
+  MapPin,
+  XCircle,
+  Video,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,10 +31,11 @@ import { useAuth } from '@/lib/auth/auth-context';
 import { fetchOrderById, transitionOrderStatus } from '@/lib/services/orders';
 import { VerifiedBadge } from '@/components/trust/verified-badge';
 import { ReviewModal } from '@/components/reviews/review-modal';
+import { OrderChat } from '@/components/orders/order-chat';
 import { Order, OrderStatus } from '@/types';
 
 const STATUS_STEPS: { status: OrderStatus; label: string }[] = [
-  { status: 'paid', label: 'Paid in Escrow' },
+  { status: 'paid', label: 'Payment Held' },
   { status: 'accepted', label: 'Accepted' },
   { status: 'in_progress', label: 'In Progress' },
   { status: 'submitted', label: 'Delivered' },
@@ -55,6 +59,7 @@ function getStepIndex(status: OrderStatus): number {
     case 'completed':
       return 4;
     case 'cancelled':
+    case 'rejected':
       return -2;
     default:
       return 0;
@@ -63,7 +68,7 @@ function getStepIndex(status: OrderStatus): number {
 
 export default function OrderDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { session } = useAuth();
+  const { session, isAdmin } = useAuth();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -75,6 +80,10 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
   // Revision modal state
   const [revisionModalOpen, setRevisionModalOpen] = useState(false);
   const [revisionNotes, setRevisionNotes] = useState('');
+
+  // Reject modal state
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
 
   // Review modal state
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
@@ -122,16 +131,42 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
     );
   }
 
-  // Current viewer's role
-  const currentUserId = session?.user?.id ?? '10000000-0000-0000-0000-000000000001';
+  // Current viewer's role and authorization check
+  const currentUserId = session?.user?.id || '';
   const isSeller = currentUserId === order.seller_id;
   const isBuyer = currentUserId === order.buyer_id;
 
+  // Strict participant access boundary: Non-participants cannot view order details
+  if (!isBuyer && !isSeller && !isAdmin) {
+    return (
+      <div className="mx-auto w-full max-w-screen-xl px-6 py-16 text-center">
+        <div className="mx-auto max-w-md rounded-2xl border border-red-200 bg-white p-8 shadow-sm">
+          <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-3" />
+          <h2 className="text-lg font-bold text-gray-900">Access Restricted</h2>
+          <p className="mt-2 text-xs text-gray-600 leading-relaxed">
+            You are not authorized to view this order, its deliverables, or communication history. Only the participating buyer, seller, or platform administrators may view this record.
+          </p>
+          <Link href="/orders">
+            <Button className="mt-6 bg-[#004ac6] text-white hover:bg-[#003b9e] text-xs font-bold">
+              Return to Orders
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const currentStep = getStepIndex(order.status);
   const isCancelled = order.status === 'cancelled';
+  const isRejected = order.status === 'rejected';
+  const isConsultation = order.order_type === 'consultation' || Boolean(order.consultation_details);
+  const revisionsCount = order.revisions_count ?? 0;
+  const maxRevisions = order.max_revisions ?? 2;
+  const canRequestMoreRevisions = revisionsCount < maxRevisions;
+  const isOverdue = new Date(order.due_date).getTime() < Date.now();
 
   async function handleAction(
-    action: 'accept' | 'start_work' | 'submit_work' | 'request_revision' | 'complete' | 'cancel',
+    action: 'accept' | 'reject' | 'start_work' | 'submit_work' | 'request_revision' | 'complete' | 'cancel',
     payload?: { notes?: string; fileUrl?: string; reason?: string }
   ) {
     setActionLoading(true);
@@ -141,6 +176,8 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       toast.success(
         action === 'accept'
           ? 'Order accepted!'
+          : action === 'reject'
+          ? 'Order request declined & refunded.'
           : action === 'start_work'
           ? 'Work status updated to In Progress!'
           : action === 'submit_work'
@@ -148,11 +185,12 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           : action === 'request_revision'
           ? 'Revision requested from seller.'
           : action === 'complete'
-          ? 'Order marked as completed & Escrow payment released!'
+          ? 'Order marked as completed & payment released!'
           : 'Order cancelled.'
       );
       setDeliverableModalOpen(false);
       setRevisionModalOpen(false);
+      setRejectModalOpen(false);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Action failed';
       toast.error(msg);
@@ -177,7 +215,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             variant="secondary"
             className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-[#004ac6]"
           >
-            Order #{order.id.slice(-6).toUpperCase()}
+            {isConsultation ? 'Consultation' : 'Gig'} #{order.id.slice(-6).toUpperCase()}
           </Badge>
           <span className="text-xs text-gray-500">
             Placed on{' '}
@@ -192,16 +230,18 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Left 2 Cols: Status Stepper & Deliverables & Timeline */}
+        {/* Left 2 Cols: Stepper, Workflows & Details */}
         <div className="lg:col-span-2 space-y-6">
           {/* Status Stepper Header */}
           <div className="rounded-2xl border border-border bg-white p-6 sm:p-8 shadow-sm">
             <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  {isSeller ? 'You are the Seller' : 'You are the Buyer'}
+                  {isSeller ? 'You are the Seller' : 'You are the Buyer'} · {isConsultation ? 'Scheduled Consultation' : 'Fixed-Scope Gig'}
                 </span>
-                <h1 className="mt-1 text-2xl font-bold text-gray-900">{order.service?.title}</h1>
+                <h1 className="mt-1 text-2xl font-bold text-gray-900">
+                  {order.service?.title ?? order.service_snapshot?.title ?? 'Service Order'}
+                </h1>
               </div>
               <div className="text-right">
                 <span className="text-2xl font-bold text-[#004ac6]">
@@ -213,8 +253,8 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
               </div>
             </div>
 
-            {/* Progress Stepper */}
-            {!isCancelled ? (
+            {/* Stepper Display */}
+            {!isCancelled && !isRejected ? (
               <div className="relative pt-4 pb-2">
                 <div className="grid grid-cols-5 gap-2 text-center">
                   {STATUS_STEPS.map((s, idx) => {
@@ -249,16 +289,65 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                   })}
                 </div>
               </div>
+            ) : isRejected ? (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 flex items-center gap-3">
+                <XCircle className="h-5 w-5 shrink-0 text-red-600" />
+                <div>
+                  <p className="font-bold">Request Declined by Provider</p>
+                  <p className="text-xs text-red-700 mt-0.5">
+                    {order.cancellation_reason || 'The provider is unavailable for this request. Escrow hold has been refunded.'}
+                  </p>
+                </div>
+              </div>
             ) : (
               <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 shrink-0 text-red-600" />
                 <div>
-                  <p className="font-bold">Order Cancelled & Escrow Refunded</p>
-                  <p className="text-xs text-red-700 mt-0.5">{order.cancellation_reason}</p>
+                  <p className="font-bold">Order Cancelled & Payment Refunded</p>
+                  <p className="text-xs text-red-700 mt-0.5">{order.cancellation_reason || 'Cancelled by participant.'}</p>
                 </div>
               </div>
             )}
           </div>
+
+          {/* Consultation Session Details (When Order is Consultation) */}
+          {isConsultation && order.consultation_details && (
+            <div className="rounded-2xl border border-purple-200 bg-purple-50/40 p-6 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-purple-900 flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-purple-700" />
+                  Scheduled Consultation Session
+                </h2>
+                <Badge variant="outline" className="border-purple-300 text-purple-800 text-[11px] font-semibold bg-white">
+                  Appointment Confirmed
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 text-xs">
+                <div>
+                  <span className="text-gray-500 block">Date & Time</span>
+                  <span className="font-bold text-gray-900 text-sm">
+                    {order.consultation_details.booking_date} at {order.consultation_details.start_time} - {order.consultation_details.end_time}
+                  </span>
+                </div>
+
+                <div>
+                  <span className="text-gray-500 block">Meeting Location / Channel</span>
+                  <span className="font-semibold text-gray-900 flex items-center gap-1.5 mt-0.5">
+                    <Video className="h-3.5 w-3.5 text-purple-600" />
+                    {order.consultation_details.location || 'Online Video Meeting (Google Meet)'}
+                  </span>
+                </div>
+              </div>
+
+              {order.consultation_details.note && (
+                <div className="mt-2 rounded-xl bg-white p-3 border border-purple-100 text-xs text-gray-700">
+                  <span className="font-semibold text-purple-900 block mb-0.5">Session Goals & Topic:</span>
+                  {order.consultation_details.note}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Action Card Based on Role & Status */}
           <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
@@ -272,15 +361,15 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                 <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900 flex items-start gap-3">
                   <Clock className="h-5 w-5 shrink-0 text-amber-700" />
                   <div>
-                    <p className="font-bold">Buyer has paid into escrow</p>
+                    <p className="font-bold">Awaiting Seller Review & Acceptance</p>
                     <p className="mt-0.5 text-amber-800">
-                      Review the project requirements below and accept to start the delivery clock ({order.delivery_days} days).
+                      Payment is held safely in escrow. Review requirements and confirm commitment to begin work.
                     </p>
                   </div>
                 </div>
 
                 {isSeller && (
-                  <div className="flex gap-3">
+                  <div className="flex flex-wrap gap-3">
                     <Button
                       onClick={() => handleAction('accept')}
                       disabled={actionLoading}
@@ -290,18 +379,30 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => handleAction('cancel', { reason: 'Seller unavailable' })}
+                      onClick={() => setRejectModalOpen(true)}
                       disabled={actionLoading}
-                      className="border-gray-200 text-red-600 hover:bg-red-50"
+                      className="border-gray-200 text-red-600 hover:bg-red-50 font-semibold"
                     >
-                      Decline Order
+                      Decline Request
                     </Button>
                   </div>
                 )}
+
                 {isBuyer && (
-                  <p className="text-xs text-gray-500 italic">
-                    Awaiting {order.seller?.full_name} to accept your project requirements.
-                  </p>
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <p className="text-xs text-gray-500 italic">
+                      Awaiting {order.seller?.full_name} to accept your booking.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAction('cancel', { reason: 'Cancelled by buyer before seller acceptance.' })}
+                      disabled={actionLoading}
+                      className="text-xs text-red-600 hover:bg-red-50 border-gray-200"
+                    >
+                      Cancel Request
+                    </Button>
+                  </div>
                 )}
               </div>
             )}
@@ -313,7 +414,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                   <div className="rounded-xl border border-purple-200 bg-purple-50 p-4 text-xs text-purple-900">
                     <p className="font-bold flex items-center gap-1.5">
                       <MessageSquare className="h-4 w-4 text-purple-700" />
-                      Revision Requested by Buyer:
+                      Revision Requested by Buyer (#{revisionsCount} of {maxRevisions}):
                     </p>
                     <p className="mt-1 text-purple-800 italic">&ldquo;{order.revision_notes}&rdquo;</p>
                   </div>
@@ -322,7 +423,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                 {isSeller ? (
                   <div className="space-y-3">
                     <p className="text-xs text-gray-600">
-                      You are currently working on this service. Once finished, submit your deliverables for the buyer to inspect.
+                      {isConsultation
+                        ? 'Prepare for the scheduled consultation session. After meeting, conclude and submit any session notes.'
+                        : 'You are currently working on this service. Once finished, submit deliverables for inspection.'}
                     </p>
                     <div className="flex gap-3">
                       {order.status === 'accepted' && (
@@ -338,14 +441,30 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                         onClick={() => setDeliverableModalOpen(true)}
                         className="bg-emerald-600 text-white hover:bg-emerald-700 font-bold"
                       >
-                        Submit Final Deliverables →
+                        {isConsultation ? 'Conclude & Submit Session Summary →' : 'Submit Final Deliverables →'}
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-xs text-gray-500">
-                    {order.seller?.full_name} is actively working on your service. Estimated completion within {order.delivery_days} days.
-                  </p>
+                  <div className="space-y-2">
+                    <p className="text-xs text-gray-500">
+                      {order.seller?.full_name} is actively working on your request. Estimated delivery within {order.delivery_days} days.
+                    </p>
+                    {isOverdue && (
+                      <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-800 flex items-center justify-between">
+                        <span>The agreed delivery date has passed.</span>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleAction('cancel', { reason: 'Delivery deadline missed by provider.' })}
+                          disabled={actionLoading}
+                          className="h-8 text-xs font-bold"
+                        >
+                          Cancel for Full Refund
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}
@@ -375,26 +494,36 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                 </div>
 
                 {isBuyer && (
-                  <div className="flex flex-wrap gap-3 pt-2">
-                    <Button
-                      onClick={() => handleAction('complete')}
-                      disabled={actionLoading}
-                      className="bg-emerald-600 text-white hover:bg-emerald-700 font-bold"
-                    >
-                      ✓ Approve & Release ₹{order.price} Payment
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setRevisionModalOpen(true)}
-                      className="border-gray-200 text-purple-700 hover:bg-purple-50"
-                    >
-                      Request Adjustments / Revision
-                    </Button>
+                  <div className="space-y-2 pt-2">
+                    <div className="flex flex-wrap gap-3">
+                      <Button
+                        onClick={() => handleAction('complete')}
+                        disabled={actionLoading}
+                        className="bg-emerald-600 text-white hover:bg-emerald-700 font-bold"
+                      >
+                        ✓ Approve & Release ₹{order.price.toLocaleString('en-IN')} Payment
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        onClick={() => setRevisionModalOpen(true)}
+                        disabled={!canRequestMoreRevisions || actionLoading}
+                        className="border-gray-200 text-purple-700 hover:bg-purple-50"
+                      >
+                        Request Revision ({revisionsCount}/{maxRevisions} Used)
+                      </Button>
+                    </div>
+
+                    {!canRequestMoreRevisions && (
+                      <p className="text-[11px] text-amber-700">
+                        Maximum revision limit ({maxRevisions}) reached for this contract.
+                      </p>
+                    )}
                   </div>
                 )}
                 {isSeller && (
                   <p className="text-xs text-gray-500 italic">
-                    Deliverables sent to {order.buyer?.full_name}. Awaiting buyer approval to release funds.
+                    Deliverables sent to {order.buyer?.full_name}. Awaiting buyer inspection and release.
                   </p>
                 )}
               </div>
@@ -405,9 +534,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
               <div className="space-y-4">
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-xs text-emerald-900 flex items-center justify-between">
                   <div>
-                    <p className="font-bold">Transaction Successfully Closed</p>
+                    <p className="font-bold">Transaction Successfully Completed</p>
                     <p className="text-emerald-800 mt-0.5">
-                      Deliverables were approved and ₹{order.price.toLocaleString('en-IN')} escrow has been released to the seller.
+                      Deliverables approved. ₹{order.price.toLocaleString('en-IN')} escrow has been released to the seller.
                     </p>
                   </div>
                   <CheckCircle2 className="h-6 w-6 text-emerald-600 shrink-0" />
@@ -427,7 +556,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                   <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 text-xs">
                     <p className="font-bold text-gray-900 flex items-center gap-1.5">
                       <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                      Review Left: {order.review.rating} Stars
+                      Review Submitted: {order.review.rating} Stars
                     </p>
                     <p className="mt-1 text-gray-600 italic">&ldquo;{order.review.comment}&rdquo;</p>
                   </div>
@@ -439,12 +568,21 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           {/* Requirements Card */}
           <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-3">
-              Project Requirements from Buyer
+              Project Requirements & Instructions
             </h2>
             <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100">
-              {order.requirements}
+              {order.requirements || 'No extra requirements specified.'}
             </p>
           </div>
+
+          {/* Order Communication & Messages */}
+          <OrderChat
+            orderId={order.id}
+            currentUserId={currentUserId}
+            currentUserName={session?.user?.user_metadata?.full_name || session?.user?.email}
+            recipient={isSeller ? order.buyer : order.seller}
+            orderTitle={order.service?.title ?? order.service_snapshot?.title}
+          />
 
           {/* Timeline */}
           <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
@@ -484,13 +622,15 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             </h2>
             {(() => {
               const party = isSeller ? order.buyer : order.seller;
-              if (!party) return <p className="text-xs text-gray-400">User not found</p>;
+              if (!party) return <p className="text-xs text-gray-400">User record not found</p>;
               const initials = party.full_name
-                .split(' ')
-                .map((n) => n[0])
-                .slice(0, 2)
-                .join('')
-                .toUpperCase();
+                ? party.full_name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .slice(0, 2)
+                    .join('')
+                    .toUpperCase()
+                : '?';
 
               return (
                 <div className="space-y-3">
@@ -520,7 +660,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                       href={`/profile/${party.user_id}`}
                       className="block text-center text-xs font-semibold text-[#004ac6] hover:underline pt-1"
                     >
-                      View Full Student Profile →
+                      View Student Profile →
                     </Link>
                   )}
                 </div>
@@ -532,15 +672,14 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-6 text-xs text-emerald-900 space-y-3">
             <div className="flex items-center gap-2 font-bold text-emerald-800">
               <ShieldCheck className="h-5 w-5 text-emerald-600" />
-              SkillBridge Escrow Protection
+              SkillBridge Student Protection
             </div>
             <p className="text-emerald-800/90 leading-relaxed">
-              Payments are held securely in intermediate student escrow. The provider is only paid once the client approves the final submission.
+              Payments are held securely in platform escrow. The provider is only paid once deliverables or consultation sessions are completed and approved.
             </p>
-            <div className="border-t border-emerald-200/60 pt-2 text-[11px] text-emerald-700">
-              ✓ Free revisions if deliverables don&apos;t match scope
-              <br />
-              ✓ Full refund guarantee if order is declined
+            <div className="border-t border-emerald-200/60 pt-2 text-[11px] text-emerald-700 space-y-1">
+              <div>✓ {maxRevisions} revisions supported before completion</div>
+              <div>✓ Full refund guarantee if order is declined or cancelled</div>
             </div>
           </div>
         </div>
@@ -550,9 +689,13 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       {deliverableModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-2xl border border-border bg-white p-6 shadow-2xl space-y-4">
-            <h3 className="text-lg font-bold text-gray-900">Submit Completed Work</h3>
+            <h3 className="text-lg font-bold text-gray-900">
+              {isConsultation ? 'Submit Session Notes & Summary' : 'Submit Completed Work'}
+            </h3>
             <p className="text-xs text-gray-500">
-              Attach link to your files (Google Drive, GitHub repo, Figma link, etc.) and write delivery notes.
+              {isConsultation
+                ? 'Attach meeting summary, action items, or resource links for your student peer.'
+                : 'Attach link to your files (Google Drive, GitHub repo, Figma link, etc.) and write delivery notes.'}
             </p>
 
             <div>
@@ -605,7 +748,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       {revisionModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-md rounded-2xl border border-border bg-white p-6 shadow-2xl space-y-4">
-            <h3 className="text-lg font-bold text-gray-900">Request Revision</h3>
+            <h3 className="text-lg font-bold text-gray-900">Request Revision ({revisionsCount + 1}/{maxRevisions})</h3>
             <p className="text-xs text-gray-500">
               Explain clearly what needs adjustment or improvement before you can accept.
             </p>
@@ -635,6 +778,46 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                 className="flex-1 bg-purple-600 text-white hover:bg-purple-700 font-bold"
               >
                 Send Request
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Modal (For Seller) */}
+      {rejectModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-border bg-white p-6 shadow-2xl space-y-4">
+            <h3 className="text-lg font-bold text-gray-900">Decline Request</h3>
+            <p className="text-xs text-gray-500">
+              Provide a brief explanation for declining this request. The client will be notified and their payment refunded.
+            </p>
+
+            <div>
+              <Label className="text-xs font-semibold text-gray-700">Reason for Declining</Label>
+              <Textarea
+                rows={3}
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="e.g. Current academic exam schedule conflict, unavailable during this window..."
+                className="mt-1 resize-none"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setRejectModalOpen(false)}
+                className="flex-1"
+              >
+                Back
+              </Button>
+              <Button
+                onClick={() => handleAction('reject', { reason: rejectReason.trim() })}
+                disabled={actionLoading}
+                className="flex-1 bg-red-600 text-white hover:bg-red-700 font-bold"
+              >
+                Decline & Refund
               </Button>
             </div>
           </div>

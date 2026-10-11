@@ -1,12 +1,15 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
-import { ShieldCheck, Upload, CheckCircle2, X } from 'lucide-react';
+import { useState, useRef, type FormEvent, type ChangeEvent } from 'react';
+import { ShieldCheck, Upload, CheckCircle2, X, FileText, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { requestStudentVerification } from '@/lib/services/verification';
+import {
+  uploadStudentDocument,
+  submitStudentVerification,
+} from '@/lib/services/verification';
 
 interface VerificationModalProps {
   userId: string;
@@ -23,13 +26,38 @@ export function VerificationModal({
   onClose,
   onSubmitted,
 }: VerificationModalProps) {
+  const [fullName, setFullName] = useState('');
   const [collegeName, setCollegeName] = useState(currentCollege ?? '');
   const [collegeEmail, setCollegeEmail] = useState('');
-  const [docType, setDocType] = useState<'college_id_card' | 'student_email'>('student_email');
+  const [studentIdNumber, setStudentIdNumber] = useState('');
+  const [docType, setDocType] = useState<'college_id_card' | 'student_email' | 'enrollment_cert'>('college_id_card');
+
+  const [file, setFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!open) return null;
+
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+
+    if (selected.size > 10 * 1024 * 1024) {
+      toast.error('File size exceeds 10MB.');
+      return;
+    }
+
+    setFile(selected);
+    if (selected.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = () => setFilePreview(reader.result as string);
+      reader.readAsDataURL(selected);
+    } else {
+      setFilePreview(null);
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -37,15 +65,29 @@ export function VerificationModal({
       toast.error('College name is required.');
       return;
     }
+    if (!studentIdNumber.trim()) {
+      toast.error('Student ID or enrollment number is required.');
+      return;
+    }
+    if (!file) {
+      toast.error('Please upload your college ID card or verification document.');
+      return;
+    }
 
     setSubmitting(true);
     try {
-      await requestStudentVerification({
+      // 1. Upload genuine document to private storage bucket
+      const uploadRes = await uploadStudentDocument(userId, file);
+
+      // 2. Submit verification request
+      await submitStudentVerification({
         userId,
+        fullName: fullName.trim() || 'Student',
         collegeName: collegeName.trim(),
         collegeEmail: collegeEmail.trim() || undefined,
+        studentIdNumber: studentIdNumber.trim(),
+        documentPath: uploadRes.documentPath,
         documentType: docType,
-        documentUrl: docType === 'college_id_card' ? 'https://images.unsplash.com/photo-1578852612716-854e527abf50?w=600' : undefined,
       });
 
       setSubmitted(true);
@@ -75,122 +117,147 @@ export function VerificationModal({
               <CheckCircle2 className="h-10 w-10" />
             </div>
             <h3 className="text-xl font-bold text-gray-900">Verification Under Review</h3>
-            <p className="text-sm text-gray-600 max-w-sm mx-auto">
-              Your college verification documents have been submitted. An administrator will review your credentials within 24 hours.
+            <p className="text-xs text-gray-600 max-w-sm mx-auto leading-relaxed">
+              Your college verification document has been securely submitted. An administrator will review your credentials within 24 hours.
             </p>
             <Button
               onClick={() => {
                 setSubmitted(false);
                 onClose();
               }}
-              className="mt-4 bg-[#004ac6] text-white hover:bg-[#003b9e]"
+              className="mt-4 bg-[#004ac6] text-white hover:bg-[#003b9e] text-xs font-bold"
             >
               Done
             </Button>
           </div>
         ) : (
           <div>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900">Get Verified as a Student</h2>
+                <h2 className="text-base font-bold text-gray-900">Get Verified as a Student</h2>
                 <p className="text-xs text-gray-500">
-                  Build trust with buyers & sellers with an official Verified Student badge.
+                  Build campus trust with an official Verified Student badge.
                 </p>
               </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="college" className="text-xs font-semibold text-gray-700">
-                  College / University <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="college"
-                  required
-                  value={collegeName}
-                  onChange={(e) => setCollegeName(e.target.value)}
-                  placeholder="e.g. MIT World Peace University, Pune"
-                  className="mt-1"
-                />
-              </div>
-
-              <div>
-                <Label className="text-xs font-semibold text-gray-700">Verification Method</Label>
-                <div className="mt-2 grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setDocType('student_email')}
-                    className={`rounded-xl border p-3 text-left transition-all ${
-                      docType === 'student_email'
-                        ? 'border-[#004ac6] bg-[#f0f4ff]'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <p className="text-xs font-bold text-gray-900">College Email</p>
-                    <p className="text-[11px] text-gray-500 mt-0.5">Instant domain check (.edu / .ac.in)</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDocType('college_id_card')}
-                    className={`rounded-xl border p-3 text-left transition-all ${
-                      docType === 'college_id_card'
-                        ? 'border-[#004ac6] bg-[#f0f4ff]'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <p className="text-xs font-bold text-gray-900">Student ID Card</p>
-                    <p className="text-[11px] text-gray-500 mt-0.5">Upload college ID photo</p>
-                  </button>
-                </div>
-              </div>
-
-              {docType === 'student_email' ? (
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="email" className="text-xs font-semibold text-gray-700">
-                    Official College Email (.edu / .ac.in)
+                  <Label htmlFor="modalFullName" className="text-xs font-semibold text-gray-700">
+                    Full Legal Name
                   </Label>
                   <Input
-                    id="email"
-                    type="email"
-                    required
-                    value={collegeEmail}
-                    onChange={(e) => setCollegeEmail(e.target.value)}
-                    placeholder="alex.sharma@mitwpu.edu.in"
-                    className="mt-1"
+                    id="modalFullName"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="e.g. Alex Sharma"
+                    className="mt-1 h-9 text-xs"
                   />
-                  <p className="text-[11px] text-gray-400 mt-1">
-                    We will send a confirmation verification token.
-                  </p>
                 </div>
-              ) : (
                 <div>
-                  <Label className="text-xs font-semibold text-gray-700">Upload Student ID Card</Label>
-                  <div className="mt-1 flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center">
-                    <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                    <p className="text-xs font-medium text-gray-700">Click to attach photo or drag here</p>
-                    <p className="text-[10px] text-gray-400 mt-1">JPG, PNG or PDF up to 5MB (Sample attached automatically in test mode)</p>
-                  </div>
+                  <Label htmlFor="modalCollege" className="text-xs font-semibold text-gray-700">
+                    College / University <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="modalCollege"
+                    required
+                    value={collegeName}
+                    onChange={(e) => setCollegeName(e.target.value)}
+                    placeholder="e.g. MIT-WPU, Pune"
+                    className="mt-1 h-9 text-xs"
+                  />
                 </div>
-              )}
+              </div>
 
-              <div className="pt-3 flex gap-3">
+              <div>
+                <Label htmlFor="modalStudentId" className="text-xs font-semibold text-gray-700">
+                  Student ID / PRN Number <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="modalStudentId"
+                  required
+                  value={studentIdNumber}
+                  onChange={(e) => setStudentIdNumber(e.target.value)}
+                  placeholder="e.g. 1032210984"
+                  className="mt-1 h-9 text-xs"
+                />
+                <p className="text-[10px] text-gray-400 mt-0.5">
+                  Private & encrypted. Never displayed publicly on profile links.
+                </p>
+              </div>
+
+              <div>
+                <Label className="text-xs font-semibold text-gray-700">
+                  Upload College ID Document <span className="text-red-500">*</span>
+                </Label>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+
+                {!file ? (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="mt-1 flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50/60 p-5 text-center cursor-pointer hover:border-[#004ac6] hover:bg-[#f0f4ff]/50 transition-colors"
+                  >
+                    <Upload className="h-6 w-6 text-gray-400 mb-1" />
+                    <p className="text-xs font-semibold text-gray-700">
+                      Click to choose student ID file
+                    </p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">
+                      JPG, PNG, WEBP, or PDF up to 10MB
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mt-1 rounded-xl border border-gray-200 bg-gray-50 p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-[#004ac6]" />
+                      <div>
+                        <p className="text-xs font-bold text-gray-900">{file.name}</p>
+                        <p className="text-[10px] text-gray-400">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFile(null)}
+                      className="p-1 text-gray-400 hover:text-red-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-lg bg-gray-50 p-2.5 text-[10px] text-gray-500 flex items-center gap-1.5">
+                <Lock className="h-3 w-3 text-gray-400 shrink-0" />
+                Uploaded to private Supabase Storage. Viewable only by authorized administrators.
+              </div>
+
+              <div className="pt-2 flex gap-3">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={onClose}
-                  className="flex-1 border-gray-200 text-gray-700"
+                  className="flex-1 border-gray-200 text-gray-700 text-xs"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  disabled={submitting}
-                  className="flex-1 bg-[#004ac6] text-white hover:bg-[#003b9e]"
+                  disabled={submitting || !file}
+                  className="flex-1 bg-[#004ac6] text-white hover:bg-[#003b9e] text-xs font-bold disabled:opacity-60"
                 >
-                  {submitting ? 'Submitting...' : 'Submit Verification'}
+                  {submitting ? 'Uploading...' : 'Submit Verification'}
                 </Button>
               </div>
             </form>

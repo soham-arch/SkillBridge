@@ -7,7 +7,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:auth": "node scripts/test-auth-verification.mjs",
+    "test:admin": "node scripts/test-admin-governance.mjs",
+    "test:profile": "node scripts/test-profiles-roles-onboarding.mjs",
+    "test:db": "node scripts/test-database-consolidation.mjs",
+    "test:services": "node scripts/test-service-lifecycle.mjs",
+    "test:search": "node scripts/test-ai-search.mjs",
+    "test:orders": "node scripts/test-unified-orders-delivery.mjs",
+    "test:payments": "node scripts/test-payments-transactions.mjs",
+    "test:messaging": "node scripts/test-messaging-notifications.mjs",
+    "test:reviews": "node scripts/test-verified-reviews-reputation.mjs",
+    "test:dashboards": "node scripts/test-real-dashboards-navigation.mjs",
+    "test:e2e": "node scripts/test-master-e2e-integration.mjs",
+    "test:all": "npm run test:auth && npm run test:admin && npm run test:profile && npm run test:db && npm run test:services && npm run test:search && npm run test:orders && npm run test:payments && npm run test:messaging && npm run test:reviews && npm run test:dashboards && npm run test:e2e",
+    "bootstrap:admin": "node scripts/bootstrap-admin.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

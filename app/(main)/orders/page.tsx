@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/lib/auth/auth-context';
+import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { fetchUserOrders } from '@/lib/services/orders';
 import { Order, OrderStatus } from '@/types';
 
@@ -29,11 +30,14 @@ const STATUS_BADGES: Record<OrderStatus, { label: string; class: string }> = {
   revision_requested: { label: 'Revision Requested', class: 'bg-orange-50 text-orange-700 border-orange-200' },
   completed: { label: 'Completed', class: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
   cancelled: { label: 'Cancelled', class: 'bg-gray-100 text-gray-600 border-gray-200' },
+  rejected: { label: 'Declined & Refunded', class: 'bg-red-50 text-red-700 border-red-200' },
 };
 
 export default function OrdersPage() {
-  const { session } = useAuth();
-  const userId = session?.user?.id ?? '10000000-0000-0000-0000-000000000001';
+  const { session, user, loading: authLoading } = useRequireAuth({
+    requireStudentVerified: false,
+  });
+  const userId = session?.user?.id || '';
 
   const [tab, setTab] = useState<'buyer' | 'seller'>('buyer');
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
@@ -41,6 +45,7 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!userId) return;
     setLoading(true);
     fetchUserOrders(userId, tab)
       .then(setOrders)
@@ -180,6 +185,11 @@ export default function OrdersPage() {
                       <span className="text-xs font-bold text-gray-400">
                         #{order.id.slice(-6).toUpperCase()}
                       </span>
+                      {order.order_type === 'consultation' || order.consultation_details ? (
+                        <span className="rounded-full border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-[11px] font-semibold text-purple-700">
+                          Consultation 📅
+                        </span>
+                      ) : null}
                       <span
                         className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${badge.class}`}
                       >

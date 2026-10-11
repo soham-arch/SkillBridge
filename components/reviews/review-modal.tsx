@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { submitOrderReview } from '@/lib/services/orders';
+import { submitVerifiedReview } from '@/lib/services/reviews';
 import { Order } from '@/types';
 
 interface ReviewModalProps {
@@ -27,23 +27,24 @@ export function ReviewModal({ order, reviewerId, open, onClose, onReviewed }: Re
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!comment.trim()) {
-      toast.error('Please write a brief comment describing your experience.');
+    const cleanComment = comment.trim();
+    if (cleanComment.length < 5) {
+      toast.error('Please write at least 5 characters describing your experience.');
       return;
     }
 
     setSubmitting(true);
     try {
-      await submitOrderReview({
+      await submitVerifiedReview({
         orderId: order.id,
         serviceId: order.service_id,
         reviewerId,
         revieweeId: order.seller_id,
         rating,
-        comment: comment.trim(),
+        comment: cleanComment,
       });
 
-      toast.success('Review submitted! Thank you for helping the student community.');
+      toast.success('Verified review submitted! Thank you for supporting peer quality.');
       onReviewed?.();
       onClose();
     } catch (err: unknown) {

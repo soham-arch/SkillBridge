@@ -13,6 +13,7 @@ const hanken = Hanken_Grotesk({
 export const metadata: Metadata = {
   title: 'SkillBridge — Student Service Marketplace',
   description: 'Discover, offer, and request services from students on SkillBridge.',
+  viewport: 'width=device-width, initial-scale=1',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -11,6 +11,7 @@ import {
   VerificationRequest,
   NotificationItem,
   SellerEarnings,
+  AdminAuditLog,
 } from '@/types';
 
 // Storage key
@@ -25,6 +26,7 @@ export interface MarketplaceState {
   reviews: Review[];
   verifications: VerificationRequest[];
   notifications: NotificationItem[];
+  adminAuditLogs?: AdminAuditLog[];
 }
 
 // Initial Seed Data mirroring migrations
@@ -502,47 +504,17 @@ function populateOrder(order: Order, services: Service[], profiles: Profile[], r
   };
 }
 
-// In-memory fallback if localStorage is unavailable
+// Non-authoritative in-memory seed catalog for offline initial render
 let inMemoryState: MarketplaceState | null = null;
 const listeners: Array<() => void> = [];
 
+/**
+ * Returns read-only in-memory seed data.
+ * NOTE: Supabase PostgreSQL is the sole authoritative store for all live business records.
+ */
 export function getMarketplaceState(): MarketplaceState {
-  if (typeof window === 'undefined') {
-    if (!inMemoryState) {
-      inMemoryState = {
-        profiles: SEED_PROFILES,
-        categories: SEED_CATEGORIES,
-        services: SEED_SERVICES,
-        orders: SEED_ORDERS,
-        payments: [],
-        reviews: SEED_REVIEWS,
-        verifications: SEED_VERIFICATIONS,
-        notifications: SEED_NOTIFICATIONS,
-      };
-    }
-    return inMemoryState;
-  }
-
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      const initial: MarketplaceState = {
-        profiles: SEED_PROFILES,
-        categories: SEED_CATEGORIES,
-        services: SEED_SERVICES,
-        orders: SEED_ORDERS,
-        payments: [],
-        reviews: SEED_REVIEWS,
-        verifications: SEED_VERIFICATIONS,
-        notifications: SEED_NOTIFICATIONS,
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
-      return initial;
-    }
-    return JSON.parse(raw) as MarketplaceState;
-  } catch (err) {
-    console.error('Error reading marketplace state from localStorage:', err);
-    return {
+  if (!inMemoryState) {
+    inMemoryState = {
       profiles: SEED_PROFILES,
       categories: SEED_CATEGORIES,
       services: SEED_SERVICES,
@@ -553,15 +525,25 @@ export function getMarketplaceState(): MarketplaceState {
       notifications: SEED_NOTIFICATIONS,
     };
   }
+  return inMemoryState;
 }
 
+/**
+ * In-memory state notifier.
+ * Strips sensitive transaction and financial data before saving harmless UI preferences.
+ */
 export function saveMarketplaceState(state: MarketplaceState): void {
   inMemoryState = state;
   if (typeof window !== 'undefined') {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (err) {
-      console.error('Error saving marketplace state:', err);
+      // Only persist harmless preferences, never transactions or account balances
+      const harmlessPreferences = {
+        lastVisitedTab: 'all',
+        hasDismissedWelcomeBanner: true,
+      };
+      localStorage.setItem('skillbridge_ui_prefs', JSON.stringify(harmlessPreferences));
+    } catch {
+      // Non-critical UI preference persistence
     }
   }
   listeners.forEach((fn) => fn());
@@ -580,7 +562,14 @@ export function subscribeMarketplaceStore(listener: () => void): () => void {
 ========================================================================= */
 
 // SERVICES
-export function getAllServices(options: { query?: string; categoryId?: string | null; sort?: string; verifiedOnly?: boolean } = {}): Service[] {
+export function getAllServices(options: {
+  query?: string;
+  categoryId?: string | null;
+  sort?: string;
+  verifiedOnly?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+} = {}): Service[] {
   const state = getMarketplaceState();
   let list = state.services
     .filter((s) => s.status === 'published')
@@ -599,6 +588,14 @@ export function getAllServices(options: { query?: string; categoryId?: string | 
 
   if (options.categoryId) {
     list = list.filter((s) => s.category_id === options.categoryId);
+  }
+
+  if (options.minPrice !== undefined && !isNaN(options.minPrice)) {
+    list = list.filter((s) => s.price >= options.minPrice!);
+  }
+
+  if (options.maxPrice !== undefined && !isNaN(options.maxPrice)) {
+    list = list.filter((s) => s.price <= options.maxPrice!);
   }
 
   if (options.verifiedOnly) {
@@ -1074,5 +1071,22 @@ export function markAllNotificationsRead(userId: string): void {
   state.notifications.forEach((n) => {
     if (n.user_id === userId) n.read = true;
   });
+  saveMarketplaceState(state);
+}
+
+// ADMIN AUDIT LOGS
+export function getAdminAuditLogs(): AdminAuditLog[] {
+  const state = getMarketplaceState();
+  return (state.adminAuditLogs || []).sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+}
+
+export function appendAdminAuditLog(entry: AdminAuditLog): void {
+  const state = getMarketplaceState();
+  if (!state.adminAuditLogs) {
+    state.adminAuditLogs = [];
+  }
+  state.adminAuditLogs.unshift(entry);
   saveMarketplaceState(state);
 }

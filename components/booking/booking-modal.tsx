@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { BookingCalendar } from '@/components/booking/booking-calendar';
 import { TimeSlotPicker } from '@/components/booking/time-slot-picker';
-import { getAvailabilitySlots, getBookingsForDate, createBooking } from '@/lib/services/bookings';
+import { getAvailabilitySlots, getBookingsForDate } from '@/lib/services/bookings';
+import { bookConsultationOrder } from '@/lib/services/orders';
 import type { Service, AvailabilitySlot } from '@/types';
 
 interface BookingModalProps {
@@ -105,18 +106,19 @@ export function BookingModal({ service, customerId, open, onClose }: BookingModa
 
     setSubmitting(true);
     try {
-      await createBooking({
-        service_id: service.id,
-        customer_id: customerId,
-        provider_id: service.provider_id,
-        booking_date: format(selectedDate, 'yyyy-MM-dd'),
-        start_time: selectedSlot.start_time,
-        end_time: selectedSlot.end_time,
+      const { order } = await bookConsultationOrder({
+        serviceId: service.id,
+        buyerId: customerId,
+        bookingDate: format(selectedDate, 'yyyy-MM-dd'),
+        startTime: selectedSlot.start_time,
+        endTime: selectedSlot.end_time,
         note: note.trim(),
+        paymentMethod: 'upi',
+        paymentSuccess: true,
       });
-      toast.success('Booking confirmed! 🎉');
+      toast.success('Consultation session confirmed & order created! 🎉');
       onClose();
-      router.push('/bookings');
+      router.push(`/orders/${order.id}`);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Booking failed. Please try again.';
       toast.error(message);

@@ -1,0 +1,1190 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="17" skipped="0" tests="39" time="666.144" timestamp="2026-10-11T22:02:04.491508+05:30" hostname="Soham"><testcase classname="skillbridge_blackbox_testing.tests.test_boundary_value_analysis.TestBoundaryValueAnalysis" name="test_bb_bva_01_password_length_below_boundary" time="44.009"><failure message="AssertionError: 5-character password was not rejected with length boundary error&#10;assert ('Password must be at least 6 characters' in '&lt;html lang=&quot;en&quot; class=&quot;__variable_67a390&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/_next/static/css/app/layout.css?v=1791736346030&quot; data-precedence=&quot;next_static/css/app/layout.css&quot;&gt;&lt;link rel=&quot;preload&quot; href=&quot;/_next/static/chunks/webpack.js?v=1791736346030&quot; as=&quot;script&quot; fetchpriority=&quot;low&quot;&gt;&lt;script src=&quot;/_next/static/chunks/main-app.js?v=1791736346030&quot; async=&quot;&quot;&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name=&quot;description&quot; content=&quot;Discover, offer, and request services from students on SkillBridge.&quot;&gt;&lt;script src=&quot;/_next/static/chunks/polyfills.js&quot; nomodule=&quot;&quot;&gt;&lt;/script&gt;&lt;style type=&quot;text/css&quot;&gt;:where(html[dir=&quot;ltr&quot;]),:where([data-sonner-toaster][dir=&quot;ltr&quot;]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir=&quot;rtl&quot;]),:where([data-sonner-toaster][dir=&quot;rtl&quot;]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\&quot;,\\&quot;register\\&quot;,\\&quot;children\\&quot;],\\&quot;loading\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;loadingStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;hasLoading\\&quot;:false,\\&quot;error\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;errorStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;template\\&quot;:[\\&quot;$\\&quot;,\\&quot;$L8\\&quot;,null,{}],\\&quot;templateStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFound\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFoundStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;childProp\\&quot;:{\\&quot;current\\&quot;:[\\&quot;$L9\\&quot;,[\\&quot;$\\&quot;,\\&quot;$La\\&quot;,null,{\\&quot;params\\&quot;:{},\\&quot;searchParams\\&quot;:{}}],null],\\&quot;segment\\&quot;:\\&quot;__PAGE__\\&quot;},\\&quot;styles\\&quot;:[]}],\\&quot;segment\\&quot;:\\&quot;register\\&quot;},\\&quot;styles\\&quot;:[]}],[\\&quot;$\\&quot;,\\&quot;$Lb\\&quot;,null,{\\&quot;position\\&quot;:\\&quot;top-right\\&quot;}]]}]}]}],null]}]]\\n&quot;])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,&quot;4:[[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;0\\&quot;,{\\&quot;charSet\\&quot;:\\&quot;utf-8\\&quot;}],[\\&quot;$\\&quot;,\\&quot;title\\&quot;,\\&quot;1\\&quot;,{\\&quot;children\\&quot;:\\&quot;SkillBridge — Student Service Marketplace\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;2\\&quot;,{\\&quot;name\\&quot;:\\&quot;description\\&quot;,\\&quot;content\\&quot;:\\&quot;Discover, offer, and request services from students on SkillBridge.\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;3\\&quot;,{\\&quot;name\\&quot;:\\&quot;viewport\\&quot;,\\&quot;content\\&quot;:\\&quot;width=device-width, initial-scale=1\\&quot;}]]\\n9:null\\n&quot;])&lt;/script&gt;&lt;next-route-announcer style=&quot;position: absolute;&quot;&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;' or 'at least 6 characters' in '&lt;html lang=&quot;en&quot; class=&quot;__variable_67a390&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/_next/static/css/app/layout.css?v=1791736346030&quot; data-precedence=&quot;next_static/css/app/layout.css&quot;&gt;&lt;link rel=&quot;preload&quot; href=&quot;/_next/static/chunks/webpack.js?v=1791736346030&quot; as=&quot;script&quot; fetchpriority=&quot;low&quot;&gt;&lt;script src=&quot;/_next/static/chunks/main-app.js?v=1791736346030&quot; async=&quot;&quot;&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name=&quot;description&quot; content=&quot;Discover, offer, and request services from students on SkillBridge.&quot;&gt;&lt;script src=&quot;/_next/static/chunks/polyfills.js&quot; nomodule=&quot;&quot;&gt;&lt;/script&gt;&lt;style type=&quot;text/css&quot;&gt;:where(html[dir=&quot;ltr&quot;]),:where([data-sonner-toaster][dir=&quot;ltr&quot;]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir=&quot;rtl&quot;]),:where([data-sonner-toaster][dir=&quot;rtl&quot;]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\&quot;,\\&quot;register\\&quot;,\\&quot;children\\&quot;],\\&quot;loading\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;loadingStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;hasLoading\\&quot;:false,\\&quot;error\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;errorStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;template\\&quot;:[\\&quot;$\\&quot;,\\&quot;$L8\\&quot;,null,{}],\\&quot;templateStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFound\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFoundStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;childProp\\&quot;:{\\&quot;current\\&quot;:[\\&quot;$L9\\&quot;,[\\&quot;$\\&quot;,\\&quot;$La\\&quot;,null,{\\&quot;params\\&quot;:{},\\&quot;searchParams\\&quot;:{}}],null],\\&quot;segment\\&quot;:\\&quot;__PAGE__\\&quot;},\\&quot;styles\\&quot;:[]}],\\&quot;segment\\&quot;:\\&quot;register\\&quot;},\\&quot;styles\\&quot;:[]}],[\\&quot;$\\&quot;,\\&quot;$Lb\\&quot;,null,{\\&quot;position\\&quot;:\\&quot;top-right\\&quot;}]]}]}]}],null]}]]\\n&quot;])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,&quot;4:[[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;0\\&quot;,{\\&quot;charSet\\&quot;:\\&quot;utf-8\\&quot;}],[\\&quot;$\\&quot;,\\&quot;title\\&quot;,\\&quot;1\\&quot;,{\\&quot;children\\&quot;:\\&quot;SkillBridge — Student Service Marketplace\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;2\\&quot;,{\\&quot;name\\&quot;:\\&quot;description\\&quot;,\\&quot;content\\&quot;:\\&quot;Discover, offer, and request services from students on SkillBridge.\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;3\\&quot;,{\\&quot;name\\&quot;:\\&quot;viewport\\&quot;,\\&quot;content\\&quot;:\\&quot;width=device-width, initial-scale=1\\&quot;}]]\\n9:null\\n&quot;])&lt;/script&gt;&lt;next-route-announcer style=&quot;position: absolute;&quot;&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;')">self = &lt;test_boundary_value_analysis.TestBoundaryValueAnalysis object at 0x0000016700C11400&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x00000167011DEE40&gt;
+test_data = {'application': {'base_url': 'http://localhost:3000', 'name': 'SkillBridge', 'tagline': 'AI-Powered Student Skill Mark...y'], 'price_ranges': {'mid_tier': {'min': '500', 'max': '1200'}, 'exact_boundary': {'min': '500', 'max': '500'}}}, ...}
+
+    def test_bb_bva_01_password_length_below_boundary(self, helper, test_data):
+        """
+        BB-BVA-01: Password length boundary test at Min - 1 (5 characters).
+        Expected: Client validation rejects with 'Password must be at least 6 characters long'.
+        """
+        helper.navigate("/register")
+        full_name = helper.wait_for_visible(By.ID, "fullName")
+        email = helper.wait_for_visible(By.ID, "email")
+        password = helper.wait_for_visible(By.ID, "password")
+        confirm_password = helper.wait_for_visible(By.ID, "confirmPassword")
+        college = helper.wait_for_visible(By.ID, "college")
+        student_id = helper.wait_for_visible(By.ID, "studentIdNumber")
+        submit_btn = helper.wait_for_clickable(By.CSS_SELECTOR, "button[type='submit']")
+    
+        reg = test_data["registration"]["valid_candidate"]
+        full_name.send_keys(reg["full_name"])
+        email.send_keys(f"bva5_{int(time.time())}@gmail.com")
+        password.send_keys("12345")  # 5 characters (Min - 1)
+        confirm_password.send_keys("12345")
+        college.send_keys(reg["college"])
+        student_id.send_keys(reg["student_id"])
+    
+        submit_btn.click()
+        time.sleep(1)
+    
+        helper.take_screenshot("BB_BVA_01_password_length_below_min")
+    
+        page_text = helper.driver.page_source
+&gt;       assert (
+            "Password must be at least 6 characters" in page_text
+            or "at least 6 characters" in page_text
+        ), "5-character password was not rejected with length boundary error"
+E       AssertionError: 5-character password was not rejected with length boundary error
+E       assert ('Password must be at least 6 characters' in '&lt;html lang="en" class="__variable_67a390"&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;&lt;link rel="stylesheet" href="/_next/static/css/app/layout.css?v=1791736346030" data-precedence="next_static/css/app/layout.css"&gt;&lt;link rel="preload" href="/_next/static/chunks/webpack.js?v=1791736346030" as="script" fetchpriority="low"&gt;&lt;script src="/_next/static/chunks/main-app.js?v=1791736346030" async=""&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name="description" content="Discover, offer, and request services from students on SkillBridge."&gt;&lt;script src="/_next/static/chunks/polyfills.js" nomodule=""&gt;&lt;/script&gt;&lt;style type="text/css"&gt;:where(html[dir="ltr"]),:where([data-sonner-toaster][dir="ltr"]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir="rtl"]),:where([data-sonner-toaster][dir="rtl"]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\",\\"register\\",\\"children\\"],\\"loading\\":\\"$undefined\\",\\"loadingStyles\\":\\"$undefined\\",\\"hasLoading\\":false,\\"error\\":\\"$undefined\\",\\"errorStyles\\":\\"$undefined\\",\\"template\\":[\\"$\\",\\"$L8\\",null,{}],\\"templateStyles\\":\\"$undefined\\",\\"notFound\\":\\"$undefined\\",\\"notFoundStyles\\":\\"$undefined\\",\\"childProp\\":{\\"current\\":[\\"$L9\\",[\\"$\\",\\"$La\\",null,{\\"params\\":{},\\"searchParams\\":{}}],null],\\"segment\\":\\"__PAGE__\\"},\\"styles\\":[]}],\\"segment\\":\\"register\\"},\\"styles\\":[]}],[\\"$\\",\\"$Lb\\",null,{\\"position\\":\\"top-right\\"}]]}]}]}],null]}]]\\n"])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,"4:[[\\"$\\",\\"meta\\",\\"0\\",{\\"charSet\\":\\"utf-8\\"}],[\\"$\\",\\"title\\",\\"1\\",{\\"children\\":\\"SkillBridge — Student Service Marketplace\\"}],[\\"$\\",\\"meta\\",\\"2\\",{\\"name\\":\\"description\\",\\"content\\":\\"Discover, offer, and request services from students on SkillBridge.\\"}],[\\"$\\",\\"meta\\",\\"3\\",{\\"name\\":\\"viewport\\",\\"content\\":\\"width=device-width, initial-scale=1\\"}]]\\n9:null\\n"])&lt;/script&gt;&lt;next-route-announcer style="position: absolute;"&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;' or 'at least 6 characters' in '&lt;html lang="en" class="__variable_67a390"&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;&lt;link rel="stylesheet" href="/_next/static/css/app/layout.css?v=1791736346030" data-precedence="next_static/css/app/layout.css"&gt;&lt;link rel="preload" href="/_next/static/chunks/webpack.js?v=1791736346030" as="script" fetchpriority="low"&gt;&lt;script src="/_next/static/chunks/main-app.js?v=1791736346030" async=""&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name="description" content="Discover, offer, and request services from students on SkillBridge."&gt;&lt;script src="/_next/static/chunks/polyfills.js" nomodule=""&gt;&lt;/script&gt;&lt;style type="text/css"&gt;:where(html[dir="ltr"]),:where([data-sonner-toaster][dir="ltr"]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir="rtl"]),:where([data-sonner-toaster][dir="rtl"]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\",\\"register\\",\\"children\\"],\\"loading\\":\\"$undefined\\",\\"loadingStyles\\":\\"$undefined\\",\\"hasLoading\\":false,\\"error\\":\\"$undefined\\",\\"errorStyles\\":\\"$undefined\\",\\"template\\":[\\"$\\",\\"$L8\\",null,{}],\\"templateStyles\\":\\"$undefined\\",\\"notFound\\":\\"$undefined\\",\\"notFoundStyles\\":\\"$undefined\\",\\"childProp\\":{\\"current\\":[\\"$L9\\",[\\"$\\",\\"$La\\",null,{\\"params\\":{},\\"searchParams\\":{}}],null],\\"segment\\":\\"__PAGE__\\"},\\"styles\\":[]}],\\"segment\\":\\"register\\"},\\"styles\\":[]}],[\\"$\\",\\"$Lb\\",null,{\\"position\\":\\"top-right\\"}]]}]}]}],null]}]]\\n"])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,"4:[[\\"$\\",\\"meta\\",\\"0\\",{\\"charSet\\":\\"utf-8\\"}],[\\"$\\",\\"title\\",\\"1\\",{\\"children\\":\\"SkillBridge — Student Service Marketplace\\"}],[\\"$\\",\\"meta\\",\\"2\\",{\\"name\\":\\"description\\",\\"content\\":\\"Discover, offer, and request services from students on SkillBridge.\\"}],[\\"$\\",\\"meta\\",\\"3\\",{\\"name\\":\\"viewport\\",\\"content\\":\\"width=device-width, initial-scale=1\\"}]]\\n9:null\\n"])&lt;/script&gt;&lt;next-route-announcer style="position: absolute;"&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;')
+
+skillbridge_blackbox_testing\tests\test_boundary_value_analysis.py:41: AssertionError</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_boundary_value_analysis.TestBoundaryValueAnalysis" name="test_bb_bva_02_password_length_at_exact_min_boundary" time="17.446" /><testcase classname="skillbridge_blackbox_testing.tests.test_boundary_value_analysis.TestBoundaryValueAnalysis" name="test_bb_bva_03_price_filter_zero_lower_boundary" time="23.370"><failure message="selenium.common.exceptions.TimeoutException: Message: &#10;Stacktrace:&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6af540]&#10;&#09;chromedriver!(No symbol) [0x7ff76f4d45fd]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52fca1]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52ff6c]&#10;&#09;chromedriver!(No symbol) [0x7ff76f583077]&#10;&#09;chromedriver!(No symbol) [0x7ff76f57fcd9]&#10;&#09;chromedriver!(No symbol) [0x7ff76f521a12]&#10;&#09;chromedriver!(No symbol) [0x7ff76f522823]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6bcb55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b7f64]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b80f4]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6a2e4c]&#10;&#09;KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]&#10;&#09;ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]">self = &lt;test_boundary_value_analysis.TestBoundaryValueAnalysis object at 0x00000167011BD310&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x0000016701279910&gt;
+
+    def test_bb_bva_03_price_filter_zero_lower_boundary(self, helper):
+        """
+        BB-BVA-03: Minimum price filter set to zero boundary (₹0).
+        Expected: System treats zero as valid non-negative lower boundary and displays published services.
+        """
+        helper.navigate("/explore")
+&gt;       min_p = helper.wait_for_visible(By.ID, "min-price-input")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+skillbridge_blackbox_testing\tests\test_boundary_value_analysis.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+skillbridge_blackbox_testing\tests\conftest.py:34: in wait_for_visible
+    return WebDriverWait(self.driver, timeout).until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="c18fc44545f785242546690b33a846e3")&gt;
+method = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x00000167012CC360&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       	chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]
+E       	chromedriver!(No symbol) [0x7ff76f6af540]
+E       	chromedriver!(No symbol) [0x7ff76f4d45fd]
+E       	chromedriver!(No symbol) [0x7ff76f52fca1]
+E       	chromedriver!(No symbol) [0x7ff76f52ff6c]
+E       	chromedriver!(No symbol) [0x7ff76f583077]
+E       	chromedriver!(No symbol) [0x7ff76f57fcd9]
+E       	chromedriver!(No symbol) [0x7ff76f521a12]
+E       	chromedriver!(No symbol) [0x7ff76f522823]
+E       	chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]
+E       	chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]
+E       	chromedriver!(No symbol) [0x7ff76f6bcb55]
+E       	chromedriver!(No symbol) [0x7ff76f6b7f64]
+E       	chromedriver!(No symbol) [0x7ff76f6b80f4]
+E       	chromedriver!(No symbol) [0x7ff76f6a2e4c]
+E       	KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]
+E       	ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]
+
+C:\Users\psoha\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_boundary_value_analysis.TestBoundaryValueAnalysis" name="test_bb_bva_04_price_filter_exact_equal_boundary" time="16.689"><failure message="selenium.common.exceptions.TimeoutException: Message: &#10;Stacktrace:&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6af540]&#10;&#09;chromedriver!(No symbol) [0x7ff76f4d45fd]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52fca1]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52ff6c]&#10;&#09;chromedriver!(No symbol) [0x7ff76f583077]&#10;&#09;chromedriver!(No symbol) [0x7ff76f57fcd9]&#10;&#09;chromedriver!(No symbol) [0x7ff76f521a12]&#10;&#09;chromedriver!(No symbol) [0x7ff76f522823]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6bcb55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b7f64]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b80f4]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6a2e4c]&#10;&#09;KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]&#10;&#09;ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]">self = &lt;test_boundary_value_analysis.TestBoundaryValueAnalysis object at 0x00000167011BE210&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x000001670127ADB0&gt;
+
+    def test_bb_bva_04_price_filter_exact_equal_boundary(self, helper):
+        """
+        BB-BVA-04: Min and Max price set to identical value (₹500 - ₹500).
+        Expected: Catalog filters to services priced exactly at ₹500.
+        """
+        helper.navigate("/explore")
+&gt;       min_p = helper.wait_for_visible(By.ID, "min-price-input")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+skillbridge_blackbox_testing\tests\test_boundary_value_analysis.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+skillbridge_blackbox_testing\tests\conftest.py:34: in wait_for_visible
+    return WebDriverWait(self.driver, timeout).until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="1a120acb17edb5e1539b9cb6795dfa80")&gt;
+method = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x00000167012CC2C0&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       	chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]
+E       	chromedriver!(No symbol) [0x7ff76f6af540]
+E       	chromedriver!(No symbol) [0x7ff76f4d45fd]
+E       	chromedriver!(No symbol) [0x7ff76f52fca1]
+E       	chromedriver!(No symbol) [0x7ff76f52ff6c]
+E       	chromedriver!(No symbol) [0x7ff76f583077]
+E       	chromedriver!(No symbol) [0x7ff76f57fcd9]
+E       	chromedriver!(No symbol) [0x7ff76f521a12]
+E       	chromedriver!(No symbol) [0x7ff76f522823]
+E       	chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]
+E       	chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]
+E       	chromedriver!(No symbol) [0x7ff76f6bcb55]
+E       	chromedriver!(No symbol) [0x7ff76f6b7f64]
+E       	chromedriver!(No symbol) [0x7ff76f6b80f4]
+E       	chromedriver!(No symbol) [0x7ff76f6a2e4c]
+E       	KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]
+E       	ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]
+
+C:\Users\psoha\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_boundary_value_analysis.TestBoundaryValueAnalysis" name="test_bb_bva_05_search_query_single_char_boundary" time="22.090"><failure message="selenium.common.exceptions.TimeoutException: Message: &#10;Stacktrace:&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6af540]&#10;&#09;chromedriver!(No symbol) [0x7ff76f4d45fd]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52fca1]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52ff6c]&#10;&#09;chromedriver!(No symbol) [0x7ff76f583077]&#10;&#09;chromedriver!(No symbol) [0x7ff76f57fcd9]&#10;&#09;chromedriver!(No symbol) [0x7ff76f521a12]&#10;&#09;chromedriver!(No symbol) [0x7ff76f522823]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6bcb55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b7f64]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b80f4]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6a2e4c]&#10;&#09;KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]&#10;&#09;ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]">self = &lt;test_boundary_value_analysis.TestBoundaryValueAnalysis object at 0x00000167011BE540&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x000001670127A600&gt;
+
+    def test_bb_bva_05_search_query_single_char_boundary(self, helper):
+        """
+        BB-BVA-05: Search input length boundary with a single character ('P').
+        Expected: System handles single character input gracefully without crashing or throwing errors.
+        """
+        helper.navigate("/explore")
+&gt;       search_input = helper.wait_for_visible(By.ID, "search-input")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+skillbridge_blackbox_testing\tests\test_boundary_value_analysis.py:123: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+skillbridge_blackbox_testing\tests\conftest.py:34: in wait_for_visible
+    return WebDriverWait(self.driver, timeout).until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="6cde32470bb187a322b31c5df18d77a5")&gt;
+method = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x00000167012CCAE0&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       	chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]
+E       	chromedriver!(No symbol) [0x7ff76f6af540]
+E       	chromedriver!(No symbol) [0x7ff76f4d45fd]
+E       	chromedriver!(No symbol) [0x7ff76f52fca1]
+E       	chromedriver!(No symbol) [0x7ff76f52ff6c]
+E       	chromedriver!(No symbol) [0x7ff76f583077]
+E       	chromedriver!(No symbol) [0x7ff76f57fcd9]
+E       	chromedriver!(No symbol) [0x7ff76f521a12]
+E       	chromedriver!(No symbol) [0x7ff76f522823]
+E       	chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]
+E       	chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]
+E       	chromedriver!(No symbol) [0x7ff76f6bcb55]
+E       	chromedriver!(No symbol) [0x7ff76f6b7f64]
+E       	chromedriver!(No symbol) [0x7ff76f6b80f4]
+E       	chromedriver!(No symbol) [0x7ff76f6a2e4c]
+E       	KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]
+E       	ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]
+
+C:\Users\psoha\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_boundary_value_analysis.TestBoundaryValueAnalysis" name="test_bb_bva_06_registration_empty_name_boundary" time="14.703"><failure message="AssertionError: Empty full name boundary did not trigger expected error&#10;assert ('Please enter your full name' in '&lt;html lang=&quot;en&quot; class=&quot;__variable_67a390&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/_next/static/css/app/layout.css?v=1791736458540&quot; data-precedence=&quot;next_static/css/app/layout.css&quot;&gt;&lt;link rel=&quot;preload&quot; href=&quot;/_next/static/chunks/webpack.js?v=1791736458540&quot; as=&quot;script&quot; fetchpriority=&quot;low&quot;&gt;&lt;script src=&quot;/_next/static/chunks/main-app.js?v=1791736458540&quot; async=&quot;&quot;&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name=&quot;description&quot; content=&quot;Discover, offer, and request services from students on SkillBridge.&quot;&gt;&lt;script src=&quot;/_next/static/chunks/polyfills.js&quot; nomodule=&quot;&quot;&gt;&lt;/script&gt;&lt;style type=&quot;text/css&quot;&gt;:where(html[dir=&quot;ltr&quot;]),:where([data-sonner-toaster][dir=&quot;ltr&quot;]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir=&quot;rtl&quot;]),:where([data-sonner-toaster][dir=&quot;rtl&quot;]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\&quot;,\\&quot;register\\&quot;,\\&quot;children\\&quot;],\\&quot;loading\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;loadingStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;hasLoading\\&quot;:false,\\&quot;error\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;errorStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;template\\&quot;:[\\&quot;$\\&quot;,\\&quot;$L8\\&quot;,null,{}],\\&quot;templateStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFound\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFoundStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;childProp\\&quot;:{\\&quot;current\\&quot;:[\\&quot;$L9\\&quot;,[\\&quot;$\\&quot;,\\&quot;$La\\&quot;,null,{\\&quot;params\\&quot;:{},\\&quot;searchParams\\&quot;:{}}],null],\\&quot;segment\\&quot;:\\&quot;__PAGE__\\&quot;},\\&quot;styles\\&quot;:[]}],\\&quot;segment\\&quot;:\\&quot;register\\&quot;},\\&quot;styles\\&quot;:[]}],[\\&quot;$\\&quot;,\\&quot;$Lb\\&quot;,null,{\\&quot;position\\&quot;:\\&quot;top-right\\&quot;}]]}]}]}],null]}]]\\n&quot;])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,&quot;4:[[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;0\\&quot;,{\\&quot;charSet\\&quot;:\\&quot;utf-8\\&quot;}],[\\&quot;$\\&quot;,\\&quot;title\\&quot;,\\&quot;1\\&quot;,{\\&quot;children\\&quot;:\\&quot;SkillBridge — Student Service Marketplace\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;2\\&quot;,{\\&quot;name\\&quot;:\\&quot;description\\&quot;,\\&quot;content\\&quot;:\\&quot;Discover, offer, and request services from students on SkillBridge.\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;3\\&quot;,{\\&quot;name\\&quot;:\\&quot;viewport\\&quot;,\\&quot;content\\&quot;:\\&quot;width=device-width, initial-scale=1\\&quot;}]]\\n9:null\\n&quot;])&lt;/script&gt;&lt;next-route-announcer style=&quot;position: absolute;&quot;&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;' or 'full name' in '&lt;html lang=&quot;en&quot; class=&quot;__variable_67a390&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/_next/static/css/app/layout.css?v=1791736458540&quot; data-precedence=&quot;next_static/css/app/layout.css&quot;&gt;&lt;link rel=&quot;preload&quot; href=&quot;/_next/static/chunks/webpack.js?v=1791736458540&quot; as=&quot;script&quot; fetchpriority=&quot;low&quot;&gt;&lt;script src=&quot;/_next/static/chunks/main-app.js?v=1791736458540&quot; async=&quot;&quot;&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name=&quot;description&quot; content=&quot;Discover, offer, and request services from students on SkillBridge.&quot;&gt;&lt;script src=&quot;/_next/static/chunks/polyfills.js&quot; nomodule=&quot;&quot;&gt;&lt;/script&gt;&lt;style type=&quot;text/css&quot;&gt;:where(html[dir=&quot;ltr&quot;]),:where([data-sonner-toaster][dir=&quot;ltr&quot;]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir=&quot;rtl&quot;]),:where([data-sonner-toaster][dir=&quot;rtl&quot;]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\&quot;,\\&quot;register\\&quot;,\\&quot;children\\&quot;],\\&quot;loading\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;loadingStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;hasLoading\\&quot;:false,\\&quot;error\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;errorStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;template\\&quot;:[\\&quot;$\\&quot;,\\&quot;$L8\\&quot;,null,{}],\\&quot;templateStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFound\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFoundStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;childProp\\&quot;:{\\&quot;current\\&quot;:[\\&quot;$L9\\&quot;,[\\&quot;$\\&quot;,\\&quot;$La\\&quot;,null,{\\&quot;params\\&quot;:{},\\&quot;searchParams\\&quot;:{}}],null],\\&quot;segment\\&quot;:\\&quot;__PAGE__\\&quot;},\\&quot;styles\\&quot;:[]}],\\&quot;segment\\&quot;:\\&quot;register\\&quot;},\\&quot;styles\\&quot;:[]}],[\\&quot;$\\&quot;,\\&quot;$Lb\\&quot;,null,{\\&quot;position\\&quot;:\\&quot;top-right\\&quot;}]]}]}]}],null]}]]\\n&quot;])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,&quot;4:[[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;0\\&quot;,{\\&quot;charSet\\&quot;:\\&quot;utf-8\\&quot;}],[\\&quot;$\\&quot;,\\&quot;title\\&quot;,\\&quot;1\\&quot;,{\\&quot;children\\&quot;:\\&quot;SkillBridge — Student Service Marketplace\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;2\\&quot;,{\\&quot;name\\&quot;:\\&quot;description\\&quot;,\\&quot;content\\&quot;:\\&quot;Discover, offer, and request services from students on SkillBridge.\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;3\\&quot;,{\\&quot;name\\&quot;:\\&quot;viewport\\&quot;,\\&quot;content\\&quot;:\\&quot;width=device-width, initial-scale=1\\&quot;}]]\\n9:null\\n&quot;])&lt;/script&gt;&lt;next-route-announcer style=&quot;position: absolute;&quot;&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;')">self = &lt;test_boundary_value_analysis.TestBoundaryValueAnalysis object at 0x00000167011BE840&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x0000016701278380&gt;
+test_data = {'application': {'base_url': 'http://localhost:3000', 'name': 'SkillBridge', 'tagline': 'AI-Powered Student Skill Mark...y'], 'price_ranges': {'mid_tier': {'min': '500', 'max': '1200'}, 'exact_boundary': {'min': '500', 'max': '500'}}}, ...}
+
+    def test_bb_bva_06_registration_empty_name_boundary(self, helper, test_data):
+        """
+        BB-BVA-06: Registration Full Name boundary at empty string (Length 0).
+        Expected: Client form validation detects empty string and triggers 'Please enter your full name'.
+        """
+        helper.navigate("/register")
+        full_name = helper.wait_for_visible(By.ID, "fullName")
+        email = helper.wait_for_visible(By.ID, "email")
+        password = helper.wait_for_visible(By.ID, "password")
+        confirm_password = helper.wait_for_visible(By.ID, "confirmPassword")
+        college = helper.wait_for_visible(By.ID, "college")
+        student_id = helper.wait_for_visible(By.ID, "studentIdNumber")
+        submit_btn = helper.wait_for_clickable(By.CSS_SELECTOR, "button[type='submit']")
+    
+        reg = test_data["registration"]["valid_candidate"]
+        # Leave full_name blank
+        email.send_keys("test.emptyname@mitwpu.edu.in")
+        password.send_keys("CollegePass2026!")
+        confirm_password.send_keys("CollegePass2026!")
+        college.send_keys(reg["college"])
+        student_id.send_keys(reg["student_id"])
+    
+        submit_btn.click()
+        time.sleep(1)
+    
+        helper.take_screenshot("BB_BVA_06_empty_name_boundary")
+    
+        page_text = helper.driver.page_source
+&gt;       assert (
+            "Please enter your full name" in page_text or "full name" in page_text
+        ), "Empty full name boundary did not trigger expected error"
+E       AssertionError: Empty full name boundary did not trigger expected error
+E       assert ('Please enter your full name' in '&lt;html lang="en" class="__variable_67a390"&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;&lt;link rel="stylesheet" href="/_next/static/css/app/layout.css?v=1791736458540" data-precedence="next_static/css/app/layout.css"&gt;&lt;link rel="preload" href="/_next/static/chunks/webpack.js?v=1791736458540" as="script" fetchpriority="low"&gt;&lt;script src="/_next/static/chunks/main-app.js?v=1791736458540" async=""&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name="description" content="Discover, offer, and request services from students on SkillBridge."&gt;&lt;script src="/_next/static/chunks/polyfills.js" nomodule=""&gt;&lt;/script&gt;&lt;style type="text/css"&gt;:where(html[dir="ltr"]),:where([data-sonner-toaster][dir="ltr"]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir="rtl"]),:where([data-sonner-toaster][dir="rtl"]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\",\\"register\\",\\"children\\"],\\"loading\\":\\"$undefined\\",\\"loadingStyles\\":\\"$undefined\\",\\"hasLoading\\":false,\\"error\\":\\"$undefined\\",\\"errorStyles\\":\\"$undefined\\",\\"template\\":[\\"$\\",\\"$L8\\",null,{}],\\"templateStyles\\":\\"$undefined\\",\\"notFound\\":\\"$undefined\\",\\"notFoundStyles\\":\\"$undefined\\",\\"childProp\\":{\\"current\\":[\\"$L9\\",[\\"$\\",\\"$La\\",null,{\\"params\\":{},\\"searchParams\\":{}}],null],\\"segment\\":\\"__PAGE__\\"},\\"styles\\":[]}],\\"segment\\":\\"register\\"},\\"styles\\":[]}],[\\"$\\",\\"$Lb\\",null,{\\"position\\":\\"top-right\\"}]]}]}]}],null]}]]\\n"])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,"4:[[\\"$\\",\\"meta\\",\\"0\\",{\\"charSet\\":\\"utf-8\\"}],[\\"$\\",\\"title\\",\\"1\\",{\\"children\\":\\"SkillBridge — Student Service Marketplace\\"}],[\\"$\\",\\"meta\\",\\"2\\",{\\"name\\":\\"description\\",\\"content\\":\\"Discover, offer, and request services from students on SkillBridge.\\"}],[\\"$\\",\\"meta\\",\\"3\\",{\\"name\\":\\"viewport\\",\\"content\\":\\"width=device-width, initial-scale=1\\"}]]\\n9:null\\n"])&lt;/script&gt;&lt;next-route-announcer style="position: absolute;"&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;' or 'full name' in '&lt;html lang="en" class="__variable_67a390"&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;&lt;link rel="stylesheet" href="/_next/static/css/app/layout.css?v=1791736458540" data-precedence="next_static/css/app/layout.css"&gt;&lt;link rel="preload" href="/_next/static/chunks/webpack.js?v=1791736458540" as="script" fetchpriority="low"&gt;&lt;script src="/_next/static/chunks/main-app.js?v=1791736458540" async=""&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name="description" content="Discover, offer, and request services from students on SkillBridge."&gt;&lt;script src="/_next/static/chunks/polyfills.js" nomodule=""&gt;&lt;/script&gt;&lt;style type="text/css"&gt;:where(html[dir="ltr"]),:where([data-sonner-toaster][dir="ltr"]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir="rtl"]),:where([data-sonner-toaster][dir="rtl"]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\",\\"register\\",\\"children\\"],\\"loading\\":\\"$undefined\\",\\"loadingStyles\\":\\"$undefined\\",\\"hasLoading\\":false,\\"error\\":\\"$undefined\\",\\"errorStyles\\":\\"$undefined\\",\\"template\\":[\\"$\\",\\"$L8\\",null,{}],\\"templateStyles\\":\\"$undefined\\",\\"notFound\\":\\"$undefined\\",\\"notFoundStyles\\":\\"$undefined\\",\\"childProp\\":{\\"current\\":[\\"$L9\\",[\\"$\\",\\"$La\\",null,{\\"params\\":{},\\"searchParams\\":{}}],null],\\"segment\\":\\"__PAGE__\\"},\\"styles\\":[]}],\\"segment\\":\\"register\\"},\\"styles\\":[]}],[\\"$\\",\\"$Lb\\",null,{\\"position\\":\\"top-right\\"}]]}]}]}],null]}]]\\n"])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,"4:[[\\"$\\",\\"meta\\",\\"0\\",{\\"charSet\\":\\"utf-8\\"}],[\\"$\\",\\"title\\",\\"1\\",{\\"children\\":\\"SkillBridge — Student Service Marketplace\\"}],[\\"$\\",\\"meta\\",\\"2\\",{\\"name\\":\\"description\\",\\"content\\":\\"Discover, offer, and request services from students on SkillBridge.\\"}],[\\"$\\",\\"meta\\",\\"3\\",{\\"name\\":\\"viewport\\",\\"content\\":\\"width=device-width, initial-scale=1\\"}]]\\n9:null\\n"])&lt;/script&gt;&lt;next-route-announcer style="position: absolute;"&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;')
+
+skillbridge_blackbox_testing\tests\test_boundary_value_analysis.py:162: AssertionError</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_decision_table.TestDecisionTable" name="test_bb_dt_01_decision_unconfirmed_credentials" time="12.671"><failure message="AssertionError: System failed to enforce unconfirmed email decision rule&#10;assert False">self = &lt;test_decision_table.TestDecisionTable object at 0x00000167011BD640&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x00000167013443E0&gt;
+test_data = {'application': {'base_url': 'http://localhost:3000', 'name': 'SkillBridge', 'tagline': 'AI-Powered Student Skill Mark...y'], 'price_ranges': {'mid_tier': {'min': '500', 'max': '1200'}, 'exact_boundary': {'min': '500', 'max': '500'}}}, ...}
+
+    def test_bb_dt_01_decision_unconfirmed_credentials(self, helper, test_data):
+        """
+        BB-DT-01: Rule 1 — Valid Email (Y), Correct Password (Y), Confirmed Account (N).
+        Expected: Unconfirmed email warning and resend button displayed.
+        """
+        helper.navigate("/login")
+        email_input = helper.wait_for_visible(By.ID, "email")
+        password_input = helper.wait_for_visible(By.ID, "password")
+        submit_btn = helper.wait_for_clickable(By.CSS_SELECTOR, "button[type='submit']")
+    
+        creds = test_data["credentials"]["unconfirmed_student"]
+        email_input.clear()
+        email_input.send_keys(creds["email"])
+        password_input.clear()
+        password_input.send_keys(creds["password"])
+    
+        submit_btn.click()
+        time.sleep(2)
+    
+        helper.take_screenshot("BB_DT_01_decision_unconfirmed")
+    
+        page_text = helper.driver.page_source
+        acknowledged = (
+            "Email not confirmed" in page_text
+            or "Resend verification email" in page_text
+            or "Invalid login credentials" in page_text
+        )
+&gt;       assert acknowledged, "System failed to enforce unconfirmed email decision rule"
+E       AssertionError: System failed to enforce unconfirmed email decision rule
+E       assert False
+
+skillbridge_blackbox_testing\tests\test_decision_table.py:41: AssertionError</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_decision_table.TestDecisionTable" name="test_bb_dt_02_decision_invalid_credentials" time="10.679" /><testcase classname="skillbridge_blackbox_testing.tests.test_decision_table.TestDecisionTable" name="test_bb_dt_03_decision_unregistered_email" time="9.188" /><testcase classname="skillbridge_blackbox_testing.tests.test_decision_table.TestDecisionTable" name="test_bb_dt_04_decision_empty_field_combination" time="11.038" /><testcase classname="skillbridge_blackbox_testing.tests.test_decision_table.TestDecisionTable" name="test_bb_dt_05_decision_multi_filter_combination" time="22.856"><failure message="selenium.common.exceptions.TimeoutException: Message: &#10;Stacktrace:&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6af540]&#10;&#09;chromedriver!(No symbol) [0x7ff76f4d45fd]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52fca1]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52ff6c]&#10;&#09;chromedriver!(No symbol) [0x7ff76f583077]&#10;&#09;chromedriver!(No symbol) [0x7ff76f57fcd9]&#10;&#09;chromedriver!(No symbol) [0x7ff76f521a12]&#10;&#09;chromedriver!(No symbol) [0x7ff76f522823]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6bcb55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b7f64]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b80f4]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6a2e4c]&#10;&#09;KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]&#10;&#09;ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]">self = &lt;test_decision_table.TestDecisionTable object at 0x00000167011BF8C0&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x0000016701347E30&gt;
+test_data = {'application': {'base_url': 'http://localhost:3000', 'name': 'SkillBridge', 'tagline': 'AI-Powered Student Skill Mark...y'], 'price_ranges': {'mid_tier': {'min': '500', 'max': '1200'}, 'exact_boundary': {'min': '500', 'max': '500'}}}, ...}
+
+    def test_bb_dt_05_decision_multi_filter_combination(self, helper, test_data):
+        """
+        BB-DT-05: Rule 5 — Filter Matrix: Category Selected (Y), Price Filter Active (Y).
+        Expected: Catalog returns subset satisfying BOTH category and price range criteria.
+        """
+        helper.navigate("/explore")
+&gt;       min_price = helper.wait_for_visible(By.ID, "min-price-input")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+skillbridge_blackbox_testing\tests\test_decision_table.py:126: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+skillbridge_blackbox_testing\tests\conftest.py:34: in wait_for_visible
+    return WebDriverWait(self.driver, timeout).until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="91a1a8d630a63b10adb1d151f63cf884")&gt;
+method = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x00000167012CE0C0&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       	chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]
+E       	chromedriver!(No symbol) [0x7ff76f6af540]
+E       	chromedriver!(No symbol) [0x7ff76f4d45fd]
+E       	chromedriver!(No symbol) [0x7ff76f52fca1]
+E       	chromedriver!(No symbol) [0x7ff76f52ff6c]
+E       	chromedriver!(No symbol) [0x7ff76f583077]
+E       	chromedriver!(No symbol) [0x7ff76f57fcd9]
+E       	chromedriver!(No symbol) [0x7ff76f521a12]
+E       	chromedriver!(No symbol) [0x7ff76f522823]
+E       	chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]
+E       	chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]
+E       	chromedriver!(No symbol) [0x7ff76f6bcb55]
+E       	chromedriver!(No symbol) [0x7ff76f6b7f64]
+E       	chromedriver!(No symbol) [0x7ff76f6b80f4]
+E       	chromedriver!(No symbol) [0x7ff76f6a2e4c]
+E       	KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]
+E       	ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]
+
+C:\Users\psoha\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_decision_table.TestDecisionTable" name="test_bb_dt_06_decision_protected_seller_guard" time="17.426" /><testcase classname="skillbridge_blackbox_testing.tests.test_equivalence_partitioning.TestEquivalencePartitioning" name="test_bb_ep_01_login_unconfirmed_email" time="10.754"><failure message="AssertionError: System did not acknowledge credential/confirmation response appropriately&#10;assert False">self = &lt;test_equivalence_partitioning.TestEquivalencePartitioning object at 0x00000167011BFF50&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x000001670127AF60&gt;
+test_data = {'application': {'base_url': 'http://localhost:3000', 'name': 'SkillBridge', 'tagline': 'AI-Powered Student Skill Mark...y'], 'price_ranges': {'mid_tier': {'min': '500', 'max': '1200'}, 'exact_boundary': {'min': '500', 'max': '500'}}}, ...}
+
+    def test_bb_ep_01_login_unconfirmed_email(self, helper, test_data):
+        """
+        BB-EP-01: Login with valid email and password for unconfirmed account.
+        Expected: System identifies unconfirmed state, displays confirmation notice and resend option.
+        """
+        helper.navigate("/login")
+        email_input = helper.wait_for_visible(By.ID, "email")
+        password_input = helper.wait_for_visible(By.ID, "password")
+        submit_btn = helper.wait_for_clickable(By.CSS_SELECTOR, "button[type='submit']")
+    
+        creds = test_data["credentials"]["unconfirmed_student"]
+        email_input.clear()
+        email_input.send_keys(creds["email"])
+        password_input.clear()
+        password_input.send_keys(creds["password"])
+    
+        submit_btn.click()
+        time.sleep(2)
+    
+        helper.take_screenshot("BB_EP_01_unconfirmed_login")
+    
+        page_text = helper.driver.page_source
+        is_unconfirmed_flagged = (
+            "Email not confirmed" in page_text
+            or "Resend verification email" in page_text
+            or "verify-email" in helper.driver.current_url
+            or "Invalid login credentials" in page_text
+        )
+&gt;       assert is_unconfirmed_flagged, "System did not acknowledge credential/confirmation response appropriately"
+E       AssertionError: System did not acknowledge credential/confirmation response appropriately
+E       assert False
+
+skillbridge_blackbox_testing\tests\test_equivalence_partitioning.py:43: AssertionError</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_equivalence_partitioning.TestEquivalencePartitioning" name="test_bb_ep_02_login_invalid_password" time="10.029" /><testcase classname="skillbridge_blackbox_testing.tests.test_equivalence_partitioning.TestEquivalencePartitioning" name="test_bb_ep_03_login_unregistered_email" time="9.945" /><testcase classname="skillbridge_blackbox_testing.tests.test_equivalence_partitioning.TestEquivalencePartitioning" name="test_bb_ep_04_login_empty_email" time="11.670" /><testcase classname="skillbridge_blackbox_testing.tests.test_equivalence_partitioning.TestEquivalencePartitioning" name="test_bb_ep_05_login_empty_password" time="7.190" /><testcase classname="skillbridge_blackbox_testing.tests.test_equivalence_partitioning.TestEquivalencePartitioning" name="test_bb_ep_06_register_valid_student" time="12.055" /><testcase classname="skillbridge_blackbox_testing.tests.test_equivalence_partitioning.TestEquivalencePartitioning" name="test_bb_ep_07_register_password_mismatch" time="10.568" /><testcase classname="skillbridge_blackbox_testing.tests.test_equivalence_partitioning.TestEquivalencePartitioning" name="test_bb_ep_08_explore_search_matching_query" time="16.281"><failure message="selenium.common.exceptions.TimeoutException: Message: &#10;Stacktrace:&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6af540]&#10;&#09;chromedriver!(No symbol) [0x7ff76f4d45fd]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52fca1]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52ff6c]&#10;&#09;chromedriver!(No symbol) [0x7ff76f583077]&#10;&#09;chromedriver!(No symbol) [0x7ff76f57fcd9]&#10;&#09;chromedriver!(No symbol) [0x7ff76f521a12]&#10;&#09;chromedriver!(No symbol) [0x7ff76f522823]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6bcb55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b7f64]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b80f4]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6a2e4c]&#10;&#09;KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]&#10;&#09;ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]">self = &lt;test_equivalence_partitioning.TestEquivalencePartitioning object at 0x00000167011DCFE0&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x00000167012781D0&gt;
+test_data = {'application': {'base_url': 'http://localhost:3000', 'name': 'SkillBridge', 'tagline': 'AI-Powered Student Skill Mark...y'], 'price_ranges': {'mid_tier': {'min': '500', 'max': '1200'}, 'exact_boundary': {'min': '500', 'max': '500'}}}, ...}
+
+    def test_bb_ep_08_explore_search_matching_query(self, helper, test_data):
+        """
+        BB-EP-08: Service search with matching keyword ('Next.js').
+        Expected: Catalog returns matching services (e.g. Next.js Website &amp; Portfolio Setup).
+        """
+        helper.navigate("/explore")
+&gt;       search_input = helper.wait_for_visible(By.ID, "search-input")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+skillbridge_blackbox_testing\tests\test_equivalence_partitioning.py:233: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+skillbridge_blackbox_testing\tests\conftest.py:34: in wait_for_visible
+    return WebDriverWait(self.driver, timeout).until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="d9db4e5076c78cb74721c949eb76a252")&gt;
+method = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x00000167012CEFC0&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       	chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]
+E       	chromedriver!(No symbol) [0x7ff76f6af540]
+E       	chromedriver!(No symbol) [0x7ff76f4d45fd]
+E       	chromedriver!(No symbol) [0x7ff76f52fca1]
+E       	chromedriver!(No symbol) [0x7ff76f52ff6c]
+E       	chromedriver!(No symbol) [0x7ff76f583077]
+E       	chromedriver!(No symbol) [0x7ff76f57fcd9]
+E       	chromedriver!(No symbol) [0x7ff76f521a12]
+E       	chromedriver!(No symbol) [0x7ff76f522823]
+E       	chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]
+E       	chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]
+E       	chromedriver!(No symbol) [0x7ff76f6bcb55]
+E       	chromedriver!(No symbol) [0x7ff76f6b7f64]
+E       	chromedriver!(No symbol) [0x7ff76f6b80f4]
+E       	chromedriver!(No symbol) [0x7ff76f6a2e4c]
+E       	KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]
+E       	ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]
+
+C:\Users\psoha\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_equivalence_partitioning.TestEquivalencePartitioning" name="test_bb_ep_09_explore_search_zero_results" time="16.187"><failure message="selenium.common.exceptions.TimeoutException: Message: &#10;Stacktrace:&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6af540]&#10;&#09;chromedriver!(No symbol) [0x7ff76f4d45fd]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52fca1]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52ff6c]&#10;&#09;chromedriver!(No symbol) [0x7ff76f583077]&#10;&#09;chromedriver!(No symbol) [0x7ff76f57fcd9]&#10;&#09;chromedriver!(No symbol) [0x7ff76f521a12]&#10;&#09;chromedriver!(No symbol) [0x7ff76f522823]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6bcb55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b7f64]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b80f4]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6a2e4c]&#10;&#09;KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]&#10;&#09;ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]">self = &lt;test_equivalence_partitioning.TestEquivalencePartitioning object at 0x00000167011DD400&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x0000016701344350&gt;
+test_data = {'application': {'base_url': 'http://localhost:3000', 'name': 'SkillBridge', 'tagline': 'AI-Powered Student Skill Mark...y'], 'price_ranges': {'mid_tier': {'min': '500', 'max': '1200'}, 'exact_boundary': {'min': '500', 'max': '500'}}}, ...}
+
+    def test_bb_ep_09_explore_search_zero_results(self, helper, test_data):
+        """
+        BB-EP-09: Service search with non-matching query string.
+        Expected: Catalog displays 'No services match your query' empty state.
+        """
+        helper.navigate("/explore")
+&gt;       search_input = helper.wait_for_visible(By.ID, "search-input")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+skillbridge_blackbox_testing\tests\test_equivalence_partitioning.py:252: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+skillbridge_blackbox_testing\tests\conftest.py:34: in wait_for_visible
+    return WebDriverWait(self.driver, timeout).until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="16a1c1c5b1d7176f685fe92350ac7cdd")&gt;
+method = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x00000167012CD620&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       	chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]
+E       	chromedriver!(No symbol) [0x7ff76f6af540]
+E       	chromedriver!(No symbol) [0x7ff76f4d45fd]
+E       	chromedriver!(No symbol) [0x7ff76f52fca1]
+E       	chromedriver!(No symbol) [0x7ff76f52ff6c]
+E       	chromedriver!(No symbol) [0x7ff76f583077]
+E       	chromedriver!(No symbol) [0x7ff76f57fcd9]
+E       	chromedriver!(No symbol) [0x7ff76f521a12]
+E       	chromedriver!(No symbol) [0x7ff76f522823]
+E       	chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]
+E       	chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]
+E       	chromedriver!(No symbol) [0x7ff76f6bcb55]
+E       	chromedriver!(No symbol) [0x7ff76f6b7f64]
+E       	chromedriver!(No symbol) [0x7ff76f6b80f4]
+E       	chromedriver!(No symbol) [0x7ff76f6a2e4c]
+E       	KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]
+E       	ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]
+
+C:\Users\psoha\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_error_guessing.TestErrorGuessing" name="test_bb_eg_01_both_login_fields_empty" time="7.378" /><testcase classname="skillbridge_blackbox_testing.tests.test_error_guessing.TestErrorGuessing" name="test_bb_eg_02_incorrect_password_handling" time="9.052" /><testcase classname="skillbridge_blackbox_testing.tests.test_error_guessing.TestErrorGuessing" name="test_bb_eg_03_malformed_email_syntax" time="10.287" /><testcase classname="skillbridge_blackbox_testing.tests.test_error_guessing.TestErrorGuessing" name="test_bb_eg_04_registration_empty_college_field" time="10.410" /><testcase classname="skillbridge_blackbox_testing.tests.test_error_guessing.TestErrorGuessing" name="test_bb_eg_05_registration_empty_student_id_field" time="12.645"><failure message="AssertionError: Validation toast for missing student ID was not displayed&#10;assert ('student ID' in '&lt;html lang=&quot;en&quot; class=&quot;__variable_67a390&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/_next/static/css/app/layout.css?v=1791736698039&quot; data-precedence=&quot;next_static/css/app/layout.css&quot;&gt;&lt;link rel=&quot;preload&quot; href=&quot;/_next/static/chunks/webpack.js?v=1791736698039&quot; as=&quot;script&quot; fetchpriority=&quot;low&quot;&gt;&lt;script src=&quot;/_next/static/chunks/main-app.js?v=1791736698039&quot; async=&quot;&quot;&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name=&quot;description&quot; content=&quot;Discover, offer, and request services from students on SkillBridge.&quot;&gt;&lt;script src=&quot;/_next/static/chunks/polyfills.js&quot; nomodule=&quot;&quot;&gt;&lt;/script&gt;&lt;style type=&quot;text/css&quot;&gt;:where(html[dir=&quot;ltr&quot;]),:where([data-sonner-toaster][dir=&quot;ltr&quot;]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir=&quot;rtl&quot;]),:where([data-sonner-toaster][dir=&quot;rtl&quot;]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\&quot;,\\&quot;register\\&quot;,\\&quot;children\\&quot;],\\&quot;loading\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;loadingStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;hasLoading\\&quot;:false,\\&quot;error\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;errorStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;template\\&quot;:[\\&quot;$\\&quot;,\\&quot;$L8\\&quot;,null,{}],\\&quot;templateStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFound\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFoundStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;childProp\\&quot;:{\\&quot;current\\&quot;:[\\&quot;$L9\\&quot;,[\\&quot;$\\&quot;,\\&quot;$La\\&quot;,null,{\\&quot;params\\&quot;:{},\\&quot;searchParams\\&quot;:{}}],null],\\&quot;segment\\&quot;:\\&quot;__PAGE__\\&quot;},\\&quot;styles\\&quot;:[]}],\\&quot;segment\\&quot;:\\&quot;register\\&quot;},\\&quot;styles\\&quot;:[]}],[\\&quot;$\\&quot;,\\&quot;$Lb\\&quot;,null,{\\&quot;position\\&quot;:\\&quot;top-right\\&quot;}]]}]}]}],null]}]]\\n&quot;])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,&quot;4:[[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;0\\&quot;,{\\&quot;charSet\\&quot;:\\&quot;utf-8\\&quot;}],[\\&quot;$\\&quot;,\\&quot;title\\&quot;,\\&quot;1\\&quot;,{\\&quot;children\\&quot;:\\&quot;SkillBridge — Student Service Marketplace\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;2\\&quot;,{\\&quot;name\\&quot;:\\&quot;description\\&quot;,\\&quot;content\\&quot;:\\&quot;Discover, offer, and request services from students on SkillBridge.\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;3\\&quot;,{\\&quot;name\\&quot;:\\&quot;viewport\\&quot;,\\&quot;content\\&quot;:\\&quot;width=device-width, initial-scale=1\\&quot;}]]\\n9:null\\n&quot;])&lt;/script&gt;&lt;next-route-announcer style=&quot;position: absolute;&quot;&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;' or 'enrollment number' in '&lt;html lang=&quot;en&quot; class=&quot;__variable_67a390&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;&lt;link rel=&quot;stylesheet&quot; href=&quot;/_next/static/css/app/layout.css?v=1791736698039&quot; data-precedence=&quot;next_static/css/app/layout.css&quot;&gt;&lt;link rel=&quot;preload&quot; href=&quot;/_next/static/chunks/webpack.js?v=1791736698039&quot; as=&quot;script&quot; fetchpriority=&quot;low&quot;&gt;&lt;script src=&quot;/_next/static/chunks/main-app.js?v=1791736698039&quot; async=&quot;&quot;&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name=&quot;description&quot; content=&quot;Discover, offer, and request services from students on SkillBridge.&quot;&gt;&lt;script src=&quot;/_next/static/chunks/polyfills.js&quot; nomodule=&quot;&quot;&gt;&lt;/script&gt;&lt;style type=&quot;text/css&quot;&gt;:where(html[dir=&quot;ltr&quot;]),:where([data-sonner-toaster][dir=&quot;ltr&quot;]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir=&quot;rtl&quot;]),:where([data-sonner-toaster][dir=&quot;rtl&quot;]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\&quot;,\\&quot;register\\&quot;,\\&quot;children\\&quot;],\\&quot;loading\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;loadingStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;hasLoading\\&quot;:false,\\&quot;error\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;errorStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;template\\&quot;:[\\&quot;$\\&quot;,\\&quot;$L8\\&quot;,null,{}],\\&quot;templateStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFound\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;notFoundStyles\\&quot;:\\&quot;$undefined\\&quot;,\\&quot;childProp\\&quot;:{\\&quot;current\\&quot;:[\\&quot;$L9\\&quot;,[\\&quot;$\\&quot;,\\&quot;$La\\&quot;,null,{\\&quot;params\\&quot;:{},\\&quot;searchParams\\&quot;:{}}],null],\\&quot;segment\\&quot;:\\&quot;__PAGE__\\&quot;},\\&quot;styles\\&quot;:[]}],\\&quot;segment\\&quot;:\\&quot;register\\&quot;},\\&quot;styles\\&quot;:[]}],[\\&quot;$\\&quot;,\\&quot;$Lb\\&quot;,null,{\\&quot;position\\&quot;:\\&quot;top-right\\&quot;}]]}]}]}],null]}]]\\n&quot;])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,&quot;4:[[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;0\\&quot;,{\\&quot;charSet\\&quot;:\\&quot;utf-8\\&quot;}],[\\&quot;$\\&quot;,\\&quot;title\\&quot;,\\&quot;1\\&quot;,{\\&quot;children\\&quot;:\\&quot;SkillBridge — Student Service Marketplace\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;2\\&quot;,{\\&quot;name\\&quot;:\\&quot;description\\&quot;,\\&quot;content\\&quot;:\\&quot;Discover, offer, and request services from students on SkillBridge.\\&quot;}],[\\&quot;$\\&quot;,\\&quot;meta\\&quot;,\\&quot;3\\&quot;,{\\&quot;name\\&quot;:\\&quot;viewport\\&quot;,\\&quot;content\\&quot;:\\&quot;width=device-width, initial-scale=1\\&quot;}]]\\n9:null\\n&quot;])&lt;/script&gt;&lt;next-route-announcer style=&quot;position: absolute;&quot;&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;')">self = &lt;test_error_guessing.TestErrorGuessing object at 0x00000167011DE060&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x0000016701319100&gt;
+test_data = {'application': {'base_url': 'http://localhost:3000', 'name': 'SkillBridge', 'tagline': 'AI-Powered Student Skill Mark...y'], 'price_ranges': {'mid_tier': {'min': '500', 'max': '1200'}, 'exact_boundary': {'min': '500', 'max': '500'}}}, ...}
+
+    def test_bb_eg_05_registration_empty_student_id_field(self, helper, test_data):
+        """
+        BB-EG-05: Student registration with empty student ID / enrollment number.
+        Expected: System displays error toast 'Please enter your student ID or enrollment number'.
+        """
+        helper.navigate("/register")
+        full_name = helper.wait_for_visible(By.ID, "fullName")
+        email = helper.wait_for_visible(By.ID, "email")
+        password = helper.wait_for_visible(By.ID, "password")
+        confirm_password = helper.wait_for_visible(By.ID, "confirmPassword")
+        college = helper.wait_for_visible(By.ID, "college")
+        student_id = helper.wait_for_visible(By.ID, "studentIdNumber")
+        submit_btn = helper.wait_for_clickable(By.CSS_SELECTOR, "button[type='submit']")
+    
+        reg = test_data["registration"]["valid_candidate"]
+        full_name.send_keys(reg["full_name"])
+        email.send_keys("test.nostudentid@mitwpu.edu.in")
+        password.send_keys("CollegePass2026!")
+        confirm_password.send_keys("CollegePass2026!")
+        college.send_keys(reg["college"])
+        student_id.clear()  # Leave student ID empty
+    
+        submit_btn.click()
+        time.sleep(1)
+    
+        helper.take_screenshot("BB_EG_05_empty_student_id_toast")
+    
+        page_text = helper.driver.page_source
+&gt;       assert (
+            "student ID" in page_text or "enrollment number" in page_text
+        ), "Validation toast for missing student ID was not displayed"
+E       AssertionError: Validation toast for missing student ID was not displayed
+E       assert ('student ID' in '&lt;html lang="en" class="__variable_67a390"&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;&lt;link rel="stylesheet" href="/_next/static/css/app/layout.css?v=1791736698039" data-precedence="next_static/css/app/layout.css"&gt;&lt;link rel="preload" href="/_next/static/chunks/webpack.js?v=1791736698039" as="script" fetchpriority="low"&gt;&lt;script src="/_next/static/chunks/main-app.js?v=1791736698039" async=""&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name="description" content="Discover, offer, and request services from students on SkillBridge."&gt;&lt;script src="/_next/static/chunks/polyfills.js" nomodule=""&gt;&lt;/script&gt;&lt;style type="text/css"&gt;:where(html[dir="ltr"]),:where([data-sonner-toaster][dir="ltr"]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir="rtl"]),:where([data-sonner-toaster][dir="rtl"]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\",\\"register\\",\\"children\\"],\\"loading\\":\\"$undefined\\",\\"loadingStyles\\":\\"$undefined\\",\\"hasLoading\\":false,\\"error\\":\\"$undefined\\",\\"errorStyles\\":\\"$undefined\\",\\"template\\":[\\"$\\",\\"$L8\\",null,{}],\\"templateStyles\\":\\"$undefined\\",\\"notFound\\":\\"$undefined\\",\\"notFoundStyles\\":\\"$undefined\\",\\"childProp\\":{\\"current\\":[\\"$L9\\",[\\"$\\",\\"$La\\",null,{\\"params\\":{},\\"searchParams\\":{}}],null],\\"segment\\":\\"__PAGE__\\"},\\"styles\\":[]}],\\"segment\\":\\"register\\"},\\"styles\\":[]}],[\\"$\\",\\"$Lb\\",null,{\\"position\\":\\"top-right\\"}]]}]}]}],null]}]]\\n"])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,"4:[[\\"$\\",\\"meta\\",\\"0\\",{\\"charSet\\":\\"utf-8\\"}],[\\"$\\",\\"title\\",\\"1\\",{\\"children\\":\\"SkillBridge — Student Service Marketplace\\"}],[\\"$\\",\\"meta\\",\\"2\\",{\\"name\\":\\"description\\",\\"content\\":\\"Discover, offer, and request services from students on SkillBridge.\\"}],[\\"$\\",\\"meta\\",\\"3\\",{\\"name\\":\\"viewport\\",\\"content\\":\\"width=device-width, initial-scale=1\\"}]]\\n9:null\\n"])&lt;/script&gt;&lt;next-route-announcer style="position: absolute;"&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;' or 'enrollment number' in '&lt;html lang="en" class="__variable_67a390"&gt;&lt;head&gt;&lt;meta charset="utf-8"&gt;&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;&lt;link rel="stylesheet" href="/_next/static/css/app/layout.css?v=1791736698039" data-precedence="next_static/css/app/layout.css"&gt;&lt;link rel="preload" href="/_next/static/chunks/webpack.js?v=1791736698039" as="script" fetchpriority="low"&gt;&lt;script src="/_next/static/chunks/main-app.js?v=1791736698039" async=""&gt;&lt;/script&gt;&lt;title&gt;SkillBridge — Student Service Marketplace&lt;/title&gt;&lt;meta name="description" content="Discover, offer, and request services from students on SkillBridge."&gt;&lt;script src="/_next/static/chunks/polyfills.js" nomodule=""&gt;&lt;/script&gt;&lt;style type="text/css"&gt;:where(html[dir="ltr"]),:where([data-sonner-toaster][dir="ltr"]){--toast-icon-margin-start: -3px;--toast-icon-margin-end: 4px;--toast-svg-margin-start: -1px;--toast-svg-margin-end: 0px;--toast-button-margin-start: auto;--toast-button-margin-end: 0;--toast-close-button-start: 0;--toast-close-button-end: unset;--toast-close-button-transform: translate(-35%, -35%)}:where(html[dir="rtl"]),:where([data-sonner-toaster][dir="rtl"]){--toast-icon-margin-start: 4px;--toast-icon-margin-end: -3px;--...en\\",\\"register\\",\\"children\\"],\\"loading\\":\\"$undefined\\",\\"loadingStyles\\":\\"$undefined\\",\\"hasLoading\\":false,\\"error\\":\\"$undefined\\",\\"errorStyles\\":\\"$undefined\\",\\"template\\":[\\"$\\",\\"$L8\\",null,{}],\\"templateStyles\\":\\"$undefined\\",\\"notFound\\":\\"$undefined\\",\\"notFoundStyles\\":\\"$undefined\\",\\"childProp\\":{\\"current\\":[\\"$L9\\",[\\"$\\",\\"$La\\",null,{\\"params\\":{},\\"searchParams\\":{}}],null],\\"segment\\":\\"__PAGE__\\"},\\"styles\\":[]}],\\"segment\\":\\"register\\"},\\"styles\\":[]}],[\\"$\\",\\"$Lb\\",null,{\\"position\\":\\"top-right\\"}]]}]}]}],null]}]]\\n"])&lt;/script&gt;&lt;script&gt;self.__next_f.push([1,"4:[[\\"$\\",\\"meta\\",\\"0\\",{\\"charSet\\":\\"utf-8\\"}],[\\"$\\",\\"title\\",\\"1\\",{\\"children\\":\\"SkillBridge — Student Service Marketplace\\"}],[\\"$\\",\\"meta\\",\\"2\\",{\\"name\\":\\"description\\",\\"content\\":\\"Discover, offer, and request services from students on SkillBridge.\\"}],[\\"$\\",\\"meta\\",\\"3\\",{\\"name\\":\\"viewport\\",\\"content\\":\\"width=device-width, initial-scale=1\\"}]]\\n9:null\\n"])&lt;/script&gt;&lt;next-route-announcer style="position: absolute;"&gt;&lt;/next-route-announcer&gt;&lt;/body&gt;&lt;/html&gt;')
+
+skillbridge_blackbox_testing\tests\test_error_guessing.py:146: AssertionError</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_error_guessing.TestErrorGuessing" name="test_bb_eg_06_unauthenticated_admin_access_attempt" time="21.851" /><testcase classname="skillbridge_blackbox_testing.tests.test_state_transitions.TestStateTransitions" name="test_bb_st_01_landing_to_login_transition" time="27.988" /><testcase classname="skillbridge_blackbox_testing.tests.test_state_transitions.TestStateTransitions" name="test_bb_st_02_login_error_state_transition" time="12.074" /><testcase classname="skillbridge_blackbox_testing.tests.test_state_transitions.TestStateTransitions" name="test_bb_st_03_seller_gate_redirect_transition" time="12.894" /><testcase classname="skillbridge_blackbox_testing.tests.test_state_transitions.TestStateTransitions" name="test_bb_st_04_admin_gate_redirect_transition" time="32.938" /><testcase classname="skillbridge_blackbox_testing.tests.test_state_transitions.TestStateTransitions" name="test_bb_st_05_category_filter_state_transition" time="36.769"><failure message="selenium.common.exceptions.TimeoutException: Message: &#10;Stacktrace:&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6af540]&#10;&#09;chromedriver!(No symbol) [0x7ff76f4d45fd]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52fca1]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52ff6c]&#10;&#09;chromedriver!(No symbol) [0x7ff76f583077]&#10;&#09;chromedriver!(No symbol) [0x7ff76f57fcd9]&#10;&#09;chromedriver!(No symbol) [0x7ff76f521a12]&#10;&#09;chromedriver!(No symbol) [0x7ff76f522823]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6bcb55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b7f64]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b80f4]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6a2e4c]&#10;&#09;KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]&#10;&#09;ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]">self = &lt;test_state_transitions.TestStateTransitions object at 0x00000167011DC4A0&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x00000167013187A0&gt;
+
+    def test_bb_st_05_category_filter_state_transition(self, helper):
+        """
+        BB-ST-05: Transition from Default Catalog State (S_cat0) to Filtered Category State (S_cat1) and Reset back.
+        Steps: 1. Open Explore. 2. Click category pill. 3. Observe catalog. 4. Click 'All Categories'. 5. Observe reset.
+        Expected: State smoothly updates catalog and returns to default state.
+        """
+        helper.navigate("/explore")
+        time.sleep(1)
+    
+        # Click specific category
+&gt;       cat_btn = helper.wait_for_clickable(By.XPATH, "//button[contains(text(), 'Web &amp; App Development')]")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+skillbridge_blackbox_testing\tests\test_state_transitions.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+skillbridge_blackbox_testing\tests\conftest.py:39: in wait_for_clickable
+    return WebDriverWait(self.driver, timeout).until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="dce2c1be60851627a9ea02fd0c1be358")&gt;
+method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x00000167012CE8E0&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       	chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]
+E       	chromedriver!(No symbol) [0x7ff76f6af540]
+E       	chromedriver!(No symbol) [0x7ff76f4d45fd]
+E       	chromedriver!(No symbol) [0x7ff76f52fca1]
+E       	chromedriver!(No symbol) [0x7ff76f52ff6c]
+E       	chromedriver!(No symbol) [0x7ff76f583077]
+E       	chromedriver!(No symbol) [0x7ff76f57fcd9]
+E       	chromedriver!(No symbol) [0x7ff76f521a12]
+E       	chromedriver!(No symbol) [0x7ff76f522823]
+E       	chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]
+E       	chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]
+E       	chromedriver!(No symbol) [0x7ff76f6bcb55]
+E       	chromedriver!(No symbol) [0x7ff76f6b7f64]
+E       	chromedriver!(No symbol) [0x7ff76f6b80f4]
+E       	chromedriver!(No symbol) [0x7ff76f6a2e4c]
+E       	KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]
+E       	ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]
+
+C:\Users\psoha\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_state_transitions.TestStateTransitions" name="test_bb_st_06_empty_search_to_reset_transition" time="21.414"><failure message="selenium.common.exceptions.TimeoutException: Message: &#10;Stacktrace:&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6af540]&#10;&#09;chromedriver!(No symbol) [0x7ff76f4d45fd]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52fca1]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52ff6c]&#10;&#09;chromedriver!(No symbol) [0x7ff76f583077]&#10;&#09;chromedriver!(No symbol) [0x7ff76f57fcd9]&#10;&#09;chromedriver!(No symbol) [0x7ff76f521a12]&#10;&#09;chromedriver!(No symbol) [0x7ff76f522823]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6bcb55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b7f64]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b80f4]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6a2e4c]&#10;&#09;KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]&#10;&#09;ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]">self = &lt;test_state_transitions.TestStateTransitions object at 0x00000167011DE7E0&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x0000016701318470&gt;
+test_data = {'application': {'base_url': 'http://localhost:3000', 'name': 'SkillBridge', 'tagline': 'AI-Powered Student Skill Mark...y'], 'price_ranges': {'mid_tier': {'min': '500', 'max': '1200'}, 'exact_boundary': {'min': '500', 'max': '500'}}}, ...}
+
+    def test_bb_st_06_empty_search_to_reset_transition(self, helper, test_data):
+        """
+        BB-ST-06: Transition from Empty Search Results State (S_empty) to Catalog Restored State (S_normal).
+        Steps: 1. Enter non-matching search. 2. S_empty displayed. 3. Click 'Reset All Filters'. 4. Observe S_normal.
+        Expected: Reset button successfully clears query and transitions catalog back to populated state.
+        """
+        helper.navigate("/explore")
+&gt;       search_input = helper.wait_for_visible(By.ID, "search-input")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+skillbridge_blackbox_testing\tests\test_state_transitions.py:126: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+skillbridge_blackbox_testing\tests\conftest.py:34: in wait_for_visible
+    return WebDriverWait(self.driver, timeout).until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="cda99036ef5d42cddda3bb589c988bb7")&gt;
+method = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x0000016701755300&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       	chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]
+E       	chromedriver!(No symbol) [0x7ff76f6af540]
+E       	chromedriver!(No symbol) [0x7ff76f4d45fd]
+E       	chromedriver!(No symbol) [0x7ff76f52fca1]
+E       	chromedriver!(No symbol) [0x7ff76f52ff6c]
+E       	chromedriver!(No symbol) [0x7ff76f583077]
+E       	chromedriver!(No symbol) [0x7ff76f57fcd9]
+E       	chromedriver!(No symbol) [0x7ff76f521a12]
+E       	chromedriver!(No symbol) [0x7ff76f522823]
+E       	chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]
+E       	chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]
+E       	chromedriver!(No symbol) [0x7ff76f6bcb55]
+E       	chromedriver!(No symbol) [0x7ff76f6b7f64]
+E       	chromedriver!(No symbol) [0x7ff76f6b80f4]
+E       	chromedriver!(No symbol) [0x7ff76f6a2e4c]
+E       	KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]
+E       	ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]
+
+C:\Users\psoha\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_state_transitions.TestStateTransitions" name="test_bb_st_07_catalog_to_service_detail_transition" time="21.146"><failure message="selenium.common.exceptions.TimeoutException: Message:">self = &lt;test_state_transitions.TestStateTransitions object at 0x00000167011DEC60&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x0000016701347B00&gt;
+
+    def test_bb_st_07_catalog_to_service_detail_transition(self, helper):
+        """
+        BB-ST-07: Transition from Catalog Grid State (S_grid) to Service Detail State (S_detail).
+        Steps: 1. Open Explore. 2. Click first service card. 3. Observe S_detail loaded.
+        Expected: State transitions to /services/[id] with price, description, and action CTA visible.
+        """
+        helper.navigate("/explore")
+        time.sleep(1)
+    
+&gt;       cards = helper.wait_for_elements(By.CSS_SELECTOR, "a[href^='/services/']")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+skillbridge_blackbox_testing\tests\test_state_transitions.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+skillbridge_blackbox_testing\tests\conftest.py:44: in wait_for_elements
+    return WebDriverWait(self.driver, timeout).until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="59d6152ca8126ec8329656007c400dd3")&gt;
+method = &lt;function presence_of_all_elements_located.&lt;locals&gt;._predicate at 0x00000167017559E0&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message:
+
+C:\Users\psoha\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_use_cases.TestUseCases" name="test_bb_uc_01_complete_buyer_discovery_workflow" time="18.071"><failure message="assert '/explore' in 'http://localhost:3000/login?returnUrl=%2Fexplore'&#10; +  where 'http://localhost:3000/login?returnUrl=%2Fexplore' = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;45f1893e803ba05b92cfc134d83a7734&quot;)&gt;.current_url&#10; +    where &lt;selenium.webdriver.chrome.webdriver.WebDriver (session=&quot;45f1893e803ba05b92cfc134d83a7734&quot;)&gt; = &lt;conftest.SeleniumHelper object at 0x00000167013454F0&gt;.driver">self = &lt;test_use_cases.TestUseCases object at 0x00000167011DF2F0&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x00000167013454F0&gt;
+test_data = {'application': {'base_url': 'http://localhost:3000', 'name': 'SkillBridge', 'tagline': 'AI-Powered Student Skill Mark...y'], 'price_ranges': {'mid_tier': {'min': '500', 'max': '1200'}, 'exact_boundary': {'min': '500', 'max': '500'}}}, ...}
+
+    def test_bb_uc_01_complete_buyer_discovery_workflow(self, helper, test_data):
+        """
+        BB-UC-01: Complete Buyer Discovery &amp; Service Selection Workflow.
+        Workflow:
+        1. Open SkillBridge Landing page (/).
+        2. Click 'Explore Skills' in top navigation.
+        3. Enter search query 'Python' into semantic search bar.
+        4. Wait for AI/database results to load.
+        5. Click the Python service card.
+        6. Verify complete service details page loads with title, price, and description.
+        """
+        # Step 1: Open Home
+        helper.navigate("/")
+        assert "SkillBridge" in helper.driver.title
+    
+        # Step 2: Click Explore Skills
+        explore_link = helper.wait_for_clickable(By.XPATH, "//a[contains(text(), 'Explore Skills')]")
+        explore_link.click()
+        time.sleep(1.5)
+&gt;       assert "/explore" in helper.driver.current_url
+E       assert '/explore' in 'http://localhost:3000/login?returnUrl=%2Fexplore'
+E        +  where 'http://localhost:3000/login?returnUrl=%2Fexplore' = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session="45f1893e803ba05b92cfc134d83a7734")&gt;.current_url
+E        +    where &lt;selenium.webdriver.chrome.webdriver.WebDriver (session="45f1893e803ba05b92cfc134d83a7734")&gt; = &lt;conftest.SeleniumHelper object at 0x00000167013454F0&gt;.driver
+
+skillbridge_blackbox_testing\tests\test_use_cases.py:33: AssertionError</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_use_cases.TestUseCases" name="test_bb_uc_02_buyer_filter_and_price_customization_workflow" time="28.190"><failure message="selenium.common.exceptions.TimeoutException: Message: &#10;Stacktrace:&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6af540]&#10;&#09;chromedriver!(No symbol) [0x7ff76f4d45fd]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52fca1]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52ff6c]&#10;&#09;chromedriver!(No symbol) [0x7ff76f583077]&#10;&#09;chromedriver!(No symbol) [0x7ff76f57fcd9]&#10;&#09;chromedriver!(No symbol) [0x7ff76f521a12]&#10;&#09;chromedriver!(No symbol) [0x7ff76f522823]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6bcb55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b7f64]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b80f4]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6a2e4c]&#10;&#09;KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]&#10;&#09;ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]">self = &lt;test_use_cases.TestUseCases object at 0x00000167011DF6B0&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x0000016701319B80&gt;
+
+    def test_bb_uc_02_buyer_filter_and_price_customization_workflow(self, helper):
+        """
+        BB-UC-02: Buyer Multi-Parametric Filter &amp; Price Range Workflow.
+        Workflow:
+        1. Open Explore page directly.
+        2. Apply category filter 'Video &amp; Content Creation'.
+        3. Set minimum price ₹500 and maximum price ₹1000.
+        4. Verify that filtered services display matching items.
+        5. Click 'Reset All Filters' or clear controls to verify full catalog restoration.
+        """
+        helper.navigate("/explore")
+        time.sleep(1)
+    
+        # Step 2: Select Video &amp; Content Creation category
+&gt;       cat_btn = helper.wait_for_clickable(By.XPATH, "//button[contains(text(), 'Video &amp; Content Creation')]")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+skillbridge_blackbox_testing\tests\test_use_cases.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+skillbridge_blackbox_testing\tests\conftest.py:39: in wait_for_clickable
+    return WebDriverWait(self.driver, timeout).until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="908883e1c941fe8e8cba2d02737c14c1")&gt;
+method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x0000016701756520&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       	chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]
+E       	chromedriver!(No symbol) [0x7ff76f6af540]
+E       	chromedriver!(No symbol) [0x7ff76f4d45fd]
+E       	chromedriver!(No symbol) [0x7ff76f52fca1]
+E       	chromedriver!(No symbol) [0x7ff76f52ff6c]
+E       	chromedriver!(No symbol) [0x7ff76f583077]
+E       	chromedriver!(No symbol) [0x7ff76f57fcd9]
+E       	chromedriver!(No symbol) [0x7ff76f521a12]
+E       	chromedriver!(No symbol) [0x7ff76f522823]
+E       	chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]
+E       	chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]
+E       	chromedriver!(No symbol) [0x7ff76f6bcb55]
+E       	chromedriver!(No symbol) [0x7ff76f6b7f64]
+E       	chromedriver!(No symbol) [0x7ff76f6b80f4]
+E       	chromedriver!(No symbol) [0x7ff76f6a2e4c]
+E       	KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]
+E       	ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]
+
+C:\Users\psoha\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException</failure></testcase><testcase classname="skillbridge_blackbox_testing.tests.test_use_cases.TestUseCases" name="test_bb_uc_03_student_registration_validation_workflow" time="19.454" /><testcase classname="skillbridge_blackbox_testing.tests.test_use_cases.TestUseCases" name="test_bb_uc_04_unauthenticated_seller_guard_workflow" time="9.788" /><testcase classname="skillbridge_blackbox_testing.tests.test_use_cases.TestUseCases" name="test_bb_uc_05_academic_tutoring_consultation_workflow" time="19.084"><failure message="selenium.common.exceptions.TimeoutException: Message: &#10;Stacktrace:&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6af540]&#10;&#09;chromedriver!(No symbol) [0x7ff76f4d45fd]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52fca1]&#10;&#09;chromedriver!(No symbol) [0x7ff76f52ff6c]&#10;&#09;chromedriver!(No symbol) [0x7ff76f583077]&#10;&#09;chromedriver!(No symbol) [0x7ff76f57fcd9]&#10;&#09;chromedriver!(No symbol) [0x7ff76f521a12]&#10;&#09;chromedriver!(No symbol) [0x7ff76f522823]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]&#10;&#09;chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6bcb55]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b7f64]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6b80f4]&#10;&#09;chromedriver!(No symbol) [0x7ff76f6a2e4c]&#10;&#09;KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]&#10;&#09;ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]">self = &lt;test_use_cases.TestUseCases object at 0x00000167011DCDD0&gt;
+helper = &lt;conftest.SeleniumHelper object at 0x0000016701345340&gt;
+
+    def test_bb_uc_05_academic_tutoring_consultation_workflow(self, helper):
+        """
+        BB-UC-05: Buyer Academic Tutoring Discovery &amp; Consultation Inspection.
+        Workflow:
+        1. Open Explore page.
+        2. Filter by Academic Tutoring category.
+        3. Inspect returned tutoring listings.
+        4. Select Data Structures &amp; Algorithms tutoring service.
+        5. Verify hourly rate, scope of tutoring, and contact/order CTA presence.
+        """
+        helper.navigate("/explore")
+        time.sleep(1)
+    
+&gt;       cat_btn = helper.wait_for_clickable(By.XPATH, "//button[contains(text(), 'Academic Tutoring')]")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+skillbridge_blackbox_testing\tests\test_use_cases.py:185: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+skillbridge_blackbox_testing\tests\conftest.py:39: in wait_for_clickable
+    return WebDriverWait(self.driver, timeout).until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="fa1e300031998954aebfc6784ef9f946")&gt;
+method = &lt;function element_to_be_clickable.&lt;locals&gt;._predicate at 0x0000016701755620&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       	chromedriver!GetHandleVerifier [0x7ff76f789d55+5a55]
+E       	chromedriver!(No symbol) [0x7ff76f6af540]
+E       	chromedriver!(No symbol) [0x7ff76f4d45fd]
+E       	chromedriver!(No symbol) [0x7ff76f52fca1]
+E       	chromedriver!(No symbol) [0x7ff76f52ff6c]
+E       	chromedriver!(No symbol) [0x7ff76f583077]
+E       	chromedriver!(No symbol) [0x7ff76f57fcd9]
+E       	chromedriver!(No symbol) [0x7ff76f521a12]
+E       	chromedriver!(No symbol) [0x7ff76f522823]
+E       	chromedriver!GetHandleVerifier [0x7ff76fba04b1+41c1b1]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbce26b+449f6b]
+E       	chromedriver!GetHandleVerifier [0x7ff76fbc274e+43e44e]
+E       	chromedriver!GetHandleVerifier [0x7ff76f8832fe+feffe]
+E       	chromedriver!(No symbol) [0x7ff76f6bcb55]
+E       	chromedriver!(No symbol) [0x7ff76f6b7f64]
+E       	chromedriver!(No symbol) [0x7ff76f6b80f4]
+E       	chromedriver!(No symbol) [0x7ff76f6a2e4c]
+E       	KERNEL32!BaseThreadInitThunk [0x7ff89024cdf7+17]
+E       	ntdll!RtlUserThreadStart [0x7ff89145ee4c+2c]
+
+C:\Users\psoha\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException</failure></testcase></testsuite></testsuites>

@@ -16,24 +16,32 @@ import {
   CheckCircle2,
   Sparkles,
   ShoppingBag,
+  AlertTriangle,
+  Edit3,
+  ExternalLink,
+  Pause,
+  Archive,
+  Layers,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/lib/auth/auth-context';
 import { getServiceById } from '@/lib/services/services';
-import { getMarketplaceState } from '@/lib/store/marketplace-store';
+import { fetchServiceReviews, calculateRatingBreakdown } from '@/lib/services/reviews';
+import { RatingBreakdown } from '@/components/reviews/rating-breakdown';
+import { ReviewCard } from '@/components/reviews/review-card';
 import { BookingModal } from '@/components/booking/booking-modal';
 import { CheckoutModal } from '@/components/orders/checkout-modal';
+import { isConsultationService } from '@/lib/services/orders';
 import { VerifiedBadge } from '@/components/trust/verified-badge';
 import type { Service, Review, ServiceMedia } from '@/types';
 
 export default function ServiceDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { session } = useAuth();
+  const { session, user, isAdmin } = useAuth();
   const [service, setService] = useState<Service | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [media, setMedia] = useState<ServiceMedia[]>([]);
   const [loading, setLoading] = useState(true);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
@@ -45,16 +53,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
         setService(svc);
 
         if (svc) {
-          const state = getMarketplaceState();
-          const svcReviews = state.reviews.filter((r) => r.service_id === svc.id).map((r) => {
-            const reviewer = state.profiles.find((p) => p.user_id === r.reviewer_id);
-            return {
-              ...r,
-              reviewer: reviewer
-                ? { id: reviewer.id, full_name: reviewer.full_name, avatar_url: reviewer.avatar_url, college: reviewer.college }
-                : null,
-            };
-          });
+          const svcReviews = await fetchServiceReviews(svc.id);
           setReviews(svcReviews);
         }
       } catch (err) {
@@ -93,14 +92,37 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
     );
   }
 
-  const currentUserId = session?.user?.id ?? '10000000-0000-0000-0000-000000000003'; // Rohan by default for test buyer
-  const isOwner = currentUserId === service.provider_id;
-  const isLoggedIn = !!session || true; // Demo allows one-click purchase
+  const currentUserId = session?.user?.id;
+  const isOwner = !!(currentUserId && service.provider_id === currentUserId);
+  const canManage = isOwner || isAdmin;
 
-  const avgRating =
-    reviews.length > 0
-      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-      : service.rating ?? 5.0;
+  // If service is draft or moderated and caller is NOT owner/admin, block public access
+  if (
+    (service.status === 'draft' || service.status === 'moderated') &&
+    !canManage
+  ) {
+    return (
+      <div className="mx-auto w-full max-w-screen-xl px-6 py-16">
+        <div className="mx-auto max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 text-gray-600">
+            <AlertTriangle className="h-7 w-7" />
+          </div>
+          <h2 className="mt-4 text-xl font-bold text-gray-900">Listing Unavailable</h2>
+          <p className="mt-2 text-xs text-gray-600">
+            This listing is currently in {service.status} mode and is not discoverable by the public.
+          </p>
+          <Link href="/explore">
+            <Button className="mt-6 bg-[#004ac6] text-white hover:bg-[#003b9e] text-xs font-bold">
+              Explore Available Services
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const breakdown = calculateRatingBreakdown(reviews);
+  const avgRating = breakdown.totalReviews > 0 ? breakdown.averageRating : (service.rating ?? 0);
 
   const providerInitials = service.provider?.full_name
     ? service.provider.full_name
@@ -111,8 +133,59 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
         .toUpperCase()
     : '?';
 
+  const isPaused = service.status === 'paused';
+  const isArchived = service.status === 'archived';
+  const isOrderingDisabled = isPaused || isArchived;
+
   return (
     <div className="mx-auto w-full max-w-screen-xl px-6 py-12">
+      {/* Owner preview / management banner */}
+      {canManage && service.status !== 'published' && (
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-xs text-amber-900 shadow-sm">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
+            <span>
+              <strong>Owner Preview Mode:</strong> This listing is currently{' '}
+              <span className="font-bold uppercase tracking-wide">{service.status}</span> and hidden
+              from student search.
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link href={`/services/${service.id}/edit`}>
+              <Button size="sm" className="bg-[#004ac6] text-white hover:bg-[#003b9e] font-semibold text-xs h-8 gap-1.5">
+                <Edit3 className="h-3.5 w-3.5" />
+                Edit Listing
+              </Button>
+            </Link>
+            <Link href="/my-services">
+              <Button size="sm" variant="outline" className="border-amber-300 text-amber-900 bg-white text-xs h-8">
+                My Services
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Paused banner for public visitor */}
+      {!canManage && isPaused && (
+        <div className="mb-6 flex items-center gap-2.5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800 shadow-sm">
+          <Pause className="h-4 w-4 shrink-0 text-amber-600" />
+          <span>
+            <strong>Service Paused:</strong> This student provider has temporarily paused new orders. You can still review the portfolio and check back later.
+          </span>
+        </div>
+      )}
+
+      {/* Archived banner for public visitor */}
+      {!canManage && isArchived && (
+        <div className="mb-6 flex items-center gap-2.5 rounded-2xl border border-zinc-200 bg-zinc-100 p-4 text-xs text-zinc-700 shadow-sm">
+          <Archive className="h-4 w-4 shrink-0 text-zinc-500" />
+          <span>
+            <strong>Listing Archived:</strong> This skill offering is no longer actively accepting bookings or orders.
+          </span>
+        </div>
+      )}
+
       {/* Breadcrumb */}
       <nav className="mb-6 flex items-center gap-2 text-sm text-gray-500">
         <Link href="/explore" className="font-medium text-[#004ac6] hover:underline">
@@ -131,6 +204,17 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Cover image if available */}
+          {service.cover_image_url && (
+            <div className="overflow-hidden rounded-2xl border border-border bg-gray-100 max-h-72 shadow-sm">
+              <img
+                src={service.cover_image_url}
+                alt={service.title}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
+
           {/* Service Header */}
           <div className="rounded-2xl border border-border bg-white p-6 sm:p-8 shadow-sm">
             <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -147,14 +231,21 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
               )}
               <Badge
                 variant="secondary"
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${
                   service.status === 'published'
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
+                    : service.status === 'paused'
+                    ? 'bg-amber-50 text-amber-700 border border-amber-200'
                     : 'bg-gray-100 text-gray-600'
                 }`}
               >
                 {service.status}
               </Badge>
+              {service.service_type && (
+                <Badge variant="outline" className="text-xs capitalize text-gray-600">
+                  {service.service_type.replace('_', ' ')}
+                </Badge>
+              )}
             </div>
 
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl leading-tight">
@@ -169,7 +260,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                 </span>
               </div>
               <div>
-                <span className="text-xs text-gray-400 block">Delivery Time</span>
+                <span className="text-xs text-gray-400 block">Turnaround Time</span>
                 <span className="font-semibold text-gray-800 flex items-center gap-1">
                   <Clock className="h-4 w-4 text-[#004ac6]" />
                   {service.delivery_days || 3} Days
@@ -179,9 +270,18 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
                 <span className="text-xs text-gray-400 block">Rating & Orders</span>
                 <span className="font-semibold text-gray-800 flex items-center gap-1">
                   <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                  {avgRating.toFixed(1)} ({reviews.length || service.reviews_count || 5} reviews · {service.completed_orders_count || 12} done)
+                  {avgRating.toFixed(1)} ({reviews.length || service.reviews_count || 5} reviews · {service.completed_orders_count || 0} done)
                 </span>
               </div>
+              {service.location && (
+                <div>
+                  <span className="text-xs text-gray-400 block">Delivery Location</span>
+                  <span className="font-semibold text-gray-800 flex items-center gap-1">
+                    <MapPin className="h-4 w-4 text-[#004ac6]" />
+                    {service.location}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Tags / Skills */}
@@ -202,12 +302,47 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
           {/* Description */}
           <div className="rounded-2xl border border-border bg-white p-6 sm:p-8 shadow-sm">
             <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-gray-400">
-              About This Service
+              About This Service Scope
             </h2>
             <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700">
               {service.description}
             </p>
           </div>
+
+          {/* Availability Notes */}
+          {service.availability_notes && (
+            <div className="rounded-2xl border border-blue-100 bg-[#f4f7ff] p-6 shadow-sm">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#004ac6] mb-1">
+                Provider Availability Requirements
+              </h3>
+              <p className="text-xs text-gray-700 leading-relaxed">
+                {service.availability_notes}
+              </p>
+            </div>
+          )}
+
+          {/* Portfolio Examples */}
+          {service.portfolio_examples && service.portfolio_examples.length > 0 && (
+            <div className="rounded-2xl border border-border bg-white p-6 sm:p-8 shadow-sm">
+              <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-gray-400">
+                Portfolio & Past Work Examples
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {service.portfolio_examples.map((item, idx) => (
+                  <a
+                    key={idx}
+                    href={item.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-between rounded-xl border border-gray-200 p-3.5 hover:border-[#004ac6] hover:bg-blue-50/30 transition-all text-xs"
+                  >
+                    <span className="font-semibold text-gray-900 truncate">{item.title}</span>
+                    <ExternalLink className="h-3.5 w-3.5 text-[#004ac6] shrink-0 ml-2" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Escrow Guarantee Banner */}
           <div className="rounded-2xl border border-blue-100 bg-[#f4f7ff] p-6 shadow-sm flex items-start gap-4">
@@ -222,77 +357,29 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
             </div>
           </div>
 
-          {/* Reviews Section */}
-          <div className="rounded-2xl border border-border bg-white p-6 sm:p-8 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-gray-400">
-                Student Reviews ({reviews.length})
-              </h2>
-              <div className="flex items-center gap-1.5">
-                <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                <span className="text-sm font-bold text-gray-900">{avgRating.toFixed(1)}</span>
-                <span className="text-xs text-gray-400">out of 5</span>
-              </div>
-            </div>
+          {/* Authoritative Rating Breakdown & Trust */}
+          <RatingBreakdown
+            breakdown={breakdown}
+            title={`Student Reviews & Reputation (${breakdown.totalReviews})`}
+          />
 
+          {/* Reviews List */}
+          <div className="space-y-4">
             {reviews.length === 0 ? (
-              <p className="text-sm text-gray-500 py-4">No reviews yet. Be the first student to request this service!</p>
-            ) : (
-              <div className="space-y-4">
-                {reviews.map((rev) => {
-                  const reviewerInitials = rev.reviewer?.full_name
-                    ? rev.reviewer.full_name
-                        .split(' ')
-                        .map((w) => w[0])
-                        .slice(0, 2)
-                        .join('')
-                        .toUpperCase()
-                    : '?';
-
-                  return (
-                    <div
-                      key={rev.id}
-                      className="rounded-xl border border-gray-100 bg-[#fafafa] p-4 space-y-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-9 w-9 border border-[#c3c6d7]">
-                            {rev.reviewer?.avatar_url && (
-                              <AvatarImage src={rev.reviewer.avatar_url} />
-                            )}
-                            <AvatarFallback className="text-xs font-bold text-[#004ac6]">
-                              {reviewerInitials}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="text-sm font-bold text-gray-900">
-                              {rev.reviewer?.full_name ?? 'Student Client'}
-                            </p>
-                            {rev.reviewer?.college && (
-                              <p className="text-[11px] text-gray-400">{rev.reviewer.college}</p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-1">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${
-                                i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-200'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-
-                      <p className="text-xs text-gray-700 leading-relaxed italic">
-                        &ldquo;{rev.comment}&rdquo;
-                      </p>
-                    </div>
-                  );
-                })}
+              <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-8 text-center text-xs text-gray-500">
+                No verified reviews yet for this listing. Be the first peer to book and review!
               </div>
+            ) : (
+              reviews.map((rev) => (
+                <ReviewCard
+                  key={rev.id}
+                  review={rev}
+                  onReportSubmitted={async () => {
+                    const fresh = await fetchServiceReviews(service.id);
+                    setReviews(fresh);
+                  }}
+                />
+              ))
             )}
           </div>
         </div>
@@ -315,26 +402,63 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
 
             {!isOwner ? (
               <div className="space-y-3">
-                <Button
-                  onClick={() => setCheckoutOpen(true)}
-                  className="w-full gap-2 bg-[#004ac6] py-6 text-base font-bold text-white hover:bg-[#003b9e] shadow-md hover:shadow-lg transition-all"
-                >
-                  <ShoppingBag className="h-5 w-5" />
-                  Order & Hire Student
-                </Button>
-
-                <Button
-                  variant="outline"
-                  onClick={() => setBookingOpen(true)}
-                  className="w-full gap-2 border-gray-200 text-gray-700 hover:bg-gray-50"
-                >
-                  <Calendar className="h-4 w-4" />
-                  Schedule Consultation Session
-                </Button>
+                {isOrderingDisabled ? (
+                  <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-center">
+                    <p className="text-xs font-bold text-amber-800">
+                      Orders Currently {service.status === 'paused' ? 'Paused' : 'Unavailable'}
+                    </p>
+                    <p className="text-[11px] text-amber-700 mt-1">
+                      This provider is not accepting new orders at this time.
+                    </p>
+                    <Button disabled className="w-full mt-3 bg-gray-300 text-gray-500 py-5 text-sm font-bold">
+                      Not Available
+                    </Button>
+                  </div>
+                ) : isConsultationService(service) ? (
+                  <div className="space-y-3">
+                    <Button
+                      onClick={() => setBookingOpen(true)}
+                      className="w-full gap-2 bg-[#004ac6] py-6 text-base font-bold text-white hover:bg-[#003b9e] shadow-md hover:shadow-lg transition-all"
+                    >
+                      <Calendar className="h-5 w-5" />
+                      Schedule Consultation Session
+                    </Button>
+                    <p className="text-center text-[11px] text-gray-500">
+                      Select date & time slot from the student provider&apos;s active calendar.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <Button
+                      onClick={() => setCheckoutOpen(true)}
+                      className="w-full gap-2 bg-[#004ac6] py-6 text-base font-bold text-white hover:bg-[#003b9e] shadow-md hover:shadow-lg transition-all"
+                    >
+                      <ShoppingBag className="h-5 w-5" />
+                      Order & Hire Student
+                    </Button>
+                    <div className="flex items-center justify-between text-[11px] text-gray-500 pt-0.5">
+                      <span>Held safely in escrow</span>
+                      <Link
+                        href={`/checkout?serviceId=${service.id}`}
+                        className="font-bold text-[#004ac6] hover:underline"
+                      >
+                        Dedicated Checkout Page →
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-xs font-medium text-[#004ac6] text-center">
-                This is your service listing.
+              <div className="space-y-3">
+                <div className="rounded-xl border border-blue-200 bg-blue-50 p-3.5 text-xs font-medium text-[#004ac6] text-center">
+                  This is your service listing ({service.status}).
+                </div>
+                <Link href={`/services/${service.id}/edit`}>
+                  <Button className="w-full gap-2 bg-[#004ac6] text-white hover:bg-[#003b9e] py-5 font-bold">
+                    <Edit3 className="h-4 w-4" />
+                    Edit This Listing
+                  </Button>
+                </Link>
               </div>
             )}
 
@@ -359,52 +483,57 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
 
               <div className="flex items-center gap-4">
                 <Avatar className="h-14 w-14 border border-[#c3c6d7]">
-                  {service.provider.avatar_url && <AvatarImage src={service.provider.avatar_url} />}
-                  <AvatarFallback className="text-base font-bold text-[#004ac6]">
+                  {service.provider.avatar_url && (
+                    <AvatarImage src={service.provider.avatar_url} alt={service.provider.full_name} />
+                  )}
+                  <AvatarFallback className="bg-[#f0f4ff] font-bold text-[#004ac6]">
                     {providerInitials}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-base font-bold text-gray-900">{service.provider.full_name}</p>
+                  <h3 className="text-base font-bold text-gray-900">{service.provider.full_name}</h3>
                   {service.provider.college && (
-                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                    <p className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
                       <GraduationCap className="h-3.5 w-3.5 text-[#004ac6]" />
                       {service.provider.college}
+                    </p>
+                  )}
+                  {service.provider.location && (
+                    <p className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
+                      <MapPin className="h-3.5 w-3.5 text-[#004ac6]" />
+                      {service.provider.location}
                     </p>
                   )}
                 </div>
               </div>
 
-              {service.provider.verification_status === 'verified' && (
-                <VerifiedBadge college={service.provider.college} />
-              )}
-
-              <Link
-                href={`/profile/${service.provider_id}`}
-                className="block text-center text-xs font-bold text-[#004ac6] hover:underline pt-2"
-              >
-                View Full Student Portfolio & Badges →
+              <Link href={`/profile/${service.provider.id}`}>
+                <Button variant="outline" className="w-full text-xs font-semibold mt-2">
+                  View Campus Profile & All Services
+                </Button>
               </Link>
             </div>
           )}
         </div>
       </div>
 
-      {/* Checkout Escrow Modal */}
-      <CheckoutModal
-        service={service}
-        buyerId={currentUserId}
-        open={checkoutOpen}
-        onClose={() => setCheckoutOpen(false)}
-      />
-
-      {/* Booking Calendar Modal */}
-      <BookingModal
-        service={service}
-        customerId={currentUserId}
-        open={bookingOpen}
-        onClose={() => setBookingOpen(false)}
-      />
+      {/* Booking and Checkout Modals */}
+      {bookingOpen && (
+        <BookingModal
+          service={service}
+          customerId={currentUserId || '10000000-0000-0000-0000-000000000003'}
+          open={bookingOpen}
+          onClose={() => setBookingOpen(false)}
+        />
+      )}
+      {checkoutOpen && (
+        <CheckoutModal
+          service={service}
+          buyerId={currentUserId || '10000000-0000-0000-0000-000000000003'}
+          open={checkoutOpen}
+          onClose={() => setCheckoutOpen(false)}
+        />
+      )}
     </div>
   );
 }
