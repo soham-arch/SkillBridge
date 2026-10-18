@@ -2,7 +2,6 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 const PROTECTED_ROUTES = [
   '/dashboard',
-  '/explore',
   '/orders',
   '/my-services',
   '/bookings',
@@ -45,7 +44,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/dashboard/:path*',
-    '/explore/:path*',
     '/orders/:path*',
     '/my-services/:path*',
     '/bookings/:path*',

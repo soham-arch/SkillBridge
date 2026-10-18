@@ -55,11 +55,28 @@ CREATE POLICY "profiles_update_own" ON profiles FOR UPDATE
     -- Only admin can change is_admin or verification_status directly via SQL
   );
 
+-- Helper function to check admin status safely without triggering RLS recursion
+CREATE OR REPLACE FUNCTION public.is_admin(p_user_id uuid DEFAULT auth.uid())
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+STABLE
+AS $$
+  SELECT COALESCE(
+    (SELECT is_admin FROM public.profiles WHERE user_id = COALESCE(p_user_id, auth.uid()) LIMIT 1),
+    false
+  );
+$$;
+
+GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO authenticated, anon;
+
 -- Admin can manage all profiles
 DROP POLICY IF EXISTS "profiles_admin_all" ON profiles;
 CREATE POLICY "profiles_admin_all" ON profiles FOR ALL
   TO authenticated
-  USING (EXISTS (SELECT 1 FROM profiles p WHERE p.user_id = auth.uid() AND p.is_admin = true));
+  USING (public.is_admin(auth.uid()))
+  WITH CHECK (public.is_admin(auth.uid()));
 
 -- =========================================================================
 -- 2. Verification Requests Table
@@ -93,7 +110,7 @@ CREATE POLICY "verification_requests_select" ON verification_requests FOR SELECT
   TO authenticated
   USING (
     auth.uid() = user_id 
-    OR EXISTS (SELECT 1 FROM profiles WHERE user_id = auth.uid() AND is_admin = true)
+    OR public.is_admin(auth.uid())
   );
 
 -- Owner can insert their verification request
@@ -108,11 +125,11 @@ CREATE POLICY "verification_requests_update" ON verification_requests FOR UPDATE
   TO authenticated
   USING (
     auth.uid() = user_id 
-    OR EXISTS (SELECT 1 FROM profiles WHERE user_id = auth.uid() AND is_admin = true)
+    OR public.is_admin(auth.uid())
   )
   WITH CHECK (
     auth.uid() = user_id 
-    OR EXISTS (SELECT 1 FROM profiles WHERE user_id = auth.uid() AND is_admin = true)
+    OR public.is_admin(auth.uid())
   );
 
 CREATE INDEX IF NOT EXISTS idx_verification_requests_user_id ON verification_requests(user_id);
@@ -139,7 +156,7 @@ CREATE POLICY "verification_audit_log_select" ON verification_audit_log FOR SELE
   TO authenticated
   USING (
     auth.uid() = user_id 
-    OR EXISTS (SELECT 1 FROM profiles WHERE user_id = auth.uid() AND is_admin = true)
+    OR public.is_admin(auth.uid())
   );
 
 DROP POLICY IF EXISTS "verification_audit_log_insert" ON verification_audit_log;
@@ -147,7 +164,7 @@ CREATE POLICY "verification_audit_log_insert" ON verification_audit_log FOR INSE
   TO authenticated
   WITH CHECK (
     auth.uid() = user_id 
-    OR EXISTS (SELECT 1 FROM profiles WHERE user_id = auth.uid() AND is_admin = true)
+    OR public.is_admin(auth.uid())
   );
 
 CREATE INDEX IF NOT EXISTS idx_verification_audit_log_user_id ON verification_audit_log(user_id);
@@ -188,7 +205,7 @@ CREATE POLICY "Allow owners and admins to read verification documents" ON storag
     bucket_id = 'verification-documents'
     AND (
       (storage.foldername(name))[1] = auth.uid()::text
-      OR EXISTS (SELECT 1 FROM profiles WHERE user_id = auth.uid() AND is_admin = true)
+      OR public.is_admin(auth.uid())
     )
   );
 

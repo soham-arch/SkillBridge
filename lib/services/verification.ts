@@ -162,6 +162,11 @@ export async function submitStudentVerification(params: {
     .single();
 
   if (requestError) {
+    if (requestError.message.toLowerCase().includes('infinite recursion')) {
+      throw new Error(
+        'Database RLS infinite recursion detected in profiles policy. Please execute supabase/FIX_RLS_INFINITE_RECURSION.sql in your Supabase SQL Editor to apply the fix.'
+      );
+    }
     throw new Error(`Failed to save verification request: ${requestError.message}`);
   }
 
@@ -245,6 +250,11 @@ export async function resubmitStudentVerification(params: {
     .single();
 
   if (reqError) {
+    if (reqError.message.toLowerCase().includes('infinite recursion')) {
+      throw new Error(
+        'Database RLS infinite recursion detected in profiles policy. Please execute supabase/FIX_RLS_INFINITE_RECURSION.sql in your Supabase SQL Editor to apply the fix.'
+      );
+    }
     throw new Error(`Resubmission failed: ${reqError.message}`);
   }
 

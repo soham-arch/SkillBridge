@@ -29,8 +29,28 @@ export interface MarketplaceState {
   adminAuditLogs?: AdminAuditLog[];
 }
 
-// Initial Seed Data mirroring migrations
 export const SEED_PROFILES: Profile[] = [
+  {
+    id: '00000000-0000-0000-0000-000000000001',
+    user_id: '00000000-0000-0000-0000-000000000001',
+    email: 'admin@skillbridge.edu',
+    full_name: 'Platform Administrator',
+    avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&auto=format&fit=crop&q=80',
+    college: 'SkillBridge Campus Governance',
+    student_id_number: 'ADMIN-2024-001',
+    verification_status: 'verified',
+    verified_at: '2026-08-01T10:00:00Z',
+    bio: 'Platform governance, trust & safety officer.',
+    location: 'Pune',
+    skills: ['Governance', 'Safety', 'Moderation', 'Operations'],
+    capabilities: ['find', 'offer'],
+    is_admin: true,
+    rating: 5.0,
+    reviews_count: 0,
+    completed_orders_count: 0,
+    created_at: '2026-08-01T08:00:00Z',
+    updated_at: '2026-08-20T12:00:00Z',
+  },
   {
     id: '10000000-0000-0000-0000-000000000001',
     user_id: '10000000-0000-0000-0000-000000000001',

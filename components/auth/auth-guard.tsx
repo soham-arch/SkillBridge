@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode } from 'react';
+import { type ReactNode, useState, useEffect } from 'react';
 import { useRequireAuth, type RequireAuthOptions } from '@/lib/auth/use-require-auth';
 
 interface AuthGuardProps extends RequireAuthOptions {
@@ -14,12 +14,21 @@ export function AuthGuard({
   ...options
 }: AuthGuardProps) {
   const { loading, session, isEmailVerified, isStudentVerified, isAdmin } = useRequireAuth(options);
+  const [timedOut, setTimedOut] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    // Failsafe timer: after 1.2s, never keep the spinner stuck
+    const timer = setTimeout(() => {
+      setTimedOut(true);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading && !timedOut) {
     if (fallback) return <>{fallback}</>;
     return (
-      <div className="flex min-h-[60vh] w-full flex-col items-center justify-center gap-3">
-        <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#004ac6] border-t-transparent" />
+      <div className="flex min-h-[50vh] w-full flex-col items-center justify-center gap-3">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#004ac6] border-t-transparent" />
         <p className="text-xs font-semibold text-gray-500">Checking authorization...</p>
       </div>
     );
