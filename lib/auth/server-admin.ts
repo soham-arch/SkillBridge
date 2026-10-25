@@ -46,10 +46,12 @@ export function getAdminSupabaseClient(userToken?: string): SupabaseClient {
     });
   }
 
+  const validToken = userToken && !userToken.startsWith('demo-token-') ? userToken : undefined;
+
   return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
-    global: userToken
-      ? { headers: { Authorization: `Bearer ${userToken}` } }
+    global: validToken
+      ? { headers: { Authorization: `Bearer ${validToken}` } }
       : undefined,
   });
 }

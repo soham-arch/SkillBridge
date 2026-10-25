@@ -26,7 +26,22 @@ async function getAuthHeaders(explicitToken?: string): Promise<Record<string, st
   try {
     const supabase = getSupabaseClient();
     const { data } = await supabase.auth.getSession();
-    const token = data.session?.access_token;
+    let token = data.session?.access_token;
+
+    if (!token && typeof window !== 'undefined') {
+      const demoRaw = localStorage.getItem('sb_demo_session');
+      if (demoRaw) {
+        try {
+          const parsed = JSON.parse(demoRaw);
+          token = parsed.access_token;
+        } catch {}
+      }
+      if (!token) {
+        const match = document.cookie.match(/sb-access-token=([^;]+)/);
+        if (match) token = decodeURIComponent(match[1]);
+      }
+    }
+
     if (token) {
       return {
         Authorization: `Bearer ${token}`,

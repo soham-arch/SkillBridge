@@ -17,16 +17,13 @@ import {
   Plus,
   X,
   Link as LinkIcon,
-  IndianRupee,
   ShieldCheck,
   CheckCircle2,
-  Lock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { useAuth } from '@/lib/auth/auth-context';
@@ -34,9 +31,6 @@ import {
   updateUserProfile,
   uploadProfileAvatar,
   switchActiveRole,
-  isBuyer,
-  isSeller,
-  canSell,
 } from '@/lib/profiles/profiles';
 import { SEED_CATEGORIES } from '@/lib/store/marketplace-store';
 import type { Capability, ActiveRole, PortfolioItem, PricingPreferences, SocialLinks } from '@/types';
@@ -65,7 +59,7 @@ const POPULAR_SKILLS = [
 export default function ProfilePage() {
   const searchParams = useSearchParams();
   const { loading: authLoading } = useRequireAuth();
-  const { session, profile, isStudentVerified, isAdmin, refreshProfile } = useAuth();
+  const { session, profile, isStudentVerified, refreshProfile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [activeTab, setActiveTab] = useState<ProfileTab>('personal');
@@ -143,7 +137,6 @@ export default function ProfilePage() {
     }
   }, [searchParams]);
 
-  // Avatar upload
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file || !session?.user?.id) return;
@@ -163,7 +156,6 @@ export default function ProfilePage() {
     }
   }
 
-  // Toggle skill
   function toggleSkill(skill: string) {
     setSkills((prev) =>
       prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
@@ -181,14 +173,12 @@ export default function ProfilePage() {
     setCustomSkill('');
   }
 
-  // Toggle Category
   function toggleCategory(catName: string) {
     setPreferredCategories((prev) =>
       prev.includes(catName) ? prev.filter((c) => c !== catName) : [...prev, catName]
     );
   }
 
-  // Portfolio item management
   function addPortfolioLink() {
     if (!newPortTitle.trim() || !newPortUrl.trim()) {
       toast.error('Please enter both title and URL.');
@@ -206,7 +196,6 @@ export default function ProfilePage() {
     setPortfolioLinks((prev) => prev.filter((_, i) => i !== idx));
   }
 
-  // Quick Switch Active Role
   async function handleSwitchActiveRole(newRole: ActiveRole) {
     if (!session?.user?.id) return;
     try {
@@ -220,7 +209,6 @@ export default function ProfilePage() {
     }
   }
 
-  // Save profile changes
   async function handleSave(e?: FormEvent) {
     if (e) e.preventDefault();
     if (!session?.user?.id) return;
@@ -279,63 +267,74 @@ export default function ProfilePage() {
   if (authLoading) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#004ac6] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-900 border-t-transparent" />
       </div>
     );
   }
 
+  const initials = fullName
+    ? fullName
+        .split(' ')
+        .map((w) => w[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase()
+    : 'SB';
+
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
-      {/* Header */}
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="mx-auto w-full max-w-4xl px-6 sm:px-8 lg:px-12 py-12 sm:py-16">
+      {/* Editorial Header */}
+      <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-neutral-200/80">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Your Profile</h1>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#004ac6]">
+              // Campus Identity & Settings
+            </span>
             {isStudentVerified && (
-              <Badge className="bg-emerald-600 text-white text-[10px] font-bold">
-                <CheckCircle2 className="h-3 w-3 mr-1" />
+              <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">
                 Verified Student
-              </Badge>
+              </span>
             )}
           </div>
-          <p className="text-xs sm:text-sm text-gray-600">
-            Manage your personal student identity, buyer/seller capabilities, and public portfolio.
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-950">
+            Account Profile.
+          </h1>
+          <p className="mt-2 text-sm text-neutral-500 font-normal">
+            Manage your personal identity, marketplace roles, and public portfolio.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {session?.user?.id && (
             <Link href={`/profile/${session.user.id}`} target="_blank">
               <Button
                 variant="outline"
-                size="sm"
-                className="text-xs font-bold rounded-xl border-gray-200"
+                className="h-11 rounded-xl border-neutral-300 text-xs font-bold text-neutral-800 hover:bg-neutral-50 shadow-2xs"
               >
                 <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-                View Public Profile
+                Public View
               </Button>
             </Link>
           )}
           <Button
-            size="sm"
             onClick={() => handleSave()}
             disabled={saving}
-            className="bg-[#004ac6] text-white hover:bg-[#003899] text-xs font-bold rounded-xl"
+            className="h-11 rounded-xl bg-neutral-950 text-white hover:bg-black text-xs font-bold px-5 shadow-xs"
           >
             <Save className="h-3.5 w-3.5 mr-1.5" />
-            {saving ? 'Saving...' : 'Save Profile'}
+            {saving ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </div>
 
       {/* Tabs Bar */}
-      <div className="flex gap-2 border-b border-gray-200 pb-3 mb-6">
+      <div className="flex gap-2 border-b border-neutral-200/80 pb-3 mb-8">
         <button
           onClick={() => setActiveTab('personal')}
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
             activeTab === 'personal'
-              ? 'bg-[#004ac6] text-white shadow-sm'
-              : 'text-gray-600 hover:bg-gray-100'
+              ? 'bg-neutral-950 text-white shadow-xs'
+              : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'
           }`}
         >
           Personal Information
@@ -344,383 +343,266 @@ export default function ProfilePage() {
           onClick={() => setActiveTab('roles')}
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
             activeTab === 'roles'
-              ? 'bg-[#004ac6] text-white shadow-sm'
-              : 'text-gray-600 hover:bg-gray-100'
+              ? 'bg-neutral-950 text-white shadow-xs'
+              : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'
           }`}
         >
-          Roles & Active Context ({activeRoleContext.toUpperCase()})
+          Marketplace Roles
         </button>
         <button
           onClick={() => setActiveTab('seller')}
           className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
             activeTab === 'seller'
-              ? 'bg-[#004ac6] text-white shadow-sm'
-              : 'text-gray-600 hover:bg-gray-100'
+              ? 'bg-neutral-950 text-white shadow-xs'
+              : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'
           }`}
         >
-          Seller Profile & Portfolio
+          Seller Specialization
         </button>
       </div>
 
-      {/* TAB 1: Personal Information */}
+      {/* TAB 1: PERSONAL INFORMATION */}
       {activeTab === 'personal' && (
-        <div className="space-y-6 rounded-3xl border border-border bg-white p-6 sm:p-8 shadow-sm">
+        <div className="rounded-3xl border border-neutral-200 bg-white p-8 sm:p-10 shadow-xs space-y-8">
           {/* Avatar Upload */}
-          <div className="flex flex-col sm:flex-row items-center gap-5 bg-gray-50 p-4 rounded-2xl border border-gray-100">
-            <div className="relative">
-              <Avatar className="h-20 w-20 border-2 border-[#c3c6d7] shadow-sm">
-                {avatarUrl && <AvatarImage src={avatarUrl} />}
-                <AvatarFallback className="text-xl font-bold text-[#004ac6]">
-                  {fullName ? fullName.slice(0, 2).toUpperCase() : 'ST'}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 pb-6 border-b border-neutral-100">
+            <div className="relative group">
+              <Avatar className="h-20 w-20 border-2 border-neutral-200 shadow-xs">
+                {avatarUrl && <AvatarImage src={avatarUrl} alt={fullName} />}
+                <AvatarFallback className="text-lg font-black text-neutral-900 bg-neutral-100">
+                  {initials}
                 </AvatarFallback>
               </Avatar>
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploadingAvatar}
-                className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-[#004ac6] text-white shadow hover:bg-[#003899] transition-colors"
-                title="Change avatar"
+                className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <Camera className="h-3.5 w-3.5" />
+                <Camera className="h-5 w-5" />
               </button>
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                className="hidden"
+                accept="image/*"
                 onChange={handleAvatarUpload}
+                className="hidden"
               />
             </div>
-            <div className="text-center sm:text-left">
-              <h4 className="text-xs font-bold text-gray-800">Profile Picture</h4>
-              <p className="text-[11px] text-gray-500 mt-0.5">
-                Upload your picture to establish trust with other students on campus.
+            <div className="space-y-1">
+              <h3 className="text-base font-bold text-neutral-950">Profile Picture</h3>
+              <p className="text-xs text-neutral-500">
+                Upload a professional headshot to increase trust with student clients.
               </p>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                disabled={uploadingAvatar}
                 onClick={() => fileInputRef.current?.click()}
-                className="mt-2 text-xs font-bold rounded-xl h-7"
+                disabled={uploadingAvatar}
+                className="rounded-xl border-neutral-300 text-xs font-bold mt-2"
               >
-                {uploadingAvatar ? 'Uploading...' : 'Upload New Photo'}
+                {uploadingAvatar ? 'Uploading...' : 'Choose Image'}
               </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label htmlFor="fullName" className="text-xs font-semibold text-gray-700">
-                Full Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="fullName"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="text-xs rounded-xl"
-              />
+          <form onSubmit={handleSave} className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                  Full Legal Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="fullName"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="h-12 rounded-xl text-sm border-neutral-200"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="college" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                  College / University
+                </Label>
+                <Input
+                  id="college"
+                  value={college}
+                  onChange={(e) => setCollege(e.target.value)}
+                  placeholder="MIT-WPU Pune"
+                  className="h-12 rounded-xl text-sm border-neutral-200"
+                />
+              </div>
             </div>
 
-            <div className="space-y-1">
-              <Label htmlFor="email" className="text-xs font-semibold text-gray-700">
-                Email Address (Read-only)
-              </Label>
-              <Input
-                id="email"
-                value={profile?.email || session?.user?.email || ''}
-                disabled
-                className="text-xs rounded-xl bg-gray-50 text-gray-500"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <Label htmlFor="college" className="text-xs font-semibold text-gray-700">
-                College / University
-              </Label>
-              <Input
-                id="college"
-                value={college}
-                onChange={(e) => setCollege(e.target.value)}
-                className="text-xs rounded-xl"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="location" className="text-xs font-semibold text-gray-700">
+            <div className="space-y-2">
+              <Label htmlFor="location" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
                 Campus Location
               </Label>
               <Input
                 id="location"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Kothrud, Pune / Hostel 3"
-                className="text-xs rounded-xl"
+                placeholder="e.g. Pune / Kothrud Campus"
+                className="h-12 rounded-xl text-sm border-neutral-200"
               />
             </div>
-          </div>
 
-          <div className="space-y-1">
-            <Label htmlFor="bio" className="text-xs font-semibold text-gray-700">
-              Personal Bio / Headline
-            </Label>
-            <Textarea
-              id="bio"
-              rows={3}
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              placeholder="Tell other students about your interests, study major, and campus background."
-              className="text-xs rounded-xl"
-            />
-          </div>
-
-          {/* Social Links */}
-          <div className="space-y-3 pt-2 border-t">
-            <h4 className="text-xs font-bold text-gray-800">External Links & Socials</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <Label className="text-[11px] text-gray-600">GitHub Profile</Label>
-                <Input
-                  placeholder="https://github.com/username"
-                  value={githubUrl}
-                  onChange={(e) => setGithubUrl(e.target.value)}
-                  className="text-xs rounded-xl mt-1"
-                />
-              </div>
-              <div>
-                <Label className="text-[11px] text-gray-600">LinkedIn Profile</Label>
-                <Input
-                  placeholder="https://linkedin.com/in/username"
-                  value={linkedinUrl}
-                  onChange={(e) => setLinkedinUrl(e.target.value)}
-                  className="text-xs rounded-xl mt-1"
-                />
-              </div>
-              <div>
-                <Label className="text-[11px] text-gray-600">Portfolio Website</Label>
-                <Input
-                  placeholder="https://yourportfolio.com"
-                  value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
-                  className="text-xs rounded-xl mt-1"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="bio" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                Short Bio / Background
+              </Label>
+              <Textarea
+                id="bio"
+                rows={4}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Briefly introduce your academic major, engineering interests, or creative specialties..."
+                className="resize-none text-sm rounded-xl border-neutral-200 leading-relaxed"
+              />
             </div>
-          </div>
-
-          {/* Confidentiality Notice */}
-          <div className="bg-amber-50 p-3.5 rounded-xl border border-amber-200 text-xs text-amber-800 flex items-start gap-2">
-            <Lock className="h-4 w-4 shrink-0 text-amber-600 mt-0.5" />
-            <div>
-              <strong>Privacy Protection:</strong> Your official student ID or PRN enrollment number and verification documents are strictly private. They are kept securely encrypted for administration and are never exposed publicly.
-            </div>
-          </div>
+          </form>
         </div>
       )}
 
-      {/* TAB 2: Roles & Permissions */}
+      {/* TAB 2: MARKETPLACE ROLES */}
       {activeTab === 'roles' && (
-        <div className="space-y-6 rounded-3xl border border-border bg-white p-6 sm:p-8 shadow-sm">
-          {/* Active Context Switcher Banner */}
-          <div className="bg-[#f0f4ff] p-5 rounded-2xl border border-[#004ac6]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#004ac6]">
-                Current Active Mode
-              </span>
-              <h3 className="text-base font-extrabold text-gray-900 mt-0.5">
-                You are currently in{' '}
-                <span className="text-[#004ac6] underline">
-                  {activeRoleContext === 'seller' ? 'Seller Mode (Offer Services)' : 'Buyer Mode (Hire Talent)'}
-                </span>
-              </h3>
-              <p className="text-xs text-gray-600 mt-1">
-                Seamlessly toggle your active interface context between hiring peers and managing your client orders.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <Button
-                size="sm"
-                variant={activeRoleContext === 'buyer' ? 'default' : 'outline'}
-                onClick={() => handleSwitchActiveRole('buyer')}
-                className={`text-xs font-bold rounded-xl h-9 ${
-                  activeRoleContext === 'buyer'
-                    ? 'bg-[#004ac6] text-white shadow-sm'
-                    : 'border-gray-200'
-                }`}
-              >
-                <ShoppingBag className="h-3.5 w-3.5 mr-1.5" />
-                Buyer Mode
-              </Button>
-              <Button
-                size="sm"
-                variant={activeRoleContext === 'seller' ? 'default' : 'outline'}
-                onClick={() => handleSwitchActiveRole('seller')}
-                className={`text-xs font-bold rounded-xl h-9 ${
-                  activeRoleContext === 'seller'
-                    ? 'bg-[#004ac6] text-white shadow-sm'
-                    : 'border-gray-200'
-                }`}
-              >
-                <Briefcase className="h-3.5 w-3.5 mr-1.5" />
-                Seller Mode
-              </Button>
-            </div>
-          </div>
-
-          {/* Account Capabilities Choice */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-bold text-gray-900">Your Account Role Permissions</h4>
-            <p className="text-xs text-gray-500">
-              Configure which capabilities your authenticated account possesses:
+        <div className="rounded-3xl border border-neutral-200 bg-white p-8 sm:p-10 shadow-xs space-y-8">
+          <div className="space-y-1">
+            <h3 className="text-lg font-bold text-neutral-950">Platform Role Configuration</h3>
+            <p className="text-xs text-neutral-500">
+              Select whether you use SkillBridge primarily to hire peer talent, offer your skills, or both.
             </p>
-
-            <div className="grid grid-cols-1 gap-3">
-              <div
-                onClick={() => setRoleMode('both')}
-                className={`cursor-pointer rounded-2xl border p-4 transition-all flex items-center justify-between ${
-                  roleMode === 'both'
-                    ? 'border-[#004ac6] bg-[#f0f4ff]/40 shadow-sm'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#004ac6] text-white font-bold">
-                    <Layers className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h5 className="font-bold text-gray-900 text-xs">Both: Buyer & Seller</h5>
-                    <p className="text-[11px] text-gray-500">
-                      Hire fellow students and create your own service listings to earn.
-                    </p>
-                  </div>
-                </div>
-                <input
-                  type="radio"
-                  name="roleMode"
-                  checked={roleMode === 'both'}
-                  onChange={() => setRoleMode('both')}
-                  className="text-[#004ac6]"
-                />
-              </div>
-
-              <div
-                onClick={() => setRoleMode('buyer')}
-                className={`cursor-pointer rounded-2xl border p-4 transition-all flex items-center justify-between ${
-                  roleMode === 'buyer'
-                    ? 'border-[#004ac6] bg-[#f0f4ff]/40 shadow-sm'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-white font-bold">
-                    <ShoppingBag className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h5 className="font-bold text-gray-900 text-xs">Buyer Only</h5>
-                    <p className="text-[11px] text-gray-500">
-                      Browse services, hire student providers, and leave feedback.
-                    </p>
-                  </div>
-                </div>
-                <input
-                  type="radio"
-                  name="roleMode"
-                  checked={roleMode === 'buyer'}
-                  onChange={() => setRoleMode('buyer')}
-                  className="text-[#004ac6]"
-                />
-              </div>
-
-              <div
-                onClick={() => setRoleMode('seller')}
-                className={`cursor-pointer rounded-2xl border p-4 transition-all flex items-center justify-between ${
-                  roleMode === 'seller'
-                    ? 'border-[#004ac6] bg-[#f0f4ff]/40 shadow-sm'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white font-bold">
-                    <Briefcase className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h5 className="font-bold text-gray-900 text-xs">Seller Only</h5>
-                    <p className="text-[11px] text-gray-500">
-                      Publish listings, deliver orders, and earn into escrow.
-                    </p>
-                  </div>
-                </div>
-                <input
-                  type="radio"
-                  name="roleMode"
-                  checked={roleMode === 'seller'}
-                  onChange={() => setRoleMode('seller')}
-                  className="text-[#004ac6]"
-                />
-              </div>
-            </div>
           </div>
 
-          {/* Verification Status Banner */}
-          <div className="rounded-2xl border p-4 bg-gray-50 flex items-center justify-between">
-            <div>
-              <h5 className="text-xs font-bold text-gray-800">Campus Verification Status</h5>
-              <p className="text-[11px] text-gray-500 mt-0.5">
-                {isStudentVerified
-                  ? 'Your student credentials are confirmed by administration. You are eligible to offer services.'
-                  : 'You must verify your college ID card before publishing public service listings.'}
-              </p>
-            </div>
-            {!isStudentVerified && (
-              <Link href="/verify">
-                <Button size="sm" className="bg-[#004ac6] text-white text-xs font-bold rounded-xl">
-                  Verify Student ID
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              {
+                id: 'buyer',
+                title: 'Buyer Only',
+                desc: 'Hire students for video editing, coding, design, and tutoring.',
+                icon: ShoppingBag,
+              },
+              {
+                id: 'seller',
+                title: 'Seller Studio',
+                desc: 'Offer your skills, create services, and receive student client requests.',
+                icon: Briefcase,
+              },
+              {
+                id: 'both',
+                title: 'Buyer & Seller',
+                desc: 'Full campus access to both discover services and monetize your expertise.',
+                icon: Layers,
+              },
+            ].map((r) => {
+              const Icon = r.icon;
+              const isSelected = roleMode === r.id;
+              return (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => setRoleMode(r.id as 'buyer' | 'seller' | 'both')}
+                  className={`text-left p-6 rounded-2xl border transition-all ${
+                    isSelected
+                      ? 'border-neutral-950 bg-neutral-950 text-white shadow-sm'
+                      : 'border-neutral-200 bg-[#fbfbfa] text-neutral-900 hover:border-neutral-400'
+                  }`}
+                >
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl mb-4 ${
+                    isSelected ? 'bg-neutral-800 text-white' : 'bg-white border border-neutral-200 text-neutral-900'
+                  }`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h4 className="text-base font-bold">{r.title}</h4>
+                  <p className={`text-xs mt-1 leading-relaxed ${isSelected ? 'text-neutral-400' : 'text-neutral-500'}`}>
+                    {r.desc}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Quick Active Context Switch */}
+          {roleMode === 'both' && (
+            <div className="pt-6 border-t border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-500">
+                  CURRENT ACTIVE CONTEXT
+                </span>
+                <p className="text-xs text-neutral-500 mt-0.5">
+                  Choose which workspace layout loads by default.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => handleSwitchActiveRole('buyer')}
+                  className={`rounded-xl text-xs font-bold ${
+                    activeRoleContext === 'buyer'
+                      ? 'bg-neutral-950 text-white'
+                      : 'border border-neutral-300 bg-white text-neutral-800'
+                  }`}
+                >
+                  <ShoppingBag className="h-3.5 w-3.5 mr-1.5" />
+                  Buyer Workspace
                 </Button>
-              </Link>
-            )}
-          </div>
+                <Button
+                  size="sm"
+                  onClick={() => handleSwitchActiveRole('seller')}
+                  className={`rounded-xl text-xs font-bold ${
+                    activeRoleContext === 'seller'
+                      ? 'bg-neutral-950 text-white'
+                      : 'border border-neutral-300 bg-white text-neutral-800'
+                  }`}
+                >
+                  <Briefcase className="h-3.5 w-3.5 mr-1.5" />
+                  Seller Workspace
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* TAB 3: Seller Profile & Portfolio */}
+      {/* TAB 3: SELLER SPECIALIZATION */}
       {activeTab === 'seller' && (
-        <div className="space-y-6 rounded-3xl border border-border bg-white p-6 sm:p-8 shadow-sm">
-          <div>
-            <h3 className="text-base font-bold text-gray-900">Seller Specialization & Offerings</h3>
-            <p className="text-xs text-gray-500 mt-0.5">
-              Highlight your technical or academic skills, showcase links, and specify your rate preferences.
+        <div className="rounded-3xl border border-neutral-200 bg-white p-8 sm:p-10 shadow-xs space-y-8">
+          <div className="space-y-1">
+            <h3 className="text-lg font-bold text-neutral-950">Seller Studio Profile</h3>
+            <p className="text-xs text-neutral-500">
+              Customize the skill tags, categories, pricing preferences, and links displayed on your services.
             </p>
           </div>
 
-          {/* Skills Tag Selector */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold text-gray-700">Skills & Tech Stack</Label>
-            <div className="flex flex-wrap gap-1.5 p-2 border rounded-xl bg-gray-50/50 max-h-36 overflow-y-auto">
-              {POPULAR_SKILLS.map((s) => {
-                const isSelected = skills.includes(s);
+          {/* Skills Picker */}
+          <div className="space-y-3">
+            <Label className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+              Skills & Expertise Tags
+            </Label>
+            <div className="flex flex-wrap gap-2">
+              {POPULAR_SKILLS.map((sk) => {
+                const active = skills.includes(sk);
                 return (
                   <button
-                    key={s}
+                    key={sk}
                     type="button"
-                    onClick={() => toggleSkill(s)}
-                    className={`text-xs px-2.5 py-1 rounded-lg font-medium transition-all ${
-                      isSelected
-                        ? 'bg-[#004ac6] text-white font-bold shadow-sm'
-                        : 'bg-white text-gray-700 border hover:bg-gray-100'
+                    onClick={() => toggleSkill(sk)}
+                    className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
+                      active
+                        ? 'bg-neutral-950 text-white shadow-xs'
+                        : 'bg-[#fbfbfa] border border-neutral-200 text-neutral-600 hover:border-neutral-900'
                     }`}
                   >
-                    {isSelected ? `✓ ${s}` : `+ ${s}`}
+                    #{sk}
                   </button>
                 );
               })}
             </div>
 
-            <div className="flex gap-2 pt-1">
+            <div className="flex gap-2 pt-2 max-w-sm">
               <Input
-                placeholder="Add custom skill (e.g. Docker, Blender, Calculus)"
                 value={customSkill}
                 onChange={(e) => setCustomSkill(e.target.value)}
                 onKeyDown={(e) => {
@@ -729,158 +611,76 @@ export default function ProfilePage() {
                     addCustomSkill();
                   }
                 }}
-                className="text-xs rounded-xl"
+                placeholder="Custom skill tag..."
+                className="h-10 text-xs rounded-xl border-neutral-200"
               />
               <Button
                 type="button"
-                variant="outline"
                 onClick={addCustomSkill}
-                className="text-xs font-bold rounded-xl"
+                variant="outline"
+                className="rounded-xl border-neutral-300 text-xs font-bold h-10 px-4"
               >
-                <Plus className="h-3.5 w-3.5 mr-1" />
                 Add
               </Button>
             </div>
           </div>
 
-          {/* Service Categories */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold text-gray-700">
-              Primary Service Categories
-            </Label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {SEED_CATEGORIES.map((cat) => {
-                const checked = preferredCategories.includes(cat.name);
-                return (
-                  <div
-                    key={cat.id}
-                    onClick={() => toggleCategory(cat.name)}
-                    className={`cursor-pointer flex items-center gap-2 p-2.5 rounded-xl border text-xs font-medium transition-colors ${
-                      checked
-                        ? 'border-[#004ac6] bg-[#f0f4ff] text-[#004ac6] font-bold'
-                        : 'border-gray-200 text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => {}}
-                      className="rounded text-[#004ac6]"
-                    />
-                    <span>{cat.name}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Pricing Preferences */}
-          <div className="space-y-3 bg-gray-50 p-4 rounded-2xl border border-gray-100">
-            <h4 className="text-xs font-bold text-gray-800 flex items-center gap-1.5">
-              <IndianRupee className="h-3.5 w-3.5 text-emerald-600" />
-              Pricing & Rate Defaults
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <Label className="text-[11px] text-gray-600">Starting Service Price (₹)</Label>
-                <Input
-                  type="number"
-                  value={startingPrice}
-                  onChange={(e) => setStartingPrice(Number(e.target.value))}
-                  className="text-xs rounded-xl mt-1"
-                />
-              </div>
-              <div>
-                <Label className="text-[11px] text-gray-600">Hourly Rate (₹)</Label>
-                <Input
-                  type="number"
-                  value={hourlyRate}
-                  onChange={(e) => setHourlyRate(Number(e.target.value))}
-                  className="text-xs rounded-xl mt-1"
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-2 pt-1">
-              <input
-                type="checkbox"
-                id="profileNegotiable"
-                checked={isNegotiable}
-                onChange={(e) => setIsNegotiable(e.target.checked)}
-                className="rounded text-[#004ac6]"
-              />
-              <Label htmlFor="profileNegotiable" className="text-xs text-gray-600 font-normal">
-                Open to negotiation for custom student project requirements
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-6 border-t border-neutral-100">
+            <div className="space-y-2">
+              <Label className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                Typical Starting Price (₹)
               </Label>
+              <Input
+                type="number"
+                min={50}
+                value={startingPrice}
+                onChange={(e) => setStartingPrice(Number(e.target.value))}
+                className="h-12 rounded-xl text-sm border-neutral-200 font-mono"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                Typical Hourly Consultation Rate (₹)
+              </Label>
+              <Input
+                type="number"
+                min={50}
+                value={hourlyRate}
+                onChange={(e) => setHourlyRate(Number(e.target.value))}
+                className="h-12 rounded-xl text-sm border-neutral-200 font-mono"
+              />
             </div>
           </div>
 
-          {/* Portfolio Links */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold text-gray-700">
-              Portfolio Projects & External Showcases
+          {/* Social & Portfolio Links */}
+          <div className="space-y-4 pt-6 border-t border-neutral-100">
+            <Label className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+              External Proof-of-Work Links
             </Label>
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Input
-                placeholder="Showcase Title (e.g. Hackathon Finalist Project)"
-                value={newPortTitle}
-                onChange={(e) => setNewPortTitle(e.target.value)}
-                className="text-xs rounded-xl"
+                value={githubUrl}
+                onChange={(e) => setGithubUrl(e.target.value)}
+                placeholder="GitHub Profile URL"
+                className="h-11 text-xs rounded-xl border-neutral-200"
               />
               <Input
-                placeholder="URL (e.g. https://behance.net/gallery/123)"
-                value={newPortUrl}
-                onChange={(e) => setNewPortUrl(e.target.value)}
-                className="text-xs rounded-xl"
+                value={linkedinUrl}
+                onChange={(e) => setLinkedinUrl(e.target.value)}
+                placeholder="LinkedIn Profile URL"
+                className="h-11 text-xs rounded-xl border-neutral-200"
               />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={addPortfolioLink}
-                className="text-xs font-bold rounded-xl shrink-0"
-              >
-                <Plus className="h-3.5 w-3.5 mr-1" />
-                Add Item
-              </Button>
+              <Input
+                value={websiteUrl}
+                onChange={(e) => setWebsiteUrl(e.target.value)}
+                placeholder="Personal Portfolio / Blog"
+                className="h-11 text-xs rounded-xl border-neutral-200"
+              />
             </div>
-
-            {portfolioLinks.length > 0 && (
-              <div className="space-y-1.5 pt-2">
-                {portfolioLinks.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between bg-white border p-2.5 rounded-xl text-xs"
-                  >
-                    <div className="flex items-center gap-2 truncate">
-                      <LinkIcon className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                      <span className="font-semibold text-gray-800">{item.title}:</span>
-                      <span className="text-gray-500 truncate">{item.url}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removePortfolioLink(idx)}
-                      className="text-gray-400 hover:text-red-500 p-1"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       )}
-
-      {/* Save Button Footer */}
-      <div className="flex justify-end pt-6">
-        <Button
-          onClick={() => handleSave()}
-          disabled={saving}
-          className="bg-[#004ac6] text-white hover:bg-[#003899] font-bold text-xs rounded-xl px-8 h-10 shadow-sm"
-        >
-          <Save className="h-4 w-4 mr-1.5" />
-          {saving ? 'Saving...' : 'Save All Changes'}
-        </Button>
-      </div>
     </div>
   );
 }

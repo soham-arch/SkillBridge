@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -14,6 +14,9 @@ import {
   User as UserIcon,
   ShieldAlert,
   PlusCircle,
+  Menu,
+  X,
+  Sparkles,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -39,13 +42,22 @@ export function SiteHeader() {
     isAdmin,
     isBuyer,
     isSeller,
-    canSell,
     activeRole,
     switchRole,
     signOut,
-    loading,
   } = useAuth();
+
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() {
+      setIsScrolled(window.scrollY > 20);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const initials = profile?.full_name
     ? profile.full_name
@@ -58,40 +70,58 @@ export function SiteHeader() {
 
   async function handleSignOut() {
     setMenuOpen(false);
+    setMobileNavOpen(false);
     await signOut();
     router.push('/login');
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-white/95 backdrop-blur-md">
-      <nav className="mx-auto flex h-20 w-full max-w-screen-xl items-center justify-between px-6">
-        <div className="flex items-center gap-8">
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        isScrolled
+          ? 'bg-white/90 backdrop-blur-md border-b border-neutral-200/80 shadow-xs'
+          : 'bg-[#faf9f6]/95 backdrop-blur-sm border-b border-neutral-200/50'
+      }`}
+    >
+      <nav
+        className={`mx-auto flex w-full max-w-7xl items-center justify-between px-6 sm:px-8 transition-all duration-300 ${
+          isScrolled ? 'h-16' : 'h-20'
+        }`}
+      >
+        {/* Brand Logo & Editorial Wordmark */}
+        <div className="flex items-center gap-8 lg:gap-10">
           <Link
             href={session ? '/dashboard' : '/'}
-            className="flex items-center gap-2 text-2xl font-black tracking-tight text-[#004ac6]"
+            className="group flex items-center gap-2.5 text-xl sm:text-2xl font-black tracking-tight text-neutral-950 transition-opacity hover:opacity-85"
           >
-            SkillBridge
-            <span className="rounded-full bg-[#f0f4ff] px-2 py-0.5 text-[10px] font-bold text-[#004ac6] border border-[#004ac6]/20">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#004ac6] transition-transform duration-300 group-hover:scale-125" />
+            <span>SkillBridge</span>
+            <span className="hidden sm:inline-block text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-400 border border-neutral-200 rounded-md px-1.5 py-0.5">
               Campus
             </span>
           </Link>
 
-          {/* Navigation Links for Authenticated Users */}
+          {/* Navigation Items (Authenticated) */}
           {session && (
-            <div className="hidden items-center gap-6 md:flex">
+            <div className="hidden md:flex items-center gap-6">
               {navItems.map((item) => {
-                const active = pathname === item.href || pathname.startsWith(item.href + '/');
+                const active =
+                  pathname === item.href || pathname.startsWith(item.href + '/');
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      'text-sm font-semibold transition-colors hover:text-[#004ac6] flex items-center gap-1.5',
-                      active ? 'text-[#004ac6]' : 'text-gray-600'
+                      'text-xs font-semibold tracking-tight uppercase tracking-wider transition-colors py-1 relative',
+                      active
+                        ? 'text-neutral-950 font-bold'
+                        : 'text-neutral-500 hover:text-neutral-900'
                     )}
                   >
-                    <item.icon className="h-4 w-4" />
                     {item.label}
+                    {active && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#004ac6] rounded-full" />
+                    )}
                   </Link>
                 );
               })}
@@ -100,31 +130,46 @@ export function SiteHeader() {
                 <Link
                   href="/admin"
                   className={cn(
-                    'text-sm font-semibold transition-colors hover:text-red-700 flex items-center gap-1.5',
-                    pathname.startsWith('/admin') ? 'text-red-700 font-bold' : 'text-gray-600'
+                    'text-xs font-semibold uppercase tracking-wider transition-colors flex items-center gap-1.5',
+                    pathname.startsWith('/admin')
+                      ? 'text-red-700 font-bold'
+                      : 'text-neutral-500 hover:text-red-600'
                   )}
                 >
-                  <ShieldAlert className="h-4 w-4 text-red-600" />
-                  Admin Console
+                  <ShieldAlert className="h-3.5 w-3.5 text-red-600" />
+                  Admin
                 </Link>
               )}
             </div>
           )}
+
+          {/* Unauthenticated Quick Links */}
+          {!session && (
+            <div className="hidden md:flex items-center gap-6">
+              <Link
+                href="/explore"
+                className="text-xs font-semibold uppercase tracking-wider text-neutral-600 hover:text-neutral-950 transition-colors"
+              >
+                Explore Skills
+              </Link>
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Right Section: Role switch, CTA, notifications, profile */}
+        <div className="flex items-center gap-3 sm:gap-4">
           {session && user ? (
             <>
-              {/* Role Switcher Pill (if seller or both) */}
+              {/* Role Toggle Pill */}
               {isSeller ? (
-                <div className="hidden sm:flex items-center bg-gray-100 p-1 rounded-xl text-xs font-bold border border-gray-200">
+                <div className="hidden sm:flex items-center bg-neutral-100/90 p-1 rounded-xl text-xs font-semibold border border-neutral-200/80">
                   <button
                     type="button"
                     onClick={() => switchRole('buyer')}
-                    className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                    className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 ${
                       activeRole === 'buyer'
-                        ? 'bg-white text-[#004ac6] shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-neutral-950 shadow-xs font-bold'
+                        : 'text-neutral-500 hover:text-neutral-900'
                     }`}
                   >
                     <ShoppingBag className="h-3.5 w-3.5" />
@@ -133,10 +178,10 @@ export function SiteHeader() {
                   <button
                     type="button"
                     onClick={() => switchRole('seller')}
-                    className={`px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                    className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 ${
                       activeRole === 'seller'
-                        ? 'bg-white text-[#004ac6] shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-neutral-950 shadow-xs font-bold'
+                        : 'text-neutral-500 hover:text-neutral-900'
                     }`}
                   >
                     <Briefcase className="h-3.5 w-3.5" />
@@ -148,22 +193,20 @@ export function SiteHeader() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-xs font-bold rounded-xl border-dashed border-[#004ac6] text-[#004ac6] hover:bg-[#f0f4ff]"
+                    className="text-xs font-bold rounded-xl border border-neutral-300 text-neutral-800 hover:bg-neutral-100"
                   >
-                    <Briefcase className="h-3.5 w-3.5 mr-1.5" />
+                    <Briefcase className="h-3.5 w-3.5 mr-1.5 text-[#004ac6]" />
                     Become a Seller
                   </Button>
                 </Link>
               )}
 
-              {/* Notifications Dropdown */}
-              <NotificationsDropdown userId={user.id} />
-
-              {/* Offer skill or Browse button */}
+              {/* Action Button (Offer Skill / Explore) */}
               {activeRole === 'seller' ? (
                 <Button
                   onClick={() => router.push('/services/create')}
-                  className="h-10 rounded-xl bg-[#004ac6] px-4 text-xs font-bold text-white hover:bg-[#003b9e] shadow-sm hidden sm:inline-flex"
+                  size="sm"
+                  className="rounded-xl bg-neutral-950 px-4 text-xs font-bold text-white hover:bg-black hidden sm:inline-flex"
                 >
                   <PlusCircle className="h-3.5 w-3.5 mr-1.5" />
                   Offer Skill
@@ -172,12 +215,16 @@ export function SiteHeader() {
                 <Button
                   onClick={() => router.push('/explore')}
                   variant="outline"
-                  className="h-10 rounded-xl border-gray-200 px-4 text-xs font-bold text-gray-700 hover:bg-gray-50 shadow-sm hidden sm:inline-flex"
+                  size="sm"
+                  className="rounded-xl border-neutral-300 px-4 text-xs font-bold text-neutral-800 hover:bg-neutral-100 hidden sm:inline-flex"
                 >
-                  <Compass className="h-3.5 w-3.5 mr-1.5" />
-                  Explore Services
+                  <Compass className="h-3.5 w-3.5 mr-1.5 text-[#004ac6]" />
+                  Explore Catalog
                 </Button>
               )}
+
+              {/* Notifications */}
+              <NotificationsDropdown userId={user.id} />
 
               {/* User Avatar Menu Dropdown */}
               <div className="relative">
@@ -185,34 +232,40 @@ export function SiteHeader() {
                   type="button"
                   onClick={() => setMenuOpen(!menuOpen)}
                   className="flex items-center gap-2 rounded-full p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#004ac6]"
+                  aria-label="User menu"
                 >
-                  <Avatar className="h-10 w-10 border border-[#c3c6d7]">
+                  <Avatar className="h-9 w-9 border border-neutral-300 shadow-2xs">
                     {profile?.avatar_url && <AvatarImage src={profile.avatar_url} />}
-                    <AvatarFallback className="text-xs font-bold text-[#004ac6]">
+                    <AvatarFallback className="text-xs font-black text-neutral-900 bg-neutral-100">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
-                  <ChevronDown className="h-3.5 w-3.5 text-gray-400 hidden sm:block" />
+                  <ChevronDown className="h-3.5 w-3.5 text-neutral-400 hidden sm:block" />
                 </button>
 
                 {menuOpen && (
                   <>
-                    <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-                    <div className="absolute right-0 mt-2 z-50 w-64 rounded-2xl border border-border bg-white shadow-2xl p-3 animate-in fade-in space-y-2">
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 z-50 w-64 rounded-2xl border border-neutral-200 bg-white shadow-xl p-3 space-y-2 animate-in fade-in zoom-in-95 duration-150">
                       {/* User Header */}
-                      <div className="px-2 py-1.5 border-b border-gray-100">
-                        <p className="text-xs font-bold text-gray-900 truncate">
+                      <div className="px-2 py-2 border-b border-neutral-100">
+                        <p className="text-xs font-bold text-neutral-900 truncate">
                           {profile?.full_name || 'Student Account'}
                         </p>
-                        <p className="text-[11px] text-gray-500 truncate">{user.email}</p>
-                        <div className="mt-1.5 flex items-center gap-1.5">
+                        <p className="text-[11px] text-neutral-400 truncate">
+                          {user.email}
+                        </p>
+                        <div className="mt-2 flex items-center gap-1.5">
                           {isStudentVerified ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
-                              <ShieldCheck className="h-3 w-3" />
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">
+                              <ShieldCheck className="h-3 w-3 text-emerald-600" />
                               Verified Student
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 border border-amber-200">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">
                               Verification Pending
                             </span>
                           )}
@@ -227,35 +280,35 @@ export function SiteHeader() {
                       {/* Links */}
                       <div className="space-y-1">
                         <Link
-                          href="/profile"
-                          onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 hover:bg-[#f0f4ff] hover:text-[#004ac6] transition-colors"
-                        >
-                          <UserIcon className="h-4 w-4" />
-                          My Profile
-                        </Link>
-                        <Link
                           href="/dashboard"
                           onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 hover:bg-[#f0f4ff] hover:text-[#004ac6] transition-colors"
+                          className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-100 hover:text-neutral-950 transition-colors"
                         >
-                          <Compass className="h-4 w-4" />
+                          <Compass className="h-3.5 w-3.5 text-[#004ac6]" />
                           Dashboard
+                        </Link>
+                        <Link
+                          href="/profile"
+                          onClick={() => setMenuOpen(false)}
+                          className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-100 hover:text-neutral-950 transition-colors"
+                        >
+                          <UserIcon className="h-3.5 w-3.5 text-neutral-500" />
+                          My Profile
                         </Link>
                         <Link
                           href="/orders"
                           onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 hover:bg-[#f0f4ff] hover:text-[#004ac6] transition-colors"
+                          className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-100 hover:text-neutral-950 transition-colors"
                         >
-                          <ShoppingBag className="h-4 w-4" />
+                          <ShoppingBag className="h-3.5 w-3.5 text-neutral-500" />
                           Orders & Escrow
                         </Link>
                         <Link
                           href="/my-services"
                           onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 hover:bg-[#f0f4ff] hover:text-[#004ac6] transition-colors"
+                          className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-100 hover:text-neutral-950 transition-colors"
                         >
-                          <Briefcase className="h-4 w-4" />
+                          <Briefcase className="h-3.5 w-3.5 text-neutral-500" />
                           My Services
                         </Link>
                         {isAdmin && (
@@ -264,20 +317,20 @@ export function SiteHeader() {
                             onClick={() => setMenuOpen(false)}
                             className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-red-700 hover:bg-red-50 transition-colors"
                           >
-                            <ShieldAlert className="h-4 w-4 text-red-600" />
+                            <ShieldAlert className="h-3.5 w-3.5 text-red-600" />
                             Admin Console
                           </Link>
                         )}
                       </div>
 
                       {/* Sign Out */}
-                      <div className="border-t border-gray-100 pt-1">
+                      <div className="border-t border-neutral-100 pt-1">
                         <button
                           type="button"
                           onClick={handleSignOut}
                           className="w-full flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors"
                         >
-                          <LogOut className="h-4 w-4" />
+                          <LogOut className="h-3.5 w-3.5" />
                           Sign Out
                         </button>
                       </div>
@@ -287,21 +340,94 @@ export function SiteHeader() {
               </div>
             </>
           ) : (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <Link href="/login">
-                <Button variant="ghost" className="text-xs font-bold text-gray-700 hover:text-gray-900">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs font-bold text-neutral-700 hover:text-neutral-950"
+                >
                   Sign In
                 </Button>
               </Link>
               <Link href="/register">
-                <Button className="h-10 rounded-xl bg-[#004ac6] px-4 text-xs font-bold text-white hover:bg-[#003b9e] shadow-sm">
-                  Register
+                <Button
+                  size="sm"
+                  className="rounded-xl bg-[#004ac6] px-4 text-xs font-bold text-white hover:bg-[#003da8] shadow-xs"
+                >
+                  Join Campus
                 </Button>
               </Link>
             </div>
           )}
+
+          {/* Mobile Menu Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen(!mobileNavOpen)}
+            className="md:hidden p-2 rounded-xl text-neutral-700 hover:bg-neutral-100 focus-visible:outline-none"
+            aria-label="Toggle navigation"
+          >
+            {mobileNavOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Drawer Navigation */}
+      {mobileNavOpen && (
+        <div className="md:hidden border-b border-neutral-200 bg-white px-6 py-5 space-y-4 animate-in slide-in-from-top-2 duration-200">
+          <div className="flex flex-col space-y-3">
+            <Link
+              href="/explore"
+              onClick={() => setMobileNavOpen(false)}
+              className="text-sm font-semibold text-neutral-800 hover:text-[#004ac6]"
+            >
+              Explore Skills
+            </Link>
+            {session && (
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileNavOpen(false)}
+                  className="text-sm font-semibold text-neutral-800 hover:text-[#004ac6]"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/orders"
+                  onClick={() => setMobileNavOpen(false)}
+                  className="text-sm font-semibold text-neutral-800 hover:text-[#004ac6]"
+                >
+                  Orders & Escrow
+                </Link>
+                <Link
+                  href="/my-services"
+                  onClick={() => setMobileNavOpen(false)}
+                  className="text-sm font-semibold text-neutral-800 hover:text-[#004ac6]"
+                >
+                  My Services
+                </Link>
+                <Link
+                  href="/bookings"
+                  onClick={() => setMobileNavOpen(false)}
+                  className="text-sm font-semibold text-neutral-800 hover:text-[#004ac6]"
+                >
+                  My Bookings
+                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setMobileNavOpen(false)}
+                    className="text-sm font-bold text-red-600"
+                  >
+                    Admin Console
+                  </Link>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

@@ -4,26 +4,26 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 220 9% 13%;
+    --background: 45 15% 98%; /* #faf9f6 warm off-white canvas */
+    --foreground: 220 16% 8%; /* #111317 deep ink black */
     --card: 0 0% 100%;
-    --card-foreground: 220 9% 13%;
+    --card-foreground: 220 16% 8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 9% 13%;
-    --primary: 219 100% 39%;
+    --popover-foreground: 220 16% 8%;
+    --primary: 219 96% 39%; /* #004ac6 iconic SkillBridge cobalt */
     --primary-foreground: 0 0% 100%;
-    --secondary: 230 24% 96%;
-    --secondary-foreground: 220 9% 13%;
-    --muted: 230 24% 96%;
-    --muted-foreground: 230 8% 46%;
-    --accent: 230 60% 97%;
-    --accent-foreground: 219 100% 39%;
+    --secondary: 40 12% 94%; /* #f2f1ed subtle secondary */
+    --secondary-foreground: 220 16% 12%;
+    --muted: 40 12% 95%;
+    --muted-foreground: 220 8% 46%; /* #686e78 legible secondary text */
+    --accent: 219 80% 96%; /* #eef4ff soft cobalt tint */
+    --accent-foreground: 219 96% 39%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 230 18% 85%;
-    --input: 230 18% 85%;
-    --ring: 219 100% 39%;
-    --radius: 0.75rem;
+    --border: 40 10% 88%; /* #e3e2dd warm quiet border */
+    --input: 40 10% 88%;
+    --ring: 219 96% 39%;
+    --radius: 0.875rem;
   }
 }
 
@@ -31,8 +31,62 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
   body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-background text-foreground selection:bg-[#004ac6] selection:text-white;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Editorial typography and utilities */
+@layer utilities {
+  .text-display {
+    font-size: clamp(2.75rem, 6vw + 1rem, 6.75rem);
+    line-height: 0.96;
+    letter-spacing: -0.04em;
+    font-weight: 800;
+  }
+  .text-headline {
+    font-size: clamp(2rem, 3.5vw + 0.5rem, 3.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    font-weight: 800;
+  }
+  .text-subheadline {
+    font-size: clamp(1.25rem, 1.8vw + 0.2rem, 1.875rem);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .editorial-card {
+    background: #ffffff;
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .editorial-card:hover {
+    border-color: rgba(17, 19, 23, 0.8);
+    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

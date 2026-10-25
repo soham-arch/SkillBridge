@@ -15,8 +15,8 @@ import {
   AlertTriangle,
   CheckCircle2,
   Sparkles,
-  Layers,
   ShoppingBag,
+  ArrowUpRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -45,22 +45,22 @@ const STATUS_CONFIG: Record<
 > = {
   published: {
     label: 'Published',
-    badgeClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200/80',
-    description: 'Active and discoverable by students across campus search & AI.',
+    badgeClass: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
+    description: 'Active and discoverable across campus search & AI.',
   },
   paused: {
     label: 'Paused',
-    badgeClass: 'bg-amber-50 text-amber-700 border border-amber-200/80',
+    badgeClass: 'bg-amber-50 text-amber-800 border border-amber-200',
     description: 'Temporarily paused. Hidden from search; not taking new orders.',
   },
   draft: {
     label: 'Draft',
-    badgeClass: 'bg-slate-100 text-slate-700 border border-slate-200',
+    badgeClass: 'bg-neutral-100 text-neutral-700 border border-neutral-200',
     description: 'Unpublished draft. Only visible to you until published.',
   },
   archived: {
     label: 'Archived',
-    badgeClass: 'bg-zinc-100 text-zinc-600 border border-zinc-200',
+    badgeClass: 'bg-neutral-100 text-neutral-600 border border-neutral-200',
     description: 'Deactivated listing. Retains historical order links.',
   },
   moderated: {
@@ -106,11 +106,9 @@ export default function MyServicesPage() {
   // Filtered listings
   const filteredServices = useMemo(() => {
     return services.filter((svc) => {
-      // Tab filter
       if (activeTab !== 'all' && svc.status !== activeTab) {
         return false;
       }
-      // Search filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchesTitle = svc.title.toLowerCase().includes(q);
@@ -124,13 +122,11 @@ export default function MyServicesPage() {
     });
   }, [services, activeTab, searchQuery]);
 
-  // Status action handler (Pause / Resume / Archive)
   async function handleStatusChange(service: Service, newStatus: ServiceStatus) {
     setTogglingId(service.id);
     try {
       await changeServiceStatus(service.id, newStatus, user?.id);
 
-      // Optimistic state update
       setServices((prev) =>
         prev.map((s) => (s.id === service.id ? { ...s, status: newStatus } : s))
       );
@@ -149,7 +145,6 @@ export default function MyServicesPage() {
     }
   }
 
-  // Safe delete handler
   async function confirmSafeDelete() {
     if (!deleteTarget) return;
 
@@ -173,7 +168,7 @@ export default function MyServicesPage() {
   if (authLoading || loading) {
     return (
       <div className="flex flex-1 items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#004ac6] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-900 border-t-transparent" />
       </div>
     );
   }
@@ -187,34 +182,40 @@ export default function MyServicesPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-6 py-12">
-      {/* Top Banner / Heading */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-12 py-12 sm:py-16">
+      {/* Editorial Header */}
+      <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-neutral-200/80">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold text-gray-900">My Services</h1>
-            <Badge className="bg-[#f0f4ff] text-[#004ac6] font-semibold border-0">
-              {services.length} Listings
-            </Badge>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#004ac6]">
+              // Seller Studio Catalog
+            </span>
+            <span className="rounded-md bg-neutral-100 px-2 py-0.5 text-[10px] font-mono font-bold text-neutral-600">
+              {services.length} Total
+            </span>
           </div>
-          <p className="mt-1 text-sm text-gray-600">
-            Create, publish, pause, and manage your campus talent listings.
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-950">
+            My Services.
+          </h1>
+          <p className="mt-2 text-sm text-neutral-500 font-normal">
+            Manage your service offerings, turnaround times, and pricing.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+
+        <div className="flex flex-wrap items-center gap-3">
           <Link href="/my-services/availability">
             <Button
               variant="outline"
-              className="gap-2 border-[#c3c6d7] text-gray-700 hover:bg-gray-50"
+              className="rounded-xl border-neutral-300 text-xs font-bold text-neutral-800 hover:bg-neutral-50 h-11 px-4 shadow-2xs"
             >
-              <Clock className="h-4 w-4" />
-              Manage Availability
+              <Clock className="h-4 w-4 mr-1.5" />
+              Calendar Availability
             </Button>
           </Link>
           <Link href="/services/create">
-            <Button className="gap-2 bg-[#004ac6] text-white hover:bg-[#003b9e] font-bold shadow-sm">
-              <PlusCircle className="h-4 w-4" />
-              Create New Service
+            <Button className="rounded-xl bg-neutral-950 text-white hover:bg-black font-bold text-xs h-11 px-5 shadow-xs">
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Offer New Skill
             </Button>
           </Link>
         </div>
@@ -222,15 +223,15 @@ export default function MyServicesPage() {
 
       {/* Buyer notice if role not yet activated */}
       {!isAdmin && !isSeller && (
-        <div className="mb-8 flex items-center justify-between gap-4 rounded-2xl border border-blue-200 bg-blue-50/70 p-5 shadow-sm">
+        <div className="mb-8 flex items-center justify-between gap-4 rounded-3xl border border-blue-200/80 bg-blue-50/50 p-6 shadow-2xs">
           <div>
-            <h4 className="text-sm font-bold text-gray-900">You are currently in Buyer mode</h4>
-            <p className="text-xs text-gray-600 mt-1">
+            <h4 className="text-sm font-bold text-neutral-950">You are currently in Buyer mode</h4>
+            <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
               Enable your Seller role in profile settings to publish listings and monetize your skills across campus.
             </p>
           </div>
           <Link href="/profile?tab=roles">
-            <Button size="sm" className="bg-[#004ac6] text-white hover:bg-[#003b9e] font-semibold">
+            <Button size="sm" className="bg-neutral-950 text-white hover:bg-black font-bold text-xs rounded-xl h-10 px-4">
               Enable Seller Role
             </Button>
           </Link>
@@ -238,28 +239,36 @@ export default function MyServicesPage() {
       )}
 
       {/* Metrics Row */}
-      <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
-          <span className="text-xs font-medium text-gray-500">Active & Published</span>
-          <p className="text-2xl font-bold text-emerald-600 mt-1">{counts.published}</p>
+      <div className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-6 shadow-xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+            Published
+          </span>
+          <p className="text-3xl font-black text-emerald-700 font-mono mt-1">{counts.published}</p>
         </div>
-        <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
-          <span className="text-xs font-medium text-gray-500">Paused</span>
-          <p className="text-2xl font-bold text-amber-600 mt-1">{counts.paused}</p>
+        <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-6 shadow-xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+            Paused
+          </span>
+          <p className="text-3xl font-black text-amber-700 font-mono mt-1">{counts.paused}</p>
         </div>
-        <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
-          <span className="text-xs font-medium text-gray-500">Drafts</span>
-          <p className="text-2xl font-bold text-gray-600 mt-1">{counts.draft}</p>
+        <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-6 shadow-xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+            Drafts
+          </span>
+          <p className="text-3xl font-black text-neutral-600 font-mono mt-1">{counts.draft}</p>
         </div>
-        <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
-          <span className="text-xs font-medium text-gray-500">Archived</span>
-          <p className="text-2xl font-bold text-zinc-500 mt-1">{counts.archived}</p>
+        <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-6 shadow-xs">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+            Archived
+          </span>
+          <p className="text-3xl font-black text-neutral-400 font-mono mt-1">{counts.archived}</p>
         </div>
       </div>
 
       {/* Controls: Tabs & Search */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-gray-200 pb-4">
-        {/* Tabs */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-neutral-200/80">
+        {/* Tab Pills */}
         <div className="flex flex-wrap gap-2">
           {(
             [
@@ -273,10 +282,10 @@ export default function MyServicesPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
                 activeTab === tab.id
-                  ? 'bg-[#004ac6] text-white shadow-sm'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-neutral-950 text-white shadow-xs'
+                  : 'bg-white border border-neutral-200 text-neutral-600 hover:border-neutral-900'
               }`}
             >
               {tab.label}
@@ -285,36 +294,36 @@ export default function MyServicesPage() {
         </div>
 
         {/* Search */}
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search your listings..."
-            className="h-9 pl-9 text-xs"
+            className="h-10 pl-9 text-xs rounded-xl border-neutral-200 bg-white"
           />
         </div>
       </div>
 
-      {/* Listings list */}
+      {/* Listings List */}
       {filteredServices.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#c3c6d7] bg-white py-16 text-center">
-          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f0f4ff] text-[#004ac6]">
-            <PlusCircle className="h-7 w-7" />
+        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-neutral-200 bg-white py-20 text-center px-6">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-400">
+            <PlusCircle className="h-6 w-6" />
           </div>
-          <p className="text-base font-bold text-gray-800">
+          <p className="text-lg font-bold text-neutral-950">
             {services.length === 0 ? 'No listings created yet' : 'No matching listings found'}
           </p>
-          <p className="mt-1 text-xs text-gray-500 max-w-sm">
+          <p className="mt-1 text-xs text-neutral-500 max-w-sm leading-relaxed">
             {services.length === 0
               ? 'Publish your first skill listing to offer development, design, tutoring, or content services to fellow students.'
               : 'Try clearing your search query or selecting a different status filter above.'}
           </p>
           {services.length === 0 && (
             <Link href="/services/create">
-              <Button className="mt-5 gap-2 bg-[#004ac6] text-white hover:bg-[#003b9e] text-xs font-bold">
+              <Button className="mt-6 gap-2 rounded-xl bg-neutral-950 text-white hover:bg-black text-xs font-bold h-11 px-6">
                 <PlusCircle className="h-4 w-4" />
-                Create Service Listing
+                Offer Your First Skill
               </Button>
             </Link>
           )}
@@ -328,19 +337,16 @@ export default function MyServicesPage() {
             return (
               <div
                 key={svc.id}
-                className="group rounded-2xl border border-border bg-white p-6 shadow-sm hover:border-[#004ac6]/40 hover:shadow-md transition-all"
+                className="group rounded-3xl border border-neutral-200 bg-white p-7 shadow-xs hover:border-neutral-900 transition-all duration-300"
               >
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                   {/* Left: Metadata */}
                   <div className="flex-1 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       {svc.category && (
-                        <Badge
-                          variant="secondary"
-                          className="rounded-full bg-[#f0f4ff] px-2.5 py-0.5 text-xs font-semibold text-[#004ac6]"
-                        >
+                        <span className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-mono font-bold text-neutral-700">
                           {svc.category.name}
-                        </Badge>
+                        </span>
                       )}
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-xs font-bold capitalize ${config.badgeClass}`}
@@ -348,40 +354,40 @@ export default function MyServicesPage() {
                         {config.label}
                       </span>
                       {svc.service_type && (
-                        <Badge variant="outline" className="text-[11px] capitalize text-gray-600">
+                        <span className="rounded-full border border-neutral-200 px-2.5 py-0.5 text-[11px] capitalize text-neutral-600">
                           {svc.service_type.replace('_', ' ')}
-                        </Badge>
+                        </span>
                       )}
                     </div>
 
-                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#004ac6] transition-colors">
+                    <h3 className="text-xl font-bold text-neutral-950 group-hover:text-[#004ac6] transition-colors leading-snug">
                       {svc.title}
                     </h3>
-                    <p className="line-clamp-2 text-xs text-gray-600 leading-relaxed">
+                    <p className="line-clamp-2 text-xs text-neutral-600 leading-relaxed font-normal">
                       {svc.description}
                     </p>
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-gray-500 pt-1">
-                      <span className="font-bold text-gray-900 text-sm">
+                    <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-neutral-500 pt-1">
+                      <span className="font-black text-neutral-950 text-base font-mono">
                         ₹{svc.price.toLocaleString('en-IN')}
                       </span>
-                      <span>·</span>
+                      <span>•</span>
                       <span className="flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5 text-gray-400" />
+                        <Clock className="h-3.5 w-3.5 text-neutral-400" />
                         {svc.delivery_days || 3} days turnaround
                       </span>
                       {svc.completed_orders_count !== undefined && (
                         <>
-                          <span>·</span>
+                          <span>•</span>
                           <span className="flex items-center gap-1">
-                            <ShoppingBag className="h-3.5 w-3.5 text-gray-400" />
+                            <ShoppingBag className="h-3.5 w-3.5 text-neutral-400" />
                             {svc.completed_orders_count} completed orders
                           </span>
                         </>
                       )}
                       {svc.location && (
                         <>
-                          <span>·</span>
+                          <span>•</span>
                           <span>{svc.location}</span>
                         </>
                       )}
@@ -395,7 +401,7 @@ export default function MyServicesPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-9 gap-1.5 border-gray-200 text-xs text-gray-700 hover:bg-gray-50"
+                        className="h-10 gap-1.5 rounded-xl border-neutral-200 text-xs font-bold text-neutral-700 hover:bg-neutral-50"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                         Preview
@@ -407,7 +413,7 @@ export default function MyServicesPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-9 gap-1.5 border-gray-200 text-xs text-gray-700 hover:bg-gray-50 font-semibold"
+                        className="h-10 gap-1.5 rounded-xl border-neutral-200 text-xs font-bold text-neutral-800 hover:bg-neutral-50"
                       >
                         <Edit3 className="h-3.5 w-3.5" />
                         Edit
@@ -421,7 +427,7 @@ export default function MyServicesPage() {
                         size="sm"
                         disabled={isToggling}
                         onClick={() => handleStatusChange(svc, 'paused')}
-                        className="h-9 gap-1.5 border-amber-200 bg-amber-50/50 text-xs text-amber-700 hover:bg-amber-100 font-semibold"
+                        className="h-10 gap-1.5 rounded-xl border-amber-200 bg-amber-50/50 text-xs font-bold text-amber-800 hover:bg-amber-100"
                       >
                         <Pause className="h-3.5 w-3.5" />
                         Pause
@@ -433,7 +439,7 @@ export default function MyServicesPage() {
                         size="sm"
                         disabled={isToggling}
                         onClick={() => handleStatusChange(svc, 'published')}
-                        className="h-9 gap-1.5 border-emerald-200 bg-emerald-50/50 text-xs text-emerald-700 hover:bg-emerald-100 font-semibold"
+                        className="h-10 gap-1.5 rounded-xl border-emerald-200 bg-emerald-50/50 text-xs font-bold text-emerald-800 hover:bg-emerald-100"
                       >
                         <Play className="h-3.5 w-3.5" />
                         Resume
@@ -444,21 +450,21 @@ export default function MyServicesPage() {
                         size="sm"
                         disabled={isToggling}
                         onClick={() => handleStatusChange(svc, 'published')}
-                        className="h-9 gap-1.5 bg-[#004ac6] text-white hover:bg-[#003b9e] text-xs font-semibold"
+                        className="h-10 gap-1.5 rounded-xl bg-neutral-950 text-white hover:bg-black text-xs font-bold"
                       >
                         <Play className="h-3.5 w-3.5" />
                         Publish
                       </Button>
                     )}
 
-                    {/* Archive (if not archived) */}
+                    {/* Archive */}
                     {svc.status !== 'archived' && (
                       <Button
                         variant="outline"
                         size="sm"
                         disabled={isToggling}
                         onClick={() => handleStatusChange(svc, 'archived')}
-                        className="h-9 gap-1.5 border-gray-200 text-xs text-gray-600 hover:bg-gray-100"
+                        className="h-10 gap-1.5 rounded-xl border-neutral-200 text-xs text-neutral-500 hover:bg-neutral-100"
                         title="Archive listing"
                       >
                         <Archive className="h-3.5 w-3.5" />
@@ -474,7 +480,7 @@ export default function MyServicesPage() {
                         setDeleteBlockedError(null);
                         setDeleteTarget(svc);
                       }}
-                      className="h-9 gap-1.5 border-red-200 text-xs text-red-600 hover:bg-red-50"
+                      className="h-10 gap-1.5 rounded-xl border-red-200 text-xs text-red-600 hover:bg-red-50"
                       title="Delete listing (safe check)"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -498,45 +504,42 @@ export default function MyServicesPage() {
           }
         }}
       >
-        <DialogContent className="max-w-md rounded-2xl bg-white p-6 shadow-xl">
+        <DialogContent className="max-w-md rounded-3xl bg-white p-8 shadow-2xl">
           <DialogHeader>
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100 text-red-600">
               <AlertTriangle className="h-6 w-6" />
             </div>
-            <DialogTitle className="text-center text-lg font-bold text-gray-900">
+            <DialogTitle className="text-center text-xl font-bold text-neutral-950">
               Delete Service Listing?
             </DialogTitle>
-            <DialogDescription className="text-center text-xs text-gray-600 mt-1">
+            <DialogDescription className="text-center text-xs text-neutral-500 mt-1">
               You are about to delete &ldquo;{deleteTarget?.title}&rdquo;.
             </DialogDescription>
           </DialogHeader>
 
           {deleteBlockedError ? (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800 space-y-2">
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800 space-y-2">
               <p className="font-semibold flex items-center gap-1.5">
                 <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
                 Historical Order Preservation Active
               </p>
               <p className="leading-relaxed">{deleteBlockedError}</p>
               <p className="text-[11px] text-amber-700">
-                You can safely <strong>archive</strong> or <strong>pause</strong> the listing
-                instead. This hides it from campus discovery while retaining student order history.
+                You can safely <strong>archive</strong> or <strong>pause</strong> the listing instead. This hides it from campus discovery while retaining student order history.
               </p>
             </div>
           ) : (
-            <div className="rounded-xl border border-gray-100 bg-gray-50 p-3.5 text-xs text-gray-600 space-y-1.5">
+            <div className="rounded-2xl border border-neutral-100 bg-neutral-50 p-4 text-xs text-neutral-600 space-y-1.5 leading-relaxed">
               <p>
-                <strong>Safe Deletion Check:</strong> If this service has past orders, permanent
-                deletion will be blocked to preserve student buyer receipts.
+                <strong>Safe Deletion Check:</strong> If this service has past orders, permanent deletion will be blocked to preserve student buyer receipts.
               </p>
-              <p className="text-gray-500">
-                If you just want to stop receiving new orders, we recommend pausing or archiving
-                instead.
+              <p className="text-neutral-500">
+                If you just want to stop receiving new orders, we recommend pausing or archiving instead.
               </p>
             </div>
           )}
 
-          <DialogFooter className="mt-4 flex flex-col sm:flex-row gap-2">
+          <DialogFooter className="mt-6 flex flex-col sm:flex-row gap-2">
             <Button
               type="button"
               variant="outline"
@@ -544,7 +547,7 @@ export default function MyServicesPage() {
                 setDeleteTarget(null);
                 setDeleteBlockedError(null);
               }}
-              className="flex-1 text-xs"
+              className="flex-1 rounded-xl text-xs font-bold h-11"
             >
               Cancel
             </Button>
@@ -558,7 +561,7 @@ export default function MyServicesPage() {
                     setDeleteTarget(null);
                   }
                 }}
-                className="flex-1 bg-amber-600 text-white hover:bg-amber-700 text-xs font-bold gap-1.5"
+                className="flex-1 rounded-xl bg-amber-600 text-white hover:bg-amber-700 text-xs font-bold gap-1.5 h-11"
               >
                 <Archive className="h-3.5 w-3.5" />
                 Archive Listing Instead
@@ -568,7 +571,7 @@ export default function MyServicesPage() {
                 type="button"
                 disabled={isDeleting}
                 onClick={confirmSafeDelete}
-                className="flex-1 bg-red-600 text-white hover:bg-red-700 text-xs font-bold gap-1.5"
+                className="flex-1 rounded-xl bg-red-600 text-white hover:bg-red-700 text-xs font-bold gap-1.5 h-11"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 {isDeleting ? 'Checking...' : 'Confirm Delete'}

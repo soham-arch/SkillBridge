@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Sparkles,
-  Clock,
   ArrowLeft,
   Briefcase,
   CheckCircle2,
@@ -14,13 +13,14 @@ import {
   EyeOff,
   ExternalLink,
   Plus,
+  Clock,
+  ArrowUpRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/lib/auth/auth-context';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { createService, uploadServiceCoverImage } from '@/lib/services/services';
@@ -206,30 +206,30 @@ export default function CreateServicePage() {
   if (authLoading) {
     return (
       <div className="flex flex-1 items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#004ac6] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-900 border-t-transparent" />
       </div>
     );
   }
 
   if (!isAdmin && !isSeller) {
     return (
-      <div className="mx-auto w-full max-w-xl px-6 py-16">
-        <div className="rounded-2xl border border-blue-100 bg-white p-8 text-center shadow-sm">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#004ac6] text-white shadow-md">
-            <Briefcase className="h-7 w-7" />
+      <div className="mx-auto w-full max-w-xl px-6 py-20">
+        <div className="rounded-3xl border border-neutral-200 bg-white p-10 text-center shadow-xs">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-950 text-white shadow-sm mb-4">
+            <Briefcase className="h-6 w-6" />
           </div>
-          <h2 className="mt-4 text-xl font-bold text-gray-900">Activate Seller Role First</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <h2 className="text-2xl font-black text-neutral-950">Activate Seller Role First</h2>
+          <p className="mt-2 text-sm text-neutral-600 leading-relaxed">
             Your account is currently set to Buyer mode. Enable Seller role in your profile to start publishing student services on campus.
           </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link href="/profile?tab=roles">
-              <Button className="bg-[#004ac6] text-white hover:bg-[#003b9e]">
+              <Button className="rounded-xl bg-neutral-950 text-white hover:bg-black font-bold text-xs h-11 px-6">
                 Enable Seller Mode
               </Button>
             </Link>
             <Link href="/dashboard">
-              <Button variant="outline">
+              <Button variant="outline" className="rounded-xl border-neutral-300 text-xs font-bold h-11 px-6">
                 Back to Dashboard
               </Button>
             </Link>
@@ -241,23 +241,23 @@ export default function CreateServicePage() {
 
   if (!isAdmin && !profile?.seller_onboarding_completed) {
     return (
-      <div className="mx-auto w-full max-w-xl px-6 py-16">
-        <div className="rounded-2xl border border-amber-200 bg-white p-8 text-center shadow-sm">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500 text-white shadow-md">
-            <Sparkles className="h-7 w-7" />
+      <div className="mx-auto w-full max-w-xl px-6 py-20">
+        <div className="rounded-3xl border border-neutral-200 bg-white p-10 text-center shadow-xs">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500 text-white shadow-sm mb-4">
+            <Sparkles className="h-6 w-6" />
           </div>
-          <h2 className="mt-4 text-xl font-bold text-gray-900">Seller Profile Required</h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <h2 className="text-2xl font-black text-neutral-950">Seller Profile Required</h2>
+          <p className="mt-2 text-sm text-neutral-600 leading-relaxed">
             Before creating your first listing, please specify your skills, categories, pricing preferences, and portfolio items so campus buyers know what you offer.
           </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link href="/profile?tab=seller">
-              <Button className="bg-amber-600 text-white hover:bg-amber-700">
+              <Button className="rounded-xl bg-neutral-950 text-white hover:bg-black font-bold text-xs h-11 px-6">
                 Complete Seller Profile
               </Button>
             </Link>
             <Link href="/onboarding?step=3">
-              <Button variant="outline">
+              <Button variant="outline" className="rounded-xl border-neutral-300 text-xs font-bold h-11 px-6">
                 Launch Onboarding
               </Button>
             </Link>
@@ -268,20 +268,22 @@ export default function CreateServicePage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-6 py-12">
-      {/* Heading */}
-      <div className="mb-6 flex items-center justify-between">
+    <div className="mx-auto w-full max-w-3xl px-6 sm:px-8 py-12 sm:py-16">
+      {/* Editorial Header */}
+      <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-neutral-200/80">
         <div>
           <Link
             href="/my-services"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#004ac6] mb-1"
+            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-neutral-400 hover:text-neutral-900 mb-2 transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            Back to My Services
+            My Services
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Offer Your Skill</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Create a student service listing to monetize your talent on campus.
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-neutral-950">
+            Publish New Skill.
+          </h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            Set up an escrow-protected student service listing.
           </p>
         </div>
 
@@ -289,33 +291,33 @@ export default function CreateServicePage() {
           type="button"
           variant="outline"
           onClick={() => setPreviewMode(!previewMode)}
-          className="gap-2 border-gray-200 text-xs font-semibold text-gray-700"
+          className="gap-2 border-neutral-300 rounded-xl text-xs font-bold text-neutral-800 hover:bg-neutral-50 h-10 px-4"
         >
-          {previewMode ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-          {previewMode ? 'Return to Edit' : 'Live Preview'}
+          {previewMode ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          {previewMode ? 'Return to Editor' : 'Live Preview'}
         </Button>
       </div>
 
       {/* PREVIEW MODE */}
       {previewMode ? (
-        <div className="rounded-2xl border-2 border-[#004ac6]/30 bg-white p-8 shadow-md space-y-6">
-          <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#004ac6]">
-              Buyer View Live Preview
+        <div className="rounded-3xl border border-neutral-900 bg-white p-8 sm:p-10 shadow-lg space-y-6">
+          <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#004ac6]">
+              // Live Preview Mode
             </span>
-            <Badge
-              className={`capitalize text-xs font-bold ${
+            <span
+              className={`rounded-full px-3 py-1 capitalize text-xs font-bold ${
                 status === 'published'
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                  : 'bg-gray-100 text-gray-600'
+                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  : 'bg-neutral-100 text-neutral-600'
               }`}
             >
               {status}
-            </Badge>
+            </span>
           </div>
 
           {coverImageUrl && (
-            <div className="h-48 w-full overflow-hidden rounded-xl bg-gray-100">
+            <div className="h-56 w-full overflow-hidden rounded-2xl bg-neutral-100 border border-neutral-200">
               <img
                 src={coverImageUrl}
                 alt="Service Cover Preview"
@@ -325,38 +327,42 @@ export default function CreateServicePage() {
           )}
 
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">{title || 'Untitled Service'}</h2>
-            <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-gray-500">
-              <span className="text-xl font-bold text-[#004ac6]">₹{price || '0'}</span>
-              <span>·</span>
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-neutral-950">
+              {title || 'Untitled Service'}
+            </h2>
+            <div className="mt-3 flex flex-wrap items-center gap-4 text-xs font-medium text-neutral-500">
+              <span className="text-2xl font-black text-neutral-950 font-mono">₹{price || '0'}</span>
+              <span>•</span>
               <span>{deliveryDays || '3'} Days Turnaround</span>
-              <span>·</span>
+              <span>•</span>
               <span className="capitalize">{serviceType.replace('_', ' ')}</span>
-              <span>·</span>
+              <span>•</span>
               <span>{location}</span>
             </div>
           </div>
 
-          <div className="border-t border-gray-100 pt-4">
-            <h4 className="text-xs font-bold uppercase text-gray-400 mb-2">Scope of Service</h4>
-            <p className="whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
+          <div className="border-t border-neutral-100 pt-6 space-y-2">
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-400">
+              // Service Scope
+            </h4>
+            <p className="whitespace-pre-wrap text-sm text-neutral-700 leading-relaxed">
               {description || 'No description entered yet.'}
             </p>
           </div>
 
           {availabilityNotes && (
-            <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-xs text-gray-700">
-              <span className="font-bold text-[#004ac6] block mb-1">Availability Schedule</span>
-              {availabilityNotes}
+            <div className="rounded-2xl border border-blue-200/80 bg-blue-50/50 p-5 text-xs text-neutral-700 space-y-1">
+              <span className="font-bold text-[#004ac6] block">Availability Schedule</span>
+              <p>{availabilityNotes}</p>
             </div>
           )}
 
           {skills.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-2 border-t border-gray-100">
+            <div className="flex flex-wrap gap-2 pt-4 border-t border-neutral-100">
               {skills.map((s) => (
                 <span
                   key={s}
-                  className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-[#004ac6]"
+                  className="rounded-lg bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-700"
                 >
                   #{s}
                 </span>
@@ -364,10 +370,10 @@ export default function CreateServicePage() {
             </div>
           )}
 
-          <div className="pt-4 flex justify-end">
+          <div className="pt-6 border-t border-neutral-100 flex justify-end">
             <Button
               onClick={() => setPreviewMode(false)}
-              className="bg-[#004ac6] text-white hover:bg-[#003b9e] text-xs font-bold"
+              className="bg-neutral-950 text-white hover:bg-black text-xs font-bold rounded-xl h-10 px-5"
             >
               Back to Editing Form
             </Button>
@@ -375,11 +381,11 @@ export default function CreateServicePage() {
         </div>
       ) : (
         /* CREATE FORM */
-        <div className="rounded-2xl border border-border bg-white p-8 shadow-sm">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <div className="rounded-3xl border border-neutral-200 bg-white p-8 sm:p-10 shadow-xs">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-7">
             {/* Title */}
             <div className="flex flex-col gap-2">
-              <Label htmlFor="title" className="text-sm font-semibold text-gray-900">
+              <Label htmlFor="title" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
                 Service Title <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -387,43 +393,43 @@ export default function CreateServicePage() {
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Modern React & Next.js Website Development"
-                className="h-12 text-sm"
+                placeholder="e.g. Full-Stack Next.js 14 App with Auth & Supabase"
+                className="h-12 text-sm rounded-xl border-neutral-200 focus-visible:border-neutral-900"
               />
             </div>
 
             {/* Description */}
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="description" className="text-sm font-semibold text-gray-900">
+                <Label htmlFor="description" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
                   Service Description <span className="text-red-500">*</span>
                 </Label>
                 <button
                   type="button"
                   onClick={handleAIExtractSkills}
                   disabled={extractingSkills}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#004ac6] hover:underline disabled:opacity-60"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#004ac6] hover:underline disabled:opacity-60"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
-                  {extractingSkills ? 'Analyzing...' : 'AI Suggest Tags'}
+                  {extractingSkills ? 'Analyzing with AI...' : 'AI Suggest Tags'}
                 </button>
               </div>
               <Textarea
                 id="description"
                 required
-                rows={4}
+                rows={5}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe your service scope, what the client will receive, tools used (e.g. Figma, Next.js), and requirements..."
-                className="resize-none text-sm"
+                placeholder="Describe your service scope, deliverables, technologies (e.g. Next.js, Figma, Premiere Pro), and client requirements..."
+                className="resize-none text-sm rounded-xl border-neutral-200 focus-visible:border-neutral-900 leading-relaxed"
               />
             </div>
 
             {/* Price + Turnaround */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="price" className="text-sm font-semibold text-gray-900">
-                  Price (₹) <span className="text-red-500">*</span>
+                <Label htmlFor="price" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                  Price (₹ INR) <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="price"
@@ -434,12 +440,12 @@ export default function CreateServicePage() {
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="e.g. 1500"
-                  className="h-12 text-sm"
+                  className="h-12 text-sm rounded-xl border-neutral-200 focus-visible:border-neutral-900 font-mono"
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="deliveryDays" className="text-sm font-semibold text-gray-900">
-                  Turnaround Time (Days) <span className="text-red-500">*</span>
+                <Label htmlFor="deliveryDays" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                  Delivery Time (Days) <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="deliveryDays"
@@ -449,22 +455,22 @@ export default function CreateServicePage() {
                   value={deliveryDays}
                   onChange={(e) => setDeliveryDays(e.target.value)}
                   placeholder="3"
-                  className="h-12 text-sm"
+                  className="h-12 text-sm rounded-xl border-neutral-200 focus-visible:border-neutral-900 font-mono"
                 />
               </div>
             </div>
 
-            {/* Category, Service Type, Location */}
+            {/* Category, Delivery Mode, Location */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="category" className="text-sm font-semibold text-gray-900">
+                <Label htmlFor="category" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
                   Category
                 </Label>
                 <select
                   id="category"
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  className="h-12 rounded-lg border border-[#c3c6d7] bg-white px-3 text-xs text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#004ac6]"
+                  className="h-12 rounded-xl border border-neutral-200 bg-white px-3 text-xs font-medium text-neutral-900 focus:outline-none focus:border-neutral-900"
                 >
                   <option value="">Select category</option>
                   {categories.map((cat) => (
@@ -476,14 +482,14 @@ export default function CreateServicePage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="serviceType" className="text-sm font-semibold text-gray-900">
+                <Label htmlFor="serviceType" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
                   Delivery Mode
                 </Label>
                 <select
                   id="serviceType"
                   value={serviceType}
                   onChange={(e) => setServiceType(e.target.value as ServiceType)}
-                  className="h-12 rounded-lg border border-[#c3c6d7] bg-white px-3 text-xs text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#004ac6]"
+                  className="h-12 rounded-xl border border-neutral-200 bg-white px-3 text-xs font-medium text-neutral-900 focus:outline-none focus:border-neutral-900"
                 >
                   <option value="digital">Digital (Online Delivery)</option>
                   <option value="in_person">In-Person (On Campus)</option>
@@ -492,7 +498,7 @@ export default function CreateServicePage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="location" className="text-sm font-semibold text-gray-900">
+                <Label htmlFor="location" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
                   Location Note
                 </Label>
                 <Input
@@ -500,36 +506,38 @@ export default function CreateServicePage() {
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="e.g. Online / Pune"
-                  className="h-12 text-xs"
+                  className="h-12 text-xs rounded-xl border-neutral-200"
                 />
               </div>
             </div>
 
-            {/* Cover Image Upload */}
+            {/* Cover Image */}
             <div className="flex flex-col gap-2">
-              <Label className="text-sm font-semibold text-gray-900">Cover Image (Optional)</Label>
+              <Label className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                Cover Image (Optional)
+              </Label>
               <div className="flex items-center gap-3">
                 <Input
                   type="file"
                   accept="image/png,image/jpeg,image/webp"
                   onChange={handleCoverImageUpload}
                   disabled={uploadingImage}
-                  className="h-11 text-xs file:mr-2 file:rounded-md file:border-0 file:bg-[#f0f4ff] file:px-2.5 file:py-1 file:text-xs file:font-semibold file:text-[#004ac6]"
+                  className="h-11 text-xs rounded-xl border-neutral-200 file:mr-3 file:rounded-lg file:border-0 file:bg-neutral-100 file:px-3 file:py-1 file:text-xs file:font-bold file:text-neutral-900"
                 />
-                {uploadingImage && <span className="text-xs text-gray-500">Uploading...</span>}
+                {uploadingImage && <span className="text-xs text-neutral-500">Uploading...</span>}
               </div>
               {coverImageUrl && (
-                <div className="mt-2 flex items-center gap-3 rounded-lg border border-gray-200 p-2">
+                <div className="mt-2 flex items-center gap-3 rounded-2xl border border-neutral-200 p-2.5">
                   <img
                     src={coverImageUrl}
                     alt="Cover Thumbnail"
-                    className="h-12 w-16 rounded object-cover"
+                    className="h-12 w-16 rounded-xl object-cover"
                   />
-                  <span className="truncate text-xs text-gray-600 flex-1">{coverImageUrl}</span>
+                  <span className="truncate text-xs text-neutral-600 flex-1">{coverImageUrl}</span>
                   <button
                     type="button"
                     onClick={() => setCoverImageUrl('')}
-                    className="text-xs font-semibold text-red-500 hover:underline"
+                    className="text-xs font-bold text-red-500 hover:underline px-2"
                   >
                     Remove
                   </button>
@@ -539,21 +547,23 @@ export default function CreateServicePage() {
 
             {/* Availability Notes */}
             <div className="flex flex-col gap-2">
-              <Label htmlFor="availabilityNotes" className="text-sm font-semibold text-gray-900">
-                Availability & Requirements Note
+              <Label htmlFor="availabilityNotes" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                Availability & Scheduling Note
               </Label>
               <Input
                 id="availabilityNotes"
                 value={availabilityNotes}
                 onChange={(e) => setAvailabilityNotes(e.target.value)}
                 placeholder="e.g. Available weekdays after 4 PM, consultation on campus"
-                className="h-12 text-xs"
+                className="h-12 text-xs rounded-xl border-neutral-200"
               />
             </div>
 
-            {/* Relevant Skills / Tags */}
+            {/* Skills & Tags */}
             <div className="flex flex-col gap-2">
-              <Label className="text-sm font-semibold text-gray-900">Relevant Skills & Tags</Label>
+              <Label className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                Skill Tags
+              </Label>
               <div className="flex gap-2">
                 <Input
                   value={skillInput}
@@ -564,31 +574,31 @@ export default function CreateServicePage() {
                       handleAddSkill();
                     }
                   }}
-                  placeholder="Add a skill tag (e.g. Tailwind CSS, Python)..."
-                  className="h-10 text-xs"
+                  placeholder="Add a skill tag (e.g. Next.js, Python)..."
+                  className="h-11 text-xs rounded-xl border-neutral-200"
                 />
                 <Button
                   type="button"
                   onClick={handleAddSkill}
                   variant="outline"
-                  className="border-gray-200 text-xs"
+                  className="rounded-xl border-neutral-300 text-xs font-bold h-11 px-4"
                 >
-                  Add
+                  Add Tag
                 </Button>
               </div>
 
               {skills.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-2">
+                <div className="flex flex-wrap gap-2 mt-2">
                   {skills.map((skill) => (
                     <span
                       key={skill}
-                      className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-[#004ac6]"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-800"
                     >
                       #{skill}
                       <button
                         type="button"
                         onClick={() => handleRemoveSkill(skill)}
-                        className="ml-1 text-blue-400 hover:text-blue-700"
+                        className="text-neutral-400 hover:text-neutral-900"
                       >
                         ×
                       </button>
@@ -598,57 +608,55 @@ export default function CreateServicePage() {
               )}
             </div>
 
-            {/* Portfolio Examples */}
-            <div className="flex flex-col gap-2 border-t border-gray-100 pt-4">
-              <Label className="text-sm font-semibold text-gray-900">Portfolio & Past Work Examples</Label>
-              <p className="text-xs text-gray-500">
-                Add links to GitHub repositories, Figma previews, or Behance cases.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-2 mt-1">
+            {/* Portfolio Links */}
+            <div className="flex flex-col gap-3 border-t border-neutral-100 pt-6">
+              <Label className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                Portfolio Links
+              </Label>
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   value={newPortTitle}
                   onChange={(e) => setNewPortTitle(e.target.value)}
-                  placeholder="Project Title (e.g. Portfolio App)"
-                  className="h-10 text-xs flex-1"
+                  placeholder="Project Title (e.g. Hackathon App)"
+                  className="h-11 text-xs rounded-xl border-neutral-200 flex-1"
                 />
                 <Input
                   value={newPortUrl}
                   onChange={(e) => setNewPortUrl(e.target.value)}
                   placeholder="URL (https://github.com/...)"
-                  className="h-10 text-xs flex-1"
+                  className="h-11 text-xs rounded-xl border-neutral-200 flex-1"
                 />
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleAddPortfolio}
-                  className="text-xs"
+                  className="rounded-xl border-neutral-300 text-xs font-bold h-11 px-4"
                 >
                   Add Link
                 </Button>
               </div>
 
               {portfolioLinks.length > 0 && (
-                <div className="space-y-1.5 mt-2">
+                <div className="space-y-2 mt-2">
                   {portfolioLinks.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-xs"
+                      className="flex items-center justify-between rounded-xl border border-neutral-200 bg-[#fbfbfa] px-4 py-2.5 text-xs"
                     >
-                      <span className="font-semibold text-gray-800">{item.title}</span>
+                      <span className="font-bold text-neutral-900">{item.title}</span>
                       <div className="flex items-center gap-3">
                         <a
                           href={item.url}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-[#004ac6] hover:underline flex items-center gap-1 text-[11px]"
+                          className="text-[#004ac6] hover:underline flex items-center gap-1 font-semibold"
                         >
                           Visit <ExternalLink className="h-3 w-3" />
                         </a>
                         <button
                           type="button"
                           onClick={() => handleRemovePortfolio(idx)}
-                          className="text-red-500 hover:text-red-700 text-xs font-semibold"
+                          className="text-red-500 hover:text-red-700 font-bold"
                         >
                           Remove
                         </button>
@@ -659,36 +667,36 @@ export default function CreateServicePage() {
               )}
             </div>
 
-            {/* Visibility */}
-            <div className="flex flex-col gap-2 border-t border-gray-100 pt-4">
-              <Label htmlFor="status" className="text-sm font-semibold text-gray-900">
-                Initial Visibility
+            {/* Visibility Option */}
+            <div className="flex flex-col gap-2 border-t border-neutral-100 pt-6">
+              <Label htmlFor="status" className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-700">
+                Listing Visibility
               </Label>
               <select
                 id="status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value as ServiceStatus)}
-                className="h-12 rounded-lg border border-[#c3c6d7] bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#004ac6]"
+                className="h-12 rounded-xl border border-neutral-200 bg-white px-3 text-xs font-medium text-neutral-900 focus:outline-none focus:border-neutral-900"
               >
-                <option value="published">Published — Visible in campus explore & discoverable</option>
-                <option value="draft">Draft — Only you can see it</option>
+                <option value="published">Published — Discoverable across campus catalog</option>
+                <option value="draft">Draft — Private to you</option>
               </select>
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-4 pt-4 border-t border-neutral-100">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
-                className="flex-1 border-gray-200"
+                className="flex-1 rounded-xl border-neutral-300 text-xs font-bold h-12"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 bg-[#004ac6] text-white hover:bg-[#003b9e] font-bold"
+                className="flex-1 rounded-xl bg-neutral-950 text-white hover:bg-black font-bold text-xs h-12"
               >
                 {submitting ? 'Publishing...' : 'Publish Service Listing'}
               </Button>

@@ -12,27 +12,19 @@ import {
   AlertCircle,
   PlusCircle,
   Search,
-  ChevronRight,
   ShieldCheck,
   Star,
   Sparkles,
-  CalendarCheck,
   Calendar,
-  ArrowRight,
-  UserCheck,
   AlertTriangle,
   RefreshCw,
   Bell,
-  ExternalLink,
-  MessageSquare,
   FileCheck,
-  Play,
-  XCircle,
-  ShieldAlert,
+  ArrowUpRight,
+  ExternalLink,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
@@ -46,6 +38,7 @@ import { transitionOrderStatus } from '@/lib/services/orders';
 import { VerifiedBadge } from '@/components/trust/verified-badge';
 import { VerificationModal } from '@/components/trust/verification-modal';
 import { ReviewModal } from '@/components/reviews/review-modal';
+import { AnimatedCounter } from '@/components/motion/animated-counter';
 import { Order } from '@/types';
 
 export default function DashboardPage() {
@@ -67,7 +60,6 @@ export default function DashboardPage() {
 
   const userId = session?.user?.id || '';
 
-  // Initialize mode from URL query or profile active role
   const initialMode =
     (searchParams?.get('mode') as 'seller' | 'buyer') ||
     profile?.active_role ||
@@ -166,8 +158,8 @@ export default function DashboardPage() {
   if (authLoading || (!buyerData && !sellerData && loading)) {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center space-y-3">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#004ac6] border-t-transparent" />
-        <p className="text-xs font-semibold text-gray-500">Loading your real-time campus dashboard...</p>
+        <div className="h-9 w-9 animate-spin rounded-full border-2 border-neutral-900 border-t-transparent" />
+        <p className="text-xs font-mono font-medium text-neutral-400">LOADING CAMPUS WORKSPACE...</p>
       </div>
     );
   }
@@ -176,67 +168,67 @@ export default function DashboardPage() {
   const isVerified = isStudentVerified;
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8 py-10">
-      {/* Welcome Bar with Adaptive Mode Switcher */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-12 py-10 sm:py-16">
+      {/* Editorial Welcome Header */}
+      <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-neutral-200/80">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#004ac6]">
-              Campus Workspace Command Center
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#004ac6]">
+              // Command Workspace
             </span>
             {isVerified ? (
               <VerifiedBadge college={profile?.college ?? 'Campus'} size="sm" />
             ) : (
-              <Badge variant="outline" className="text-[10px] text-amber-700 border-amber-300">
+              <span className="rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">
                 Verification Pending
-              </Badge>
+              </span>
             )}
           </div>
-          <h1 className="text-3xl font-extrabold text-gray-900">
-            Welcome back, {firstName} 👋
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-950">
+            Welcome back, {firstName}.
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-gray-600">
+          <p className="mt-2 text-sm text-neutral-600 max-w-xl font-normal leading-relaxed">
             {roleMode === 'buyer'
               ? 'Track hired freelancers, scheduled consultations, deliverables, and orders awaiting review.'
               : 'Manage live service listings, incoming requests, active orders, and transaction-derived earnings.'}
           </p>
         </div>
 
-        {/* Adaptive Mode Switcher & Refresh */}
-        <div className="flex items-center gap-3">
+        {/* Mode Switcher & Refresh Pill */}
+        <div className="flex flex-wrap items-center gap-3">
           <Button
             size="sm"
             variant="outline"
             onClick={loadData}
             disabled={loading}
-            className="rounded-xl border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 h-10"
+            className="rounded-xl border-neutral-300 text-xs font-bold text-neutral-700 hover:bg-neutral-50 h-10 px-3.5 shadow-2xs"
           >
             <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
+            Sync
           </Button>
 
-          <div className="flex items-center rounded-2xl border border-border bg-white p-1.5 shadow-sm">
+          <div className="flex items-center rounded-2xl border border-neutral-200 bg-white p-1 shadow-2xs">
             <button
               onClick={() => handleModeChange('buyer')}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
                 roleMode === 'buyer'
-                  ? 'bg-[#004ac6] text-white shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-neutral-950 text-white shadow-xs'
+                  : 'text-neutral-500 hover:text-neutral-900'
               }`}
             >
               <ShoppingBag className="h-3.5 w-3.5" />
-              Buyer Hub (Hiring)
+              Buyer Hub
             </button>
             <button
               onClick={() => handleModeChange('seller')}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
                 roleMode === 'seller'
-                  ? 'bg-[#004ac6] text-white shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-neutral-950 text-white shadow-xs'
+                  : 'text-neutral-500 hover:text-neutral-900'
               }`}
             >
               <Briefcase className="h-3.5 w-3.5" />
-              Seller Studio (Offerings)
+              Seller Studio
             </button>
           </div>
         </div>
@@ -244,7 +236,7 @@ export default function DashboardPage() {
 
       {/* Error & Retry State */}
       {error && (
-        <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 flex items-center justify-between gap-4">
+        <div className="mb-8 rounded-2xl border border-red-200 bg-red-50 p-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <AlertCircle className="h-5 w-5 text-red-600 shrink-0" />
             <p className="text-xs text-red-800">
@@ -265,35 +257,37 @@ export default function DashboardPage() {
           SELLER STUDIO DASHBOARD VIEW
       ========================================================================= */}
       {roleMode === 'seller' && (
-        <div className="space-y-8 animate-in fade-in duration-200">
-          {/* Seller Activation Banner if user has not enabled seller permissions */}
+        <div className="space-y-10 animate-in fade-in duration-200">
+          {/* Seller Activation Banner if not yet a seller */}
           {!isSeller && (
-            <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-start gap-3.5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#004ac6] text-white">
+            <div className="rounded-3xl border border-blue-200/80 bg-blue-50/50 p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-2xs">
+              <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-neutral-950 text-white">
                   <Briefcase className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-gray-900">Activate Your Campus Seller Studio</h3>
-                  <p className="text-xs text-gray-600 mt-0.5">
+                  <h3 className="text-base font-bold text-neutral-950">
+                    Activate Your Campus Seller Studio
+                  </h3>
+                  <p className="text-xs text-neutral-600 mt-1 max-w-xl leading-relaxed">
                     You currently have Buyer access. Complete your seller profile with your campus skills, pricing, and portfolio to publish service listings.
                   </p>
                 </div>
               </div>
               <Link href="/onboarding">
-                <Button size="sm" className="bg-[#004ac6] text-white hover:bg-[#003899] text-xs font-bold rounded-xl whitespace-nowrap">
+                <Button className="rounded-xl bg-neutral-950 px-5 text-xs font-bold text-white hover:bg-black whitespace-nowrap">
                   Complete Seller Setup →
                 </Button>
               </Link>
             </div>
           )}
 
-          {/* Verification Warning if seller is unverified */}
+          {/* Verification Warning */}
           {!isVerified && (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 flex items-center justify-between gap-4">
+            <div className="rounded-3xl border border-amber-200 bg-amber-50/70 p-6 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
-                <p className="text-xs text-amber-800">
+                <AlertTriangle className="h-5 w-5 text-amber-700 shrink-0" />
+                <p className="text-xs text-amber-900 leading-relaxed">
                   <strong>Student Verification Required:</strong> While you can draft listings, your offerings will only appear publicly in search once your official college ID is verified.
                 </p>
               </div>
@@ -305,282 +299,184 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Authoritative Earnings & Metrics Grid (Zero Fabricated Fallbacks) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Metrics Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Total Earned */}
-            <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between text-gray-400 mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider">Total Earned</span>
-                <span className="rounded-lg bg-emerald-50 p-2 text-emerald-600">
-                  <TrendingUp className="h-4 w-4" />
-                </span>
-              </div>
-              <p className="text-3xl font-black text-gray-900">
-                ₹{(sellerData?.metrics.totalEarned ?? 0).toLocaleString('en-IN')}
+            <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-7 shadow-xs">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+                Total Payouts
+              </span>
+              <p className="text-3xl sm:text-4xl font-black text-neutral-950 font-mono mt-2">
+                <AnimatedCounter
+                  value={sellerData?.metrics.totalEarned ?? 0}
+                  prefix="₹"
+                />
               </p>
-              <p className="text-[11px] text-emerald-600 font-semibold mt-1">
-                Completed & Released Payouts
+              <p className="text-[11px] text-emerald-700 font-semibold mt-2 flex items-center gap-1">
+                <TrendingUp className="h-3.5 w-3.5" />
+                Completed & Released
               </p>
             </div>
 
             {/* In Escrow */}
-            <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between text-gray-400 mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider">Held in Escrow</span>
-                <span className="rounded-lg bg-blue-50 p-2 text-[#004ac6]">
-                  <Clock className="h-4 w-4" />
-                </span>
-              </div>
-              <p className="text-3xl font-black text-[#004ac6]">
-                ₹{(sellerData?.metrics.inEscrow ?? 0).toLocaleString('en-IN')}
+            <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-7 shadow-xs">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+                Held in Escrow
+              </span>
+              <p className="text-3xl sm:text-4xl font-black text-[#004ac6] font-mono mt-2">
+                <AnimatedCounter
+                  value={sellerData?.metrics.inEscrow ?? 0}
+                  prefix="₹"
+                />
               </p>
-              <p className="text-[11px] text-gray-500 font-medium mt-1">
-                Active Client Orders in Progress
+              <p className="text-[11px] text-neutral-500 font-medium mt-2 flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5" />
+                Active Orders in Progress
               </p>
             </div>
 
             {/* Completed Orders */}
-            <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between text-gray-400 mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider">Completed Orders</span>
-                <span className="rounded-lg bg-purple-50 p-2 text-purple-600">
-                  <CheckCircle2 className="h-4 w-4" />
-                </span>
-              </div>
-              <p className="text-3xl font-black text-gray-900">
-                {sellerData?.metrics.completedOrdersCount ?? 0}
+            <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-7 shadow-xs">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+                Completed Orders
+              </span>
+              <p className="text-3xl sm:text-4xl font-black text-neutral-950 font-mono mt-2">
+                <AnimatedCounter
+                  value={sellerData?.metrics.completedOrdersCount ?? 0}
+                />
               </p>
-              <p className="text-[11px] text-gray-500 font-medium mt-1">
-                Verified deliveries on record
+              <p className="text-[11px] text-neutral-500 font-medium mt-2 flex items-center gap-1">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Verified deliveries
               </p>
             </div>
 
             {/* Active Offerings */}
-            <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between text-gray-400 mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider">Active Services</span>
-                <span className="rounded-lg bg-amber-50 p-2 text-amber-600">
-                  <Sparkles className="h-4 w-4" />
-                </span>
-              </div>
-              <p className="text-3xl font-black text-gray-900">
-                {sellerData?.metrics.activeListingsCount ?? 0}
+            <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-7 shadow-xs">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+                Active Offerings
+              </span>
+              <p className="text-3xl sm:text-4xl font-black text-neutral-950 font-mono mt-2">
+                <AnimatedCounter
+                  value={sellerData?.metrics.activeListingsCount ?? 0}
+                />
               </p>
-              <p className="text-[11px] text-gray-500 font-medium mt-1">
-                Published on marketplace
+              <p className="text-[11px] text-neutral-500 font-medium mt-2 flex items-center gap-1">
+                <Sparkles className="h-3.5 w-3.5" />
+                Published on catalog
               </p>
             </div>
           </div>
 
-          {/* Quick Actions Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-gradient-to-r from-[#004ac6] to-[#002b7a] p-6 text-white shadow-md">
+          {/* Editorial Quick Actions Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 rounded-3xl bg-neutral-950 p-8 text-white shadow-md">
             <div>
-              <h2 className="text-lg font-bold">Offer a Peer Skill or Tutoring Session</h2>
-              <p className="text-xs text-blue-100 mt-1 max-w-xl">
-                Create a high-converting listing with milestones, turn-around times, and clear scope for college batchmates.
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#004ac6]">
+                STUDIO SHORTCUT
+              </span>
+              <h2 className="text-2xl font-black tracking-tight mt-1">
+                Publish a New Skill or Consultation Slot
+              </h2>
+              <p className="text-xs text-neutral-400 mt-1 max-w-lg leading-relaxed">
+                Offer your expertise in code, video editing, design, or tutoring with safe escrow milestones.
               </p>
             </div>
             <div className="flex items-center gap-3">
               <Link href="/my-services">
-                <Button variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 font-bold text-xs h-10 px-4 rounded-xl">
-                  Manage My Services
+                <Button variant="outline" className="border-neutral-700 bg-neutral-900 text-white hover:bg-neutral-800 text-xs font-bold rounded-xl h-11 px-5">
+                  Manage Listings
                 </Button>
               </Link>
               <Link href="/services/create">
-                <Button className="bg-white text-[#004ac6] hover:bg-gray-100 font-bold text-xs h-10 px-5 rounded-xl shadow">
+                <Button className="bg-[#004ac6] text-white hover:bg-[#003da8] text-xs font-bold rounded-xl h-11 px-5 shadow-sm">
                   <PlusCircle className="h-4 w-4 mr-2" />
-                  Create New Service
+                  Offer New Skill
                 </Button>
               </Link>
             </div>
           </div>
 
-          {/* Section 1: Incoming Client Requests (Actionable Accept / Decline) */}
-          <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
+          {/* Section 1: Incoming Client Requests */}
+          <div className="rounded-3xl border border-neutral-200 bg-white p-8 shadow-xs space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
               <div>
-                <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-neutral-950 flex items-center gap-2">
                   <Bell className="h-4 w-4 text-[#004ac6]" />
                   Incoming Client Requests
                   {sellerData && sellerData.incomingRequests.length > 0 && (
-                    <Badge className="bg-amber-100 text-amber-800 text-[10px]">
+                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
                       {sellerData.incomingRequests.length} Pending
-                    </Badge>
+                    </span>
                   )}
                 </h3>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Orders awaiting your review and acceptance before work begins.
+                <p className="text-xs text-neutral-500 mt-1">
+                  Orders awaiting your review and acceptance before milestone starts.
                 </p>
               </div>
-              <Link href="/orders" className="text-xs font-bold text-[#004ac6] hover:underline">
+              <Link href="/orders" className="text-xs font-bold text-neutral-900 hover:text-[#004ac6] transition-colors">
                 View All Orders →
               </Link>
             </div>
 
             {!sellerData || sellerData.incomingRequests.length === 0 ? (
-              <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed">
-                <CheckCircle2 className="h-8 w-8 text-emerald-500 mx-auto mb-2" />
-                <p className="text-xs font-semibold text-gray-700">No pending requests awaiting acceptance.</p>
-                <p className="text-[11px] text-gray-400 mt-0.5">New client requests will appear here with one-click actions.</p>
+              <div className="text-center py-12 bg-[#fbfbfa] rounded-2xl border border-dashed border-neutral-200">
+                <CheckCircle2 className="h-8 w-8 text-neutral-400 mx-auto mb-2" />
+                <p className="text-xs font-bold text-neutral-700">No pending requests awaiting acceptance.</p>
+                <p className="text-[11px] text-neutral-400 mt-0.5">New client requests will appear here with one-click actions.</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {sellerData.incomingRequests.map((o) => (
                   <div
                     key={o.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50/20 p-4 hover:border-amber-300 transition-colors"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-amber-200/80 bg-amber-50/30 p-5 hover:border-amber-300 transition-colors"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-gray-400">Order #{o.id.slice(-6).toUpperCase()}</span>
-                        <Badge variant="secondary" className="bg-amber-100 text-amber-800 text-[10px] font-bold uppercase">
+                        <span className="text-xs font-mono font-bold text-neutral-400">
+                          #{o.id.slice(-6).toUpperCase()}
+                        </span>
+                        <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold text-amber-900 uppercase">
                           Awaiting Your Acceptance
-                        </Badge>
+                        </span>
                       </div>
-                      <p className="text-sm font-bold text-gray-900">{o.service?.title || 'Service Listing'}</p>
-                      <p className="text-xs text-gray-600">
-                        Client: <strong>{o.buyer?.full_name || 'Verified Student'}</strong> • Turnaround: {o.delivery_days} days
+                      <p className="text-base font-bold text-neutral-950">
+                        {o.service?.title || 'Service Listing'}
+                      </p>
+                      <p className="text-xs text-neutral-600">
+                        Client: <strong>{o.buyer?.full_name || 'Verified Student'}</strong> • {o.delivery_days} days turnaround
                       </p>
                       {o.requirements && (
-                        <p className="text-xs text-gray-500 italic line-clamp-1">
+                        <p className="text-xs text-neutral-500 italic line-clamp-1">
                           &ldquo;{o.requirements}&rdquo;
                         </p>
                       )}
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-base font-black text-emerald-600 mr-2">
-                        ₹{o.price.toLocaleString('en-IN')}
-                      </span>
                       <Button
                         size="sm"
-                        disabled={actionLoadingId === o.id}
                         onClick={() => handleAcceptOrder(o.id)}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl"
+                        disabled={actionLoadingId === o.id}
+                        className="rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-bold h-10 px-4"
                       >
-                        Accept
+                        Accept Request
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
-                        disabled={actionLoadingId === o.id}
                         onClick={() => handleDeclineOrder(o.id)}
-                        className="border-red-200 text-red-700 hover:bg-red-50 text-xs font-bold rounded-xl"
+                        disabled={actionLoadingId === o.id}
+                        className="rounded-xl border-neutral-300 text-xs font-bold text-neutral-700 hover:bg-neutral-100 h-10 px-4"
                       >
                         Decline
                       </Button>
-                      <Link href={`/orders/${o.id}`}>
-                        <Button size="sm" variant="ghost" className="text-xs font-bold text-gray-600">
-                          Inspect →
-                        </Button>
-                      </Link>
                     </div>
                   </div>
                 ))}
               </div>
             )}
           </div>
-
-          {/* Section 2: Ongoing Work / In-Progress Orders */}
-          <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                  <Play className="h-4 w-4 text-[#004ac6]" />
-                  Ongoing Work & Milestones
-                </h3>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Accepted client projects actively in progress.
-                </p>
-              </div>
-              <Link href="/orders" className="text-xs font-bold text-[#004ac6] hover:underline">
-                View Orders →
-              </Link>
-            </div>
-
-            {!sellerData || sellerData.ongoingWork.length === 0 ? (
-              <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed">
-                <p className="text-xs text-gray-500">No projects currently in progress.</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {sellerData.ongoingWork.map((o) => (
-                  <Link
-                    key={o.id}
-                    href={`/orders/${o.id}`}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-gray-100 bg-[#fafafa] p-4 hover:border-[#004ac6]/40 hover:bg-white transition-all shadow-sm"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold text-gray-400">#{o.id.slice(-6).toUpperCase()}</span>
-                        <Badge
-                          variant="secondary"
-                          className={`text-[10px] font-bold uppercase rounded-full ${
-                            o.status === 'submitted'
-                              ? 'bg-purple-100 text-purple-800'
-                              : o.status === 'revision_requested'
-                              ? 'bg-orange-100 text-orange-800'
-                              : 'bg-blue-100 text-blue-800'
-                          }`}
-                        >
-                          {o.status.replace('_', ' ')}
-                        </Badge>
-                      </div>
-                      <p className="text-sm font-bold text-gray-900">{o.service?.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Client: {o.buyer?.full_name}</p>
-                    </div>
-
-                    <div className="text-left sm:text-right">
-                      <p className="text-base font-bold text-emerald-600">₹{o.price.toLocaleString('en-IN')}</p>
-                      <span className="text-xs font-bold text-[#004ac6] flex items-center sm:justify-end gap-1 mt-0.5">
-                        Open Workspace <ChevronRight className="h-3.5 w-3.5" />
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Section 3: Upcoming Consultations */}
-          {sellerData && sellerData.consultations.length > 0 && (
-            <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-[#004ac6]" />
-                  Upcoming Client Consultations
-                </h3>
-                <Link href="/bookings" className="text-xs font-bold text-[#004ac6] hover:underline">
-                  All Sessions →
-                </Link>
-              </div>
-
-              <div className="space-y-3">
-                {sellerData.consultations.map((c) => (
-                  <div
-                    key={c.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-gray-100 bg-blue-50/20 p-4"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge className="bg-blue-100 text-blue-800 text-[10px] font-bold">
-                          {c.booking_date} • {c.start_time} - {c.end_time}
-                        </Badge>
-                      </div>
-                      <p className="text-sm font-bold text-gray-900">{c.service?.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Student: {c.customer?.full_name}</p>
-                    </div>
-
-                    <Link href="/bookings">
-                      <Button size="sm" variant="outline" className="text-xs font-bold rounded-xl">
-                        View Schedule Details
-                      </Button>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
 
@@ -588,72 +484,70 @@ export default function DashboardPage() {
           BUYER HUB DASHBOARD VIEW
       ========================================================================= */}
       {roleMode === 'buyer' && (
-        <div className="space-y-8 animate-in fade-in duration-200">
-          {/* Buyer Search & Discovery Banner */}
-          <div className="rounded-2xl border border-border bg-gradient-to-r from-blue-50/80 to-indigo-50/80 p-6 sm:p-8 shadow-sm">
-            <div className="max-w-2xl">
-              <span className="text-xs font-extrabold text-[#004ac6] uppercase tracking-wider">
-                Discover Verified Peer Freelancers
-              </span>
-              <h2 className="text-2xl font-black text-gray-900 mt-1">
-                What peer help do you need on campus today?
-              </h2>
-              <p className="text-xs sm:text-sm text-gray-600 mt-1.5">
-                Hire student developers, designers, tutors, and video editors with safe escrow protection.
-              </p>
+        <div className="space-y-10 animate-in fade-in duration-200">
+          {/* Quick Skill Search */}
+          <div className="rounded-3xl border border-neutral-200 bg-white p-8 shadow-xs">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#004ac6]">
+              CAMPUS TALENT SEARCH
+            </span>
+            <h2 className="text-2xl font-black tracking-tight text-neutral-950 mt-1">
+              Find Peer Freelancers & Tutors
+            </h2>
+            <p className="text-xs text-neutral-500 mt-1">
+              Hire student developers, designers, tutors, and video editors with safe escrow protection.
+            </p>
 
-              <form onSubmit={handleSearchSubmit} className="mt-5 flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Search for Next.js, Python, Figma, DSA Tutoring, Resume Review..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 text-xs rounded-xl bg-white border-gray-300 h-10 shadow-sm"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="bg-[#004ac6] text-white hover:bg-[#003899] font-bold text-xs rounded-xl px-5 h-10 shadow-sm"
-                >
-                  Search
-                </Button>
-              </form>
-            </div>
+            <form onSubmit={handleSearchSubmit} className="mt-6 flex gap-3 max-w-2xl">
+              <div className="relative flex-1">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+                <Input
+                  placeholder="Search for Next.js, Python, Figma, DSA Tutoring, Resume Review..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 text-xs rounded-xl bg-neutral-50 border-neutral-200 h-11"
+                />
+              </div>
+              <Button
+                type="submit"
+                className="bg-neutral-950 text-white hover:bg-black font-bold text-xs rounded-xl px-6 h-11"
+              >
+                Search
+              </Button>
+            </form>
           </div>
 
-          {/* Reviews Awaiting Submission Card (Requirement 1) */}
+          {/* Reviews Awaiting Submission Card */}
           {buyerData && buyerData.awaitingReviewOrders.length > 0 && (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-6 shadow-sm">
+            <div className="rounded-3xl border border-amber-200 bg-amber-50/50 p-8 shadow-2xs">
               <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-500 text-white">
                   <Star className="h-5 w-5 fill-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-bold text-gray-900">
-                    Verified Reviews Awaiting Submission ({buyerData.awaitingReviewOrders.length})
+                  <h3 className="text-base font-bold text-neutral-950">
+                    Reviews Awaiting Your Rating ({buyerData.awaitingReviewOrders.length})
                   </h3>
-                  <p className="text-xs text-gray-600 mt-0.5">
-                    You recently completed transactions with campus peers! Leave genuine feedback to unlock reputation badges.
+                  <p className="text-xs text-neutral-600 mt-1 leading-relaxed">
+                    You recently completed transactions with campus peers! Leave verified feedback to strengthen their portfolio.
                   </p>
 
-                  <div className="mt-3 space-y-2">
+                  <div className="mt-4 space-y-2">
                     {buyerData.awaitingReviewOrders.map((o) => (
                       <div
                         key={o.id}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-amber-200/80 shadow-xs"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-amber-200 shadow-2xs"
                       >
                         <div>
-                          <p className="text-xs font-bold text-gray-900">{o.service?.title}</p>
-                          <p className="text-[11px] text-gray-500">Provider: {o.seller?.full_name}</p>
+                          <p className="text-xs font-bold text-neutral-950">{o.service?.title}</p>
+                          <p className="text-[11px] text-neutral-500">Provider: {o.seller?.full_name}</p>
                         </div>
                         <Button
                           size="sm"
                           onClick={() => setReviewingOrder(o)}
-                          className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl h-8 px-3"
+                          className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl h-9 px-4"
                         >
                           <Star className="h-3 w-3 fill-white mr-1.5" />
-                          Leave Verified Review
+                          Leave Review
                         </Button>
                       </div>
                     ))}
@@ -663,59 +557,76 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Buyer Quick Stats Grid (Authoritative Database Queries) */}
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
-              <span className="text-xs text-gray-400 font-semibold block">Active Purchases</span>
-              <p className="text-3xl font-black text-gray-900 mt-1">
-                {buyerData?.metrics.activeOrdersCount ?? 0}
+          {/* Buyer Quick Stats Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+            <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-7 shadow-xs">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+                Active Hires
+              </span>
+              <p className="text-3xl sm:text-4xl font-black text-neutral-950 font-mono mt-2">
+                <AnimatedCounter
+                  value={buyerData?.metrics.activeOrdersCount ?? 0}
+                />
               </p>
-              <p className="text-[11px] text-gray-500 mt-1">Gigs in progress</p>
+              <p className="text-[11px] text-neutral-500 mt-2">Orders in progress</p>
             </div>
 
-            <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
-              <span className="text-xs text-gray-400 font-semibold block">Escrow Protected</span>
-              <p className="text-3xl font-black text-[#004ac6] mt-1">
-                ₹{(buyerData?.metrics.inEscrow ?? 0).toLocaleString('en-IN')}
+            <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-7 shadow-xs">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+                In Escrow Vault
+              </span>
+              <p className="text-3xl sm:text-4xl font-black text-[#004ac6] font-mono mt-2">
+                <AnimatedCounter
+                  value={buyerData?.metrics.inEscrow ?? 0}
+                  prefix="₹"
+                />
               </p>
-              <p className="text-[11px] text-emerald-600 font-semibold mt-1">Funds securely locked</p>
+              <p className="text-[11px] text-emerald-700 font-semibold mt-2">Funds locked safely</p>
             </div>
 
-            <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
-              <span className="text-xs text-gray-400 font-semibold block">Completed Purchases</span>
-              <p className="text-3xl font-black text-emerald-600 mt-1">
-                {buyerData?.metrics.completedOrdersCount ?? 0}
+            <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-7 shadow-xs">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+                Completed
+              </span>
+              <p className="text-3xl sm:text-4xl font-black text-neutral-950 font-mono mt-2">
+                <AnimatedCounter
+                  value={buyerData?.metrics.completedOrdersCount ?? 0}
+                />
               </p>
-              <p className="text-[11px] text-gray-500 mt-1">Deliverables approved</p>
+              <p className="text-[11px] text-neutral-500 mt-2">Approved deliverables</p>
             </div>
 
-            <div className="rounded-2xl border border-border bg-white p-5 shadow-sm">
-              <span className="text-xs text-gray-400 font-semibold block">Upcoming Consultations</span>
-              <p className="text-3xl font-black text-purple-600 mt-1">
-                {buyerData?.metrics.upcomingConsultationsCount ?? 0}
+            <div className="rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-7 shadow-xs">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+                Sessions
+              </span>
+              <p className="text-3xl sm:text-4xl font-black text-neutral-950 font-mono mt-2">
+                <AnimatedCounter
+                  value={buyerData?.metrics.upcomingConsultationsCount ?? 0}
+                />
               </p>
-              <p className="text-[11px] text-gray-500 mt-1">Confirmed calendar bookings</p>
+              <p className="text-[11px] text-neutral-500 mt-2">Upcoming calendar bookings</p>
             </div>
           </div>
 
-          {/* Section 1: Active Purchases & Hires */}
-          <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold text-gray-900">Your Active Purchases & Hires</h3>
+          {/* Active Purchases */}
+          <div className="rounded-3xl border border-neutral-200 bg-white p-8 shadow-xs space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
+              <h3 className="text-lg font-bold text-neutral-950">Active Purchases & Hires</h3>
               <Link href="/explore">
-                <Button size="sm" className="bg-[#004ac6] text-white hover:bg-[#003b9e] text-xs font-bold rounded-xl">
+                <Button size="sm" className="bg-neutral-950 text-white hover:bg-black text-xs font-bold rounded-xl h-9 px-4">
                   Find More Skills →
                 </Button>
               </Link>
             </div>
 
             {!buyerData || buyerData.activeOrders.length === 0 ? (
-              <div className="text-center py-10 space-y-3 bg-gray-50 rounded-2xl border border-dashed">
-                <ShoppingBag className="h-10 w-10 text-gray-300 mx-auto" />
-                <p className="text-sm font-semibold text-gray-700">You don&apos;t have any active orders right now.</p>
+              <div className="text-center py-12 bg-[#fbfbfa] rounded-2xl border border-dashed border-neutral-200 space-y-3">
+                <ShoppingBag className="h-8 w-8 text-neutral-400 mx-auto" />
+                <p className="text-xs font-bold text-neutral-700">You don&apos;t have any active orders right now.</p>
                 <Link href="/explore">
-                  <Button className="bg-[#004ac6] text-white text-xs font-bold rounded-xl">
-                    Explore Campus Marketplace
+                  <Button className="bg-[#004ac6] text-white hover:bg-[#003da8] text-xs font-bold rounded-xl px-5 h-9">
+                    Explore Skills
                   </Button>
                 </Link>
               </div>
@@ -725,29 +636,35 @@ export default function DashboardPage() {
                   <Link
                     key={o.id}
                     href={`/orders/${o.id}`}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-gray-100 bg-[#fafafa] p-4 hover:border-[#004ac6]/30 transition-colors"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-neutral-200/80 bg-[#fbfbfa] p-5 hover:border-neutral-900 transition-all shadow-2xs"
                   >
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-bold text-gray-400">#{o.id.slice(-6).toUpperCase()}</span>
-                        <Badge
-                          variant="secondary"
-                          className={`text-[10px] font-bold uppercase rounded-full ${
+                        <span className="text-xs font-mono font-bold text-neutral-400">
+                          #{o.id.slice(-6).toUpperCase()}
+                        </span>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
                             o.status === 'submitted'
                               ? 'bg-purple-100 text-purple-800'
                               : 'bg-blue-100 text-blue-800'
                           }`}
                         >
                           {o.status.replace('_', ' ')}
-                        </Badge>
+                        </span>
                       </div>
-                      <p className="text-sm font-bold text-gray-900">{o.service?.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Provider: {o.seller?.full_name}</p>
+                      <p className="text-sm font-bold text-neutral-950">{o.service?.title}</p>
+                      <p className="text-xs text-neutral-500 mt-0.5">Provider: {o.seller?.full_name}</p>
                     </div>
 
                     <div className="text-left sm:text-right">
-                      <p className="text-base font-bold text-[#004ac6]">₹{o.price.toLocaleString('en-IN')}</p>
-                      <span className="text-xs font-semibold text-[#004ac6]">Track Deliverable →</span>
+                      <p className="text-base font-black text-neutral-950 font-mono">
+                        ₹{o.price.toLocaleString('en-IN')}
+                      </p>
+                      <span className="text-xs font-bold text-[#004ac6] flex items-center sm:justify-end gap-1 mt-0.5">
+                        Track Deliverable
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </span>
                     </div>
                   </Link>
                 ))}
@@ -755,41 +672,41 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Section 2: Upcoming Consultations (Requirement 1) */}
-          <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+          {/* Upcoming Consultations */}
+          <div className="rounded-3xl border border-neutral-200 bg-white p-8 shadow-xs space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
+              <h3 className="text-lg font-bold text-neutral-950 flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-[#004ac6]" />
                 Upcoming Consultations & Sessions
               </h3>
-              <Link href="/bookings" className="text-xs font-bold text-[#004ac6] hover:underline">
+              <Link href="/bookings" className="text-xs font-bold text-neutral-900 hover:text-[#004ac6] transition-colors">
                 View All Bookings →
               </Link>
             </div>
 
             {!buyerData || buyerData.consultations.length === 0 ? (
-              <div className="text-center py-6 bg-gray-50 rounded-xl border border-dashed">
-                <p className="text-xs text-gray-500">No scheduled consultations upcoming.</p>
+              <div className="text-center py-8 bg-[#fbfbfa] rounded-2xl border border-dashed border-neutral-200">
+                <p className="text-xs text-neutral-500">No scheduled consultations upcoming.</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {buyerData.consultations.map((c) => (
                   <div
                     key={c.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-gray-100 bg-[#fafafa] p-4"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-[#fbfbfa] p-5 shadow-2xs"
                   >
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <Badge className="bg-purple-100 text-purple-800 text-[10px] font-bold">
+                        <span className="rounded-full bg-purple-100 text-purple-800 text-[10px] font-bold px-2.5 py-0.5">
                           {c.booking_date} • {c.start_time} - {c.end_time}
-                        </Badge>
+                        </span>
                       </div>
-                      <p className="text-sm font-bold text-gray-900">{c.service?.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Mentor / Tutor: {c.provider?.full_name}</p>
+                      <p className="text-sm font-bold text-neutral-950">{c.service?.title}</p>
+                      <p className="text-xs text-neutral-500 mt-0.5">Mentor / Tutor: {c.provider?.full_name}</p>
                     </div>
 
                     <Link href="/bookings">
-                      <Button size="sm" variant="outline" className="text-xs font-bold rounded-xl">
+                      <Button size="sm" variant="outline" className="text-xs font-bold rounded-xl h-9 border-neutral-300">
                         Session Details
                       </Button>
                     </Link>
@@ -799,43 +716,10 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {/* Section 3: Recent Activity & Notifications (Requirement 1) */}
-          {buyerData && buyerData.notifications.length > 0 && (
-            <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
-              <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
-                <Bell className="h-4 w-4 text-[#004ac6]" />
-                Recent Alerts & Notifications
-              </h3>
-
-              <div className="space-y-2">
-                {buyerData.notifications.map((n) => (
-                  <div
-                    key={n.id}
-                    className={`p-3 rounded-xl border flex items-start justify-between gap-4 transition-all ${
-                      n.read ? 'bg-gray-50/50 border-gray-100' : 'bg-blue-50/40 border-blue-200'
-                    }`}
-                  >
-                    <div className="space-y-0.5">
-                      <p className="text-xs font-bold text-gray-900">{n.title}</p>
-                      <p className="text-xs text-gray-600">{n.message}</p>
-                    </div>
-                    {n.link && (
-                      <Link href={n.link}>
-                        <Button size="sm" variant="ghost" className="text-[11px] font-bold text-[#004ac6]">
-                          Open →
-                        </Button>
-                      </Link>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Section 4: Completed Purchases History */}
+          {/* Completed Purchases History */}
           {buyerData && buyerData.completedOrders.length > 0 && (
-            <div className="rounded-2xl border border-border bg-white p-6 shadow-sm">
-              <h3 className="text-base font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <div className="rounded-3xl border border-neutral-200 bg-white p-8 shadow-xs space-y-6">
+              <h3 className="text-lg font-bold text-neutral-950 flex items-center gap-2 pb-4 border-b border-neutral-100">
                 <FileCheck className="h-4 w-4 text-emerald-600" />
                 Completed Purchases & Deliverables
               </h3>
@@ -844,35 +728,35 @@ export default function DashboardPage() {
                 {buyerData.completedOrders.map((o) => (
                   <div
                     key={o.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-gray-100 bg-[#fafafa]"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-neutral-200 bg-[#fbfbfa] shadow-2xs"
                   >
                     <div>
-                      <p className="text-sm font-bold text-gray-900">{o.service?.title}</p>
-                      <p className="text-xs text-gray-500">Seller: {o.seller?.full_name}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge className="bg-emerald-50 text-emerald-700 text-[10px] font-bold">
+                      <p className="text-sm font-bold text-neutral-950">{o.service?.title}</p>
+                      <p className="text-xs text-neutral-500 mt-0.5">Seller: {o.seller?.full_name}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-emerald-800 text-[10px] font-bold border border-emerald-200">
                           Completed
-                        </Badge>
+                        </span>
                         {o.review ? (
-                          <Badge className="bg-amber-50 text-amber-800 text-[10px] font-bold flex items-center gap-1">
-                            <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                          <span className="rounded-full bg-amber-50 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 flex items-center gap-1 border border-amber-200">
+                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                             Reviewed ({o.review.rating}/5)
-                          </Badge>
+                          </span>
                         ) : (
-                          <Badge className="bg-gray-100 text-gray-600 text-[10px]">
+                          <span className="rounded-full bg-neutral-100 text-neutral-600 text-[10px] font-medium px-2 py-0.5">
                             Awaiting Review
-                          </Badge>
+                          </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-black text-gray-900">
+                    <div className="flex items-center gap-3">
+                      <span className="text-base font-black text-neutral-950 font-mono">
                         ₹{o.price.toLocaleString('en-IN')}
                       </span>
                       <Link href={`/orders/${o.id}`}>
-                        <Button size="sm" variant="outline" className="text-xs font-bold rounded-xl">
-                          View Receipt & Work
+                        <Button size="sm" variant="outline" className="text-xs font-bold rounded-xl h-9 border-neutral-300">
+                          View Receipt
                         </Button>
                       </Link>
                     </div>
@@ -884,19 +768,19 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Trust & Profile Verification Card */}
-      <div className="mt-8 rounded-2xl border border-border bg-white p-6 sm:p-8 shadow-sm">
+      {/* Trust & Profile Verification Footer Card */}
+      <div className="mt-12 rounded-3xl border border-neutral-200 bg-white p-8 sm:p-10 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
               <ShieldCheck className="h-7 w-7" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-gray-900">Campus Verification & Trust Standards</h3>
+                <h3 className="text-base font-bold text-neutral-950">Campus Verification & Trust Standards</h3>
                 <VerifiedBadge college={profile?.college} />
               </div>
-              <p className="text-xs text-gray-600 mt-1 max-w-xl">
+              <p className="text-xs text-neutral-600 mt-1 max-w-xl leading-relaxed">
                 SkillBridge verifies student status through college ID cards and university credentials. Verified badges appear on all your service listings and public profile.
               </p>
             </div>
@@ -905,7 +789,7 @@ export default function DashboardPage() {
           <Button
             onClick={() => setVerificationOpen(true)}
             variant="outline"
-            className="border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 shrink-0 rounded-xl"
+            className="border-neutral-300 text-xs font-bold text-neutral-800 hover:bg-neutral-50 shrink-0 rounded-xl h-11 px-5"
           >
             Review Verification Status
           </Button>
@@ -920,7 +804,7 @@ export default function DashboardPage() {
         onClose={() => setVerificationOpen(false)}
       />
 
-      {/* Verified Review Submission Modal (for completed orders awaiting reviews) */}
+      {/* Verified Review Submission Modal */}
       {reviewingOrder && (
         <ReviewModal
           order={reviewingOrder}

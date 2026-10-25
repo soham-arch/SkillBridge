@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, CheckCircle2, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
@@ -14,9 +14,9 @@ import { toast } from 'sonner';
 import type { Booking } from '@/types';
 
 const STATUS_STYLES: Record<string, string> = {
-  confirmed: 'bg-blue-50 text-blue-700',
-  completed: 'bg-emerald-50 text-emerald-700',
-  cancelled: 'bg-gray-100 text-gray-500',
+  confirmed: 'bg-blue-50 text-[#004ac6] border border-blue-200',
+  completed: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
+  cancelled: 'bg-neutral-100 text-neutral-500 border border-neutral-200',
 };
 
 function formatTime(time: string): string {
@@ -50,7 +50,6 @@ export default function BookingsPage() {
     try {
       await updateBookingStatus(id, status);
       toast.success(status === 'cancelled' ? 'Booking cancelled.' : 'Booking marked as completed!');
-      // Refresh
       const [cust, prov] = await Promise.all([
         getMyBookingsAsCustomer(),
         getMyBookingsAsProvider(),
@@ -68,7 +67,7 @@ export default function BookingsPage() {
   if (authLoading || loading) {
     return (
       <div className="flex flex-1 items-center justify-center py-24">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#004ac6] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-900 border-t-transparent" />
       </div>
     );
   }
@@ -76,23 +75,30 @@ export default function BookingsPage() {
   const items = tab === 'customer' ? customerBookings : providerBookings;
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-6 py-12">
-      {/* Heading */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">My Bookings</h1>
-        <p className="mt-2 text-gray-600">Track your scheduled sessions.</p>
+    <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-12 py-12 sm:py-16">
+      {/* Editorial Header */}
+      <div className="mb-10 pb-8 border-b border-neutral-200/80">
+        <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#004ac6]">
+          // Live Calendar & Consultations
+        </span>
+        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-950 mt-1">
+          My Bookings.
+        </h1>
+        <p className="mt-2 text-sm text-neutral-500 font-normal">
+          Track scheduled tutoring sessions, 1-on-1 code reviews, and design critiques.
+        </p>
       </div>
 
       {/* Tabs */}
-      <div className="mb-6 flex w-fit gap-1 rounded-xl border border-border bg-white p-1 shadow-sm">
+      <div className="mb-8 flex w-fit gap-1 rounded-2xl border border-neutral-200 bg-white p-1 shadow-2xs">
         {(['customer', 'provider'] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`rounded-lg px-5 py-2 text-sm font-semibold transition-colors ${
+            className={`rounded-xl px-4 py-2 text-xs font-bold transition-all ${
               tab === t
-                ? 'bg-[#004ac6] text-white shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-neutral-950 text-white shadow-xs'
+                : 'text-neutral-500 hover:text-neutral-900'
             }`}
           >
             {t === 'customer'
@@ -104,17 +110,17 @@ export default function BookingsPage() {
 
       {/* Content */}
       {items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#c3c6d7] bg-white py-20 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#f0f4ff]">
-            <Calendar className="h-8 w-8 text-[#004ac6]" />
+        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-neutral-200 bg-white py-24 text-center px-6">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-400">
+            <Calendar className="h-6 w-6" />
           </div>
-          <p className="text-lg font-semibold text-gray-700">
-            {tab === 'customer' ? 'No bookings yet' : 'No client bookings yet'}
+          <p className="text-xl font-bold text-neutral-950">
+            {tab === 'customer' ? 'No bookings scheduled yet' : 'No client bookings yet'}
           </p>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-xs text-neutral-500 max-w-sm leading-relaxed">
             {tab === 'customer'
-              ? 'Explore services and book your first session.'
-              : 'Set up your availability to start receiving bookings.'}
+              ? 'Explore consultation services on the campus catalog and book your first 1-on-1 slot.'
+              : 'Configure your calendar availability in seller studio to receive student bookings.'}
           </p>
         </div>
       ) : (
@@ -129,7 +135,7 @@ export default function BookingsPage() {
                   .slice(0, 2)
                   .join('')
                   .toUpperCase()
-              : '?';
+              : 'SB';
 
             const isFuture =
               new Date(booking.booking_date) >= new Date(new Date().toDateString());
@@ -140,29 +146,29 @@ export default function BookingsPage() {
             return (
               <div
                 key={booking.id}
-                className="rounded-xl border border-border bg-white p-5 shadow-sm"
+                className="rounded-3xl border border-neutral-200 bg-white p-7 shadow-xs hover:border-neutral-900 transition-all duration-300"
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                   <div className="flex items-start gap-4 flex-1">
-                    <Avatar className="h-10 w-10 shrink-0 border border-[#c3c6d7]">
+                    <Avatar className="h-12 w-12 shrink-0 border border-neutral-200">
                       {otherParty?.avatar_url ? (
                         <AvatarImage src={otherParty.avatar_url} alt="" />
                       ) : null}
-                      <AvatarFallback className="text-xs font-semibold text-[#004ac6]">
+                      <AvatarFallback className="text-xs font-bold text-neutral-900 bg-neutral-100">
                         {initials}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="text-base font-semibold text-gray-900">
-                        {booking.service?.title ?? 'Service'}
+                      <p className="text-lg font-bold text-neutral-950 leading-snug">
+                        {booking.service?.title ?? 'Consultation Session'}
                       </p>
-                      <p className="text-xs text-gray-500">
-                        {tab === 'customer' ? 'with' : 'by'}{' '}
-                        {otherParty?.full_name ?? 'Unknown'}
+                      <p className="text-xs text-neutral-500 mt-0.5">
+                        {tab === 'customer' ? 'Tutor / Mentor:' : 'Client:'}{' '}
+                        <strong className="text-neutral-800">{otherParty?.full_name ?? 'Student Peer'}</strong>
                       </p>
-                      <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
+                      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs font-medium text-neutral-600">
+                        <span className="flex items-center gap-1.5 font-bold text-neutral-900">
+                          <Calendar className="h-3.5 w-3.5 text-[#004ac6]" />
                           {new Date(booking.booking_date).toLocaleDateString('en-IN', {
                             weekday: 'short',
                             day: 'numeric',
@@ -170,27 +176,30 @@ export default function BookingsPage() {
                             year: 'numeric',
                           })}
                         </span>
-                        <span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1.5 font-mono">
+                          <Clock className="h-3.5 w-3.5 text-neutral-400" />
                           {formatTime(booking.start_time)} — {formatTime(booking.end_time)}
                         </span>
                       </div>
                       {booking.note && (
-                        <p className="mt-2 line-clamp-2 text-sm text-gray-600">
-                          &quot;{booking.note}&quot;
+                        <p className="mt-2 text-xs text-neutral-600 italic">
+                          &ldquo;{booking.note}&rdquo;
                         </p>
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
+
+                  <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-neutral-100">
                     <span
-                      className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-                        STATUS_STYLES[booking.status] ?? 'bg-gray-100 text-gray-600'
+                      className={`shrink-0 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                        STATUS_STYLES[booking.status] ?? 'bg-neutral-100 text-neutral-600'
                       }`}
                     >
                       {booking.status}
                     </span>
                     {booking.service?.price != null && (
-                      <span className="text-sm font-bold text-[#004ac6]">
+                      <span className="text-xl font-black text-neutral-950 font-mono">
                         ₹{Number(booking.service.price).toLocaleString('en-IN')}
                       </span>
                     )}
@@ -199,17 +208,17 @@ export default function BookingsPage() {
 
                 {/* Actions */}
                 {(canCancel || canComplete) && (
-                  <div className="mt-4 flex gap-2 border-t border-gray-100 pt-3">
+                  <div className="mt-5 flex gap-2 border-t border-neutral-100 pt-4">
                     {canCancel && (
                       <Button
                         size="sm"
                         variant="outline"
                         disabled={actionLoading === booking.id}
                         onClick={() => handleStatusUpdate(booking.id, 'cancelled')}
-                        className="gap-1.5 border-[#c3c6d7] text-gray-600 hover:border-red-300 hover:text-red-600"
+                        className="rounded-xl border-neutral-300 text-neutral-700 hover:border-red-300 hover:text-red-600 text-xs font-bold h-9 px-4"
                       >
-                        <XCircle className="h-3.5 w-3.5" />
-                        Cancel
+                        <XCircle className="h-3.5 w-3.5 mr-1" />
+                        Cancel Booking
                       </Button>
                     )}
                     {canComplete && (
@@ -217,9 +226,9 @@ export default function BookingsPage() {
                         size="sm"
                         disabled={actionLoading === booking.id}
                         onClick={() => handleStatusUpdate(booking.id, 'completed')}
-                        className="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-700"
+                        className="rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-bold h-9 px-4"
                       >
-                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
                         Mark Completed
                       </Button>
                     )}

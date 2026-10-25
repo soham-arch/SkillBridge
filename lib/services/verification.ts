@@ -1,5 +1,6 @@
 import { getSupabaseClient } from '@/lib/supabase/client';
 import { VerificationRequest, VerificationAuditLog, Profile } from '@/types';
+import { getMarketplaceState, saveMarketplaceState } from '@/lib/store/marketplace-store';
 import {
   sendVerificationApprovedEmail,
   sendVerificationRejectedEmail,
@@ -12,6 +13,34 @@ const ALLOWED_MIME_TYPES = [
   'application/pdf',
 ];
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+
+/**
+ * Retrieves the active administrative token across Supabase auth, demo session, or cookie.
+ */
+async function getAdminToken(): Promise<string | undefined> {
+  try {
+    const supabase = getSupabaseClient();
+    const { data: sessionData } = await supabase.auth.getSession();
+    let token = sessionData.session?.access_token;
+
+    if (!token && typeof window !== 'undefined') {
+      const demoRaw = localStorage.getItem('sb_demo_session');
+      if (demoRaw) {
+        try {
+          const parsed = JSON.parse(demoRaw);
+          token = parsed.access_token;
+        } catch {}
+      }
+      if (!token) {
+        const match = document.cookie.match(/sb-access-token=([^;]+)/);
+        if (match) token = decodeURIComponent(match[1]);
+      }
+    }
+    return token;
+  } catch {
+    return undefined;
+  }
+}
 
 export interface DocumentUploadResult {
   documentPath: string;
@@ -81,9 +110,7 @@ export async function createDocumentSignedUrl(documentPath: string): Promise<str
   }
 
   try {
-    const supabase = getSupabaseClient();
-    const { data: sessionData } = await supabase.auth.getSession();
-    const token = sessionData.session?.access_token;
+    const token = await getAdminToken();
     if (token) {
       const res = await fetch('/api/admin/verifications/signed-url', {
         method: 'POST',
@@ -198,6 +225,41 @@ export async function submitStudentVerification(params: {
     });
   } catch (auditErr) {
     console.warn('Audit log write warning:', auditErr);
+  }
+
+  // 4. Synchronize into local marketplace store so local demo admin views sync immediately
+  try {
+    const state = getMarketplaceState();
+    const newRecord: VerificationRequest = {
+      id: request.id,
+      user_id: userId,
+      full_name: fullName.trim(),
+      college_name: collegeName.trim(),
+      college_email: collegeEmail?.trim() || null,
+      student_id_number: studentIdNumber.trim(),
+      document_path: documentPath,
+      document_type: documentType,
+      status: 'pending',
+      submitted_at: request.submitted_at || new Date().toISOString(),
+      user: {
+        id: userId,
+        full_name: fullName.trim(),
+        avatar_url: null,
+        email: collegeEmail?.trim() || '',
+        college: collegeName.trim(),
+      } as any,
+    };
+    const existingIndex = state.verifications.findIndex(
+      (v) => v.id === request.id || v.user_id === userId
+    );
+    if (existingIndex >= 0) {
+      state.verifications[existingIndex] = newRecord;
+    } else {
+      state.verifications.unshift(newRecord);
+    }
+    saveMarketplaceState({ ...state });
+  } catch (storeErr) {
+    console.warn('Store sync note:', storeErr);
   }
 
   return request as VerificationRequest;
@@ -336,9 +398,8 @@ export async function fetchVerificationAuditHistory(
  */
 export async function fetchAllVerificationsAdmin(): Promise<VerificationRequest[]> {
   try {
-    const supabase = getSupabaseClient();
-    const { data: sessionData } = await supabase.auth.getSession();
-    const token = sessionData.session?.access_token;
+    const token = await getAdminToken();
+
     if (token) {
       const res = await fetch('/api/admin/verifications', {
         headers: { Authorization: `Bearer ${token}` },
@@ -369,7 +430,8 @@ export async function fetchAllVerificationsAdmin(): Promise<VerificationRequest[
 
   if (error) {
     console.warn('Admin fetch verifications warning:', error.message);
-    return [];
+    const state = getMarketplaceState();
+    return state.verifications || [];
   }
 
   return (data || []) as VerificationRequest[];
@@ -389,9 +451,7 @@ export async function adminReviewVerification(params: {
   const { requestId, approve, notes, reviewerId } = params;
 
   try {
-    const supabase = getSupabaseClient();
-    const { data: sessionData } = await supabase.auth.getSession();
-    const token = sessionData.session?.access_token;
+    const token = await getAdminToken();
     if (token) {
       const res = await fetch('/api/admin/verifications/review', {
         method: 'POST',
@@ -405,9 +465,15 @@ export async function adminReviewVerification(params: {
         const json = await res.json();
         return { success: true, emailResult: json.emailResult };
       }
+      const errJson = await res.json().catch(() => null);
+      if (errJson?.error) {
+        throw new Error(errJson.error);
+      }
     }
-  } catch {
-    // Fallback to direct RPC/database logic below
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message && !err.message.includes('fetch')) {
+      throw err;
+    }
   }
 
   const supabase = getSupabaseClient();
@@ -433,10 +499,10 @@ export async function adminReviewVerification(params: {
       .from('verification_requests')
       .select('*, user:profiles!verification_requests_user_id_fkey(*)')
       .eq('id', requestId)
-      .single();
+      .maybeSingle();
 
     if (getReqError || !req) {
-      throw new Error(`Verification request not found: ${getReqError?.message}`);
+      throw new Error(`Verification request not found: ${getReqError?.message || 'Record not accessible'}`);
     }
 
     targetUserId = req.user_id;

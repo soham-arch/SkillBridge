@@ -154,7 +154,7 @@ export default function PendingApprovalPage() {
               <span className="text-gray-500">Submitted At:</span>
               <span className="text-gray-700">
                 {request?.submitted_at
-                  ? new Date(request.submitted_at).toLocaleDateString(undefined, {
+                  ? new Date(request.submitted_at).toLocaleString(undefined, {
                       dateStyle: 'medium',
                       timeStyle: 'short',
                     })

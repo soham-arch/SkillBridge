@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   Search,
   Sparkles,
@@ -11,6 +12,9 @@ import {
   Clock,
   X,
   SlidersHorizontal,
+  ArrowUpRight,
+  GraduationCap,
+  RotateCcw,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -19,6 +23,7 @@ import { getPublishedServices, type ExploreFilters } from '@/lib/services/servic
 import { getCategories } from '@/lib/services/categories';
 import { performAISearch } from '@/lib/ai/semantic-search';
 import { VerifiedBadge } from '@/components/trust/verified-badge';
+import { editorialEase } from '@/components/motion/motion-tokens';
 import type { Service, Category, AISearchResult } from '@/types';
 
 const SUGGESTED_QUERIES = [
@@ -31,6 +36,7 @@ const SUGGESTED_QUERIES = [
 
 function ExploreContent() {
   const searchParams = useSearchParams();
+  const shouldReduceMotion = useReducedMotion();
   const initialQuery = searchParams.get('q') || '';
   const initialCategory = searchParams.get('category') || null;
 
@@ -67,8 +73,10 @@ function ExploreContent() {
   const fetchServices = useCallback(async () => {
     setLoading(true);
     try {
-      const minP = minPrice.trim() !== '' && !isNaN(Number(minPrice)) ? Number(minPrice) : undefined;
-      const maxP = maxPrice.trim() !== '' && !isNaN(Number(maxPrice)) ? Number(maxPrice) : undefined;
+      const minP =
+        minPrice.trim() !== '' && !isNaN(Number(minPrice)) ? Number(minPrice) : undefined;
+      const maxP =
+        maxPrice.trim() !== '' && !isNaN(Number(maxPrice)) ? Number(maxPrice) : undefined;
 
       const all = await getPublishedServices({
         category_id: categoryId,
@@ -117,7 +125,7 @@ function ExploreContent() {
     getCategories().then(setCategories).catch(console.error);
   }, []);
 
-  // 400ms debounce to avoid expensive model calls on every keystroke
+  // 400ms debounce
   useEffect(() => {
     const timer = setTimeout(fetchServices, 400);
     return () => clearTimeout(timer);
@@ -133,50 +141,53 @@ function ExploreContent() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-screen-xl px-6 py-12">
-      {/* Heading */}
-      <div className="mb-8">
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-[#f0f4ff] px-3 py-1 text-xs font-semibold text-[#004ac6] mb-2">
-          <Sparkles className="h-3.5 w-3.5" />
-          AI-Powered Semantic Discovery
+    <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-12 py-12 sm:py-16">
+      {/* Editorial Page Header */}
+      <div className="mb-10 space-y-3">
+        <div className="inline-flex items-center gap-2 rounded-full border border-neutral-300/80 bg-white/80 px-3.5 py-1 text-xs font-mono font-semibold uppercase tracking-wider text-neutral-700">
+          <Sparkles className="h-3.5 w-3.5 text-[#004ac6]" />
+          Semantic Discovery // Campus Catalog
         </div>
-        <h1 className="text-3xl font-bold text-gray-900">Explore Student Services</h1>
-        <p className="mt-1 text-sm text-gray-600">
-          Describe what you need naturally — our semantic AI connects you with verified peer talent.
+        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-neutral-950">
+          Explore Student Services.
+        </h1>
+        <p className="text-base text-neutral-600 max-w-2xl font-normal leading-relaxed">
+          Describe what you need naturally or filter by specialized college disciplines. Our AI connects you with verified peer talent.
         </p>
       </div>
 
-      {/* Search & Filter Controls */}
-      <div className="mb-6 flex flex-col gap-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      {/* Search Bar & Primary Filter Controls */}
+      <div className="mb-8 space-y-4">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
           {/* Natural language query input */}
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
             <Input
               id="search-input"
               placeholder="e.g. 'I need someone to edit a 5-minute video with cinematic transitions'..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="h-12 rounded-xl border-[#c3c6d7] bg-white pl-11 pr-10 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus-visible:ring-2 focus-visible:ring-[#004ac6]"
+              className="h-12 w-full rounded-2xl border border-neutral-300/90 bg-white pl-11 pr-10 text-sm text-neutral-900 placeholder:text-neutral-400 shadow-2xs focus-visible:border-neutral-900 focus-visible:ring-0"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-gray-400 hover:text-gray-600"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-neutral-400 hover:text-neutral-900"
+                aria-label="Clear search"
               >
                 <X className="h-4 w-4" />
               </button>
             )}
           </div>
 
-          {/* Sort selector */}
-          <div className="flex items-center gap-2">
+          {/* Sort & Verification Selectors */}
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
             <select
               id="sort-select"
               value={sort}
               onChange={(e) => setSort(e.target.value as ExploreFilters['sort'])}
-              className="h-12 rounded-xl border border-[#c3c6d7] bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#004ac6] shadow-sm"
+              className="h-12 rounded-2xl border border-neutral-300/90 bg-white px-4 text-xs font-semibold text-neutral-800 focus:outline-none focus:border-neutral-900 shadow-2xs cursor-pointer"
             >
               <option value="newest">Newest First</option>
               <option value="rating">Top Rated</option>
@@ -189,39 +200,39 @@ function ExploreContent() {
               id="verified-only-button"
               type="button"
               onClick={() => setVerifiedOnly(!verifiedOnly)}
-              className={`h-12 flex items-center gap-1.5 rounded-xl border px-4 text-xs font-semibold transition-all shadow-sm ${
+              className={`h-12 flex items-center gap-2 rounded-2xl border px-4 text-xs font-bold transition-all shadow-2xs select-none ${
                 verifiedOnly
-                  ? 'border-emerald-600 bg-emerald-50 text-emerald-800'
-                  : 'border-[#c3c6d7] bg-white text-gray-700 hover:bg-gray-50'
+                  ? 'border-emerald-700 bg-emerald-50 text-emerald-900 font-bold'
+                  : 'border-neutral-300/90 bg-white text-neutral-700 hover:bg-neutral-50 hover:border-neutral-400'
               }`}
             >
               <ShieldCheck className="h-4 w-4 text-emerald-600" />
-              Verified Students
+              <span>Verified Only</span>
             </button>
           </div>
         </div>
 
-        {/* Price Range Filter & Quick Controls */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 rounded-xl border border-[#c3c6d7] bg-white px-3 py-1.5 text-xs text-gray-700 shadow-sm">
-            <SlidersHorizontal className="h-3.5 w-3.5 text-gray-400" />
-            <span className="font-semibold text-gray-600">Price:</span>
+        {/* Secondary Filter Row: Price Inputs & Clear Filter */}
+        <div className="flex flex-wrap items-center gap-3 pt-1">
+          <div className="flex items-center gap-2 rounded-xl border border-neutral-200 bg-white px-3 py-1.5 text-xs text-neutral-700 shadow-2xs">
+            <SlidersHorizontal className="h-3.5 w-3.5 text-neutral-400" />
+            <span className="font-semibold text-neutral-500 uppercase font-mono text-[11px]">Price:</span>
             <input
               id="min-price-input"
               type="number"
               placeholder="Min ₹"
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
-              className="w-16 rounded border border-gray-200 px-1.5 py-0.5 text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#004ac6]"
+              className="w-16 rounded border border-neutral-200 px-2 py-0.5 text-xs text-neutral-900 focus:outline-none focus:border-neutral-900"
             />
-            <span className="text-gray-400">–</span>
+            <span className="text-neutral-400">–</span>
             <input
               id="max-price-input"
               type="number"
               placeholder="Max ₹"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
-              className="w-16 rounded border border-gray-200 px-1.5 py-0.5 text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#004ac6]"
+              className="w-16 rounded border border-neutral-200 px-2 py-0.5 text-xs text-neutral-900 focus:outline-none focus:border-neutral-900"
             />
             {(minPrice || maxPrice) && (
               <button
@@ -230,24 +241,37 @@ function ExploreContent() {
                   setMinPrice('');
                   setMaxPrice('');
                 }}
-                className="ml-1 text-[11px] text-gray-400 hover:text-red-500"
+                className="ml-1 text-[11px] text-neutral-400 hover:text-red-500"
                 title="Clear price filter"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
+
+          {(query || categoryId || verifiedOnly || minPrice || maxPrice) && (
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="flex items-center gap-1.5 rounded-xl border border-dashed border-neutral-300 px-3 py-1.5 text-xs font-semibold text-neutral-600 hover:text-neutral-950 hover:border-neutral-500 transition-colors"
+            >
+              <RotateCcw className="h-3 w-3" />
+              Reset Filters
+            </button>
+          )}
         </div>
 
-        {/* Suggested Queries */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-gray-400">Try asking:</span>
+        {/* Prompt Suggestions */}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <span className="text-xs font-mono font-medium text-neutral-400">
+            Suggested Prompts:
+          </span>
           {SUGGESTED_QUERIES.map((sq) => (
             <button
               key={sq}
               type="button"
               onClick={() => setQuery(sq)}
-              className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-600 transition-colors hover:border-[#004ac6] hover:text-[#004ac6]"
+              className="rounded-full border border-neutral-200 bg-white/90 px-3 py-1 text-xs text-neutral-600 transition-all hover:border-neutral-800 hover:text-neutral-950 shadow-2xs"
             >
               {sq}
             </button>
@@ -256,40 +280,48 @@ function ExploreContent() {
 
         {/* AI Intent & Explanation Banner */}
         {aiIntent && (
-          <div className="rounded-xl border border-blue-100 bg-[#f4f7ff] p-4 text-xs text-gray-700 shadow-sm animate-in fade-in">
+          <div className="rounded-2xl border border-blue-200/80 bg-blue-50/50 p-4 text-xs text-neutral-800 shadow-2xs animate-in fade-in duration-200">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-start gap-2.5">
                 <Sparkles className="h-4 w-4 text-[#004ac6] shrink-0 mt-0.5" />
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-bold text-[#004ac6]">Understood Intent: {aiIntent}</span>
+                    <span className="font-bold text-[#004ac6]">
+                      Understood Intent: {aiIntent}
+                    </span>
                     {isAiEnhanced ? (
-                      <Badge variant="secondary" className="bg-blue-100 text-[#004ac6] text-[10px] font-semibold border border-blue-200">
+                      <span className="rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-[#004ac6]">
                         NVIDIA Nemotron AI
-                      </Badge>
+                      </span>
                     ) : (
-                      <Badge variant="outline" className="bg-slate-100 text-slate-700 text-[10px] font-medium border-slate-200">
+                      <span className="rounded-md bg-neutral-200/80 px-2 py-0.5 text-[10px] font-medium text-neutral-700">
                         Local Semantic Hybrid
-                      </Badge>
+                      </span>
                     )}
                   </div>
-                  {aiExplanation && <p className="text-gray-600 mt-1">{aiExplanation}</p>}
+                  {aiExplanation && (
+                    <p className="text-neutral-600 mt-1 leading-relaxed">
+                      {aiExplanation}
+                    </p>
+                  )}
                 </div>
               </div>
               {isSearchingAI && (
-                <span className="text-[11px] text-[#004ac6] animate-pulse font-medium shrink-0">
-                  AI Ranking...
+                <span className="text-[11px] text-[#004ac6] animate-pulse font-bold shrink-0">
+                  Ranking Listings...
                 </span>
               )}
             </div>
 
             {extractedSkills.length > 0 && (
-              <div className="mt-2.5 flex flex-wrap items-center gap-1.5 pt-2 border-t border-blue-100/70">
-                <span className="text-[11px] font-semibold text-gray-500">Extracted Skills:</span>
+              <div className="mt-3 flex flex-wrap items-center gap-1.5 pt-2.5 border-t border-blue-200/60">
+                <span className="text-[11px] font-mono font-medium text-neutral-500">
+                  Matched Skills:
+                </span>
                 {extractedSkills.map((sk) => (
                   <span
                     key={sk}
-                    className="rounded-md bg-white px-2 py-0.5 text-[11px] font-medium text-gray-700 border border-gray-200"
+                    className="rounded-md bg-white px-2 py-0.5 text-[11px] font-semibold text-neutral-800 border border-blue-100"
                   >
                     {sk}
                   </span>
@@ -299,71 +331,81 @@ function ExploreContent() {
           </div>
         )}
 
-        {/* Category Pills */}
-        <div className="flex flex-wrap gap-2 pt-1">
-          <Button
-            size="sm"
+        {/* Category Pills Navigation */}
+        <div className="flex flex-wrap gap-2 pt-2">
+          <button
+            type="button"
             onClick={() => setCategoryId(null)}
-            className={
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
               categoryId === null
-                ? 'rounded-full bg-[#004ac6] text-white hover:bg-[#003b9e]'
-                : 'rounded-full border border-[#c3c6d7] bg-white text-gray-700 hover:bg-gray-50 shadow-none'
-            }
-            variant={categoryId === null ? 'default' : 'outline'}
+                ? 'bg-neutral-950 text-white shadow-xs'
+                : 'bg-white border border-neutral-200 text-neutral-700 hover:border-neutral-900'
+            }`}
           >
             All Categories
-          </Button>
+          </button>
           {categories.map((cat) => (
-            <Button
+            <button
               key={cat.id}
-              size="sm"
+              type="button"
               onClick={() => setCategoryId(cat.id)}
-              className={
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
                 categoryId === cat.id
-                  ? 'rounded-full bg-[#004ac6] text-white hover:bg-[#003b9e]'
-                  : 'rounded-full border border-[#c3c6d7] bg-white text-gray-700 hover:bg-gray-50 shadow-none'
-              }
-              variant={categoryId === cat.id ? 'default' : 'outline'}
+                  ? 'bg-neutral-950 text-white shadow-xs'
+                  : 'bg-white border border-neutral-200 text-neutral-700 hover:border-neutral-900'
+              }`}
             >
               {cat.name}
-            </Button>
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Results Count */}
-      <div className="mb-4 flex items-center justify-between text-xs text-gray-500">
+      {/* Results Count & Meta */}
+      <div className="mb-6 flex items-center justify-between text-xs text-neutral-500 font-mono">
         <span>
-          Showing <strong>{services.length}</strong> services
-          {verifiedOnly ? ' from verified students' : ''}
+          SHOWING <strong>{services.length}</strong> ACTIVE SERVICES
+          {verifiedOnly ? ' (VERIFIED PROVIDERS ONLY)' : ''}
         </span>
       </div>
 
-      {/* Results Grid */}
+      {/* Results Grid / Loading / Empty */}
       {loading ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-64 animate-pulse rounded-2xl border border-border bg-white" />
+            <div
+              key={i}
+              className="h-72 animate-pulse rounded-3xl border border-neutral-200 bg-white"
+            />
           ))}
         </div>
       ) : services.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#c3c6d7] bg-white py-24 text-center">
-          <Search className="mb-4 h-12 w-12 text-gray-300" />
-          <p className="text-lg font-bold text-gray-700">No services match your query</p>
-          <p className="mt-1 text-xs text-gray-500 max-w-sm">
-            Try adjusting your search keywords, clear category or price filters, or browse all student skills.
+        <div className="flex flex-col items-center justify-center rounded-3xl border border-neutral-200 bg-white py-24 text-center px-6">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-100 text-neutral-400 mb-4">
+            <Search className="h-6 w-6" />
+          </div>
+          <h3 className="text-xl font-bold text-neutral-900">
+            No campus services match your criteria
+          </h3>
+          <p className="mt-2 text-sm text-neutral-500 max-w-sm leading-relaxed">
+            Try adjusting your search query, clearing category or price constraints, or explore our curated skills.
           </p>
           <Button
             onClick={handleResetFilters}
-            className="mt-4 bg-[#004ac6] text-white hover:bg-[#003b9e]"
+            className="mt-6 rounded-xl bg-neutral-950 px-5 text-xs font-bold text-white hover:bg-black"
           >
             Reset All Filters
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((svc) => (
-            <ServiceCard key={svc.id} service={svc} aiMatch={aiResultsMap[svc.id]} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {services.map((svc, idx) => (
+            <ServiceCard
+              key={svc.id}
+              service={svc}
+              index={idx}
+              aiMatch={aiResultsMap[svc.id]}
+            />
           ))}
         </div>
       )}
@@ -375,11 +417,14 @@ export default function ExplorePage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto w-full max-w-screen-xl px-6 py-12">
-          <div className="h-8 w-64 animate-pulse bg-gray-200 rounded-lg mb-8" />
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto w-full max-w-7xl px-6 sm:px-8 lg:px-12 py-16">
+          <div className="h-10 w-72 animate-pulse bg-neutral-200 rounded-xl mb-8" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-64 animate-pulse rounded-2xl border border-border bg-white" />
+              <div
+                key={i}
+                className="h-72 animate-pulse rounded-3xl border border-neutral-200 bg-white"
+              />
             ))}
           </div>
         </div>
@@ -390,63 +435,75 @@ export default function ExplorePage() {
   );
 }
 
-function ServiceCard({ service, aiMatch }: { service: Service; aiMatch?: AISearchResult }) {
+function ServiceCard({
+  service,
+  index,
+  aiMatch,
+}: {
+  service: Service;
+  index: number;
+  aiMatch?: AISearchResult;
+}) {
+  const num = (index + 1).toString().padStart(2, '0');
+
   return (
     <Link
       href={`/services/${service.id}`}
-      className="group flex flex-col justify-between rounded-2xl border border-border bg-white p-6 shadow-sm transition-all hover:border-[#004ac6]/40 hover:shadow-lg relative overflow-hidden"
+      className="group relative flex flex-col justify-between rounded-3xl border border-neutral-200 bg-[#fbfbfa] p-7 transition-all duration-300 hover:border-neutral-900 hover:bg-white hover:shadow-xl"
     >
       <div>
-        {/* Top Badges */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-          {service.category && (
-            <Badge
-              variant="secondary"
-              className="rounded-full bg-[#f0f4ff] px-2.5 py-0.5 text-[11px] font-semibold text-[#004ac6]"
-            >
-              {service.category.name}
-            </Badge>
-          )}
+        {/* Top Badges & Numbering */}
+        <div className="flex items-center justify-between gap-2 pb-5 border-b border-neutral-200/60">
+          <span className="text-xs font-mono font-bold text-neutral-400 group-hover:text-[#004ac6] transition-colors">
+            {num} // {service.category?.name || 'CAMPUS SKILL'}
+          </span>
 
           {service.provider?.verification_status === 'verified' && (
-            <VerifiedBadge college={service.provider.college} size="sm" showLabel={false} />
+            <VerifiedBadge
+              college={service.provider.college}
+              size="sm"
+              showLabel={false}
+            />
           )}
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-bold text-gray-900 group-hover:text-[#004ac6] transition-colors line-clamp-2">
+        <h3 className="mt-5 text-xl font-bold tracking-tight text-neutral-900 group-hover:text-[#004ac6] transition-colors line-clamp-2 leading-snug">
           {service.title}
         </h3>
 
         {/* Description */}
-        <p className="mt-2 text-xs leading-relaxed text-gray-600 line-clamp-2">
+        <p className="mt-2 text-xs leading-relaxed text-neutral-600 line-clamp-3">
           {service.description}
         </p>
 
-        {/* AI Match Reasons if present */}
+        {/* AI Match Reasons */}
         {aiMatch && aiMatch.match_reasons.length > 0 && (
-          <div className="mt-3 rounded-lg bg-blue-50/60 p-2 text-[11px] text-blue-900 border border-blue-100 flex items-center gap-1.5">
-            <Sparkles className="h-3 w-3 text-[#004ac6] shrink-0" />
-            <span className="truncate">{aiMatch.match_reasons.join(' · ')}</span>
+          <div className="mt-4 rounded-xl bg-blue-50/80 p-2.5 text-[11px] text-[#004ac6] border border-blue-100 flex items-center gap-2">
+            <Sparkles className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate font-medium">{aiMatch.match_reasons.join(' · ')}</span>
           </div>
         )}
       </div>
 
-      <div className="mt-5 border-t border-gray-100 pt-4">
-        {/* Provider info */}
-        <div className="flex items-center justify-between gap-2 mb-3">
+      <div className="mt-6 pt-5 border-t border-neutral-200/60">
+        {/* Provider Info */}
+        <div className="flex items-center justify-between gap-2 mb-4">
           <div className="min-w-0">
-            <p className="text-xs font-bold text-gray-800 truncate">
+            <p className="text-xs font-bold text-neutral-900 truncate">
               {service.provider?.full_name ?? 'Student Provider'}
             </p>
             {service.provider?.college && (
-              <p className="text-[11px] text-gray-400 truncate">{service.provider.college}</p>
+              <p className="text-[11px] text-neutral-400 truncate flex items-center gap-1">
+                <GraduationCap className="h-3 w-3" />
+                {service.provider.college}
+              </p>
             )}
           </div>
-          <div className="flex items-center gap-1 text-xs font-bold text-gray-800">
+          <div className="flex items-center gap-1 text-xs font-bold text-neutral-900">
             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
             <span>{service.rating ?? 4.9}</span>
-            <span className="text-[11px] text-gray-400 font-normal">
+            <span className="text-[11px] text-neutral-400 font-normal">
               ({service.completed_orders_count || 12})
             </span>
           </div>
@@ -455,15 +512,22 @@ function ServiceCard({ service, aiMatch }: { service: Service; aiMatch?: AISearc
         {/* Price & Delivery */}
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs text-gray-400 block">Starting at</span>
-            <span className="text-lg font-extrabold text-[#004ac6]">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">
+              Starting at
+            </span>
+            <span className="text-xl font-black tracking-tight text-neutral-950 font-mono">
               ₹{service.price.toLocaleString('en-IN')}
             </span>
           </div>
-          <span className="flex items-center gap-1 text-xs font-semibold text-gray-500">
-            <Clock className="h-3.5 w-3.5 text-[#004ac6]" />
-            {service.delivery_days || 3}d delivery
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1 text-xs font-semibold text-neutral-500">
+              <Clock className="h-3.5 w-3.5 text-neutral-400" />
+              {service.delivery_days || 3}d
+            </span>
+            <span className="flex items-center justify-center h-8 w-8 rounded-full bg-neutral-100 text-neutral-900 group-hover:bg-[#004ac6] group-hover:text-white transition-colors">
+              <ArrowUpRight className="h-4 w-4" />
+            </span>
+          </div>
         </div>
       </div>
     </Link>
