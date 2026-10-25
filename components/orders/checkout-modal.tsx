@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { generateTestSignature, formatINR } from '@/lib/payments/razorpay';
+import { useAuth } from '@/lib/auth/auth-context';
 import { Service, PaymentMethod } from '@/types';
 
 interface CheckoutModalProps {
@@ -30,6 +31,7 @@ interface CheckoutModalProps {
 
 export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModalProps) {
   const router = useRouter();
+  const { session, user } = useAuth();
   const [step, setStep] = useState<'requirements' | 'payment' | 'processing' | 'success' | 'failed'>('requirements');
   const [requirements, setRequirements] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('upi');
@@ -43,12 +45,23 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
 
   async function handleClose() {
     if (createdOrderId && step !== 'success') {
+      const activeUserId = buyerId || user?.id || session?.user?.id;
+      const authHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (session?.access_token) {
+        authHeaders['Authorization'] = `Bearer ${session.access_token}`;
+      }
+      if (activeUserId) {
+        authHeaders['x-user-id'] = activeUserId;
+      }
       try {
         await fetch('/api/payments/cancel', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: authHeaders,
           body: JSON.stringify({
             orderId: createdOrderId,
+            buyerId: activeUserId,
             reason: 'Buyer closed checkout modal before payment completion.',
           }),
         });
@@ -72,13 +85,25 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
     setStep('processing');
     setErrorMessage(null);
 
+    const activeUserId = buyerId || user?.id || session?.user?.id;
+    const authHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (session?.access_token) {
+      authHeaders['Authorization'] = `Bearer ${session.access_token}`;
+    }
+    if (activeUserId) {
+      authHeaders['x-user-id'] = activeUserId;
+    }
+
     try {
       // 1. Authoritatively create order on server with verified database price
       const createRes = await fetch('/api/payments/create-order', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify({
           serviceId: service.id,
+          buyerId: activeUserId,
           requirements: requirements.trim(),
           paymentMethod,
           orderType: service.service_type === 'consultation' ? 'consultation' : 'fixed_gig',
@@ -110,9 +135,10 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
       // 3. Cryptographically verify signature authoritatively on the server
       const verifyRes = await fetch('/api/payments/verify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify({
           orderId: orderData.orderId,
+          buyerId: activeUserId,
           razorpayOrderId: orderData.razorpayOrderId,
           razorpayPaymentId: testPaymentId,
           razorpaySignature: signatureToSubmit,

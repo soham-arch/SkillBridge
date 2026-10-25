@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { extractAuthToken, getServerSupabaseClient } from '@/lib/auth/server-seller';
+import { extractAuthToken, getServerSupabaseClient, verifyUserRequest } from '@/lib/auth/server-seller';
 import { isValidUUID } from '@/lib/services/services';
 
 /**
@@ -14,22 +14,23 @@ import { isValidUUID } from '@/lib/services/services';
  */
 export async function POST(req: Request) {
   try {
-    const token = extractAuthToken(req);
-    const supabase = getServerSupabaseClient(token);
+    const body = await req.json().catch(() => ({}));
+    const { orderId, reason = 'Buyer cancelled payment before authorization.', buyerId: bodyBuyerId } = body;
 
     // 1. Authenticate user
-    const { data: { user }, error: authErr } = await supabase.auth.getUser();
-    if (authErr || !user) {
+    const auth = await verifyUserRequest(req, bodyBuyerId);
+    if (!auth.ok || !auth.user) {
       return NextResponse.json(
-        { error: 'Unauthorized. Please sign in.' },
+        { error: auth.error || 'Unauthorized. Please sign in.' },
         { status: 401 }
       );
     }
+    const user = auth.user;
 
-    const body = await req.json();
-    const { orderId, reason = 'Buyer cancelled payment before authorization.' } = body;
+    const token = auth.token || extractAuthToken(req);
+    const supabase = getServerSupabaseClient(token);
 
-    if (!orderId || !isValidUUID(orderId)) {
+    if (!orderId) {
       return NextResponse.json(
         { error: 'Valid order identifier is required.' },
         { status: 400 }

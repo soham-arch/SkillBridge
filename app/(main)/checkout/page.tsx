@@ -165,6 +165,13 @@ function CheckoutContent() {
 
     if (!service) return;
 
+    const activeUserId = user?.id || session?.user?.id;
+    if (!activeUserId && !session?.access_token) {
+      toast.error('Please sign in to complete checkout.');
+      router.push(`/login?returnUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+      return;
+    }
+
     if (!requirements.trim()) {
       toast.error('Please describe your project requirements for the seller.');
       return;
@@ -173,13 +180,24 @@ function CheckoutContent() {
     setProcessing(true);
     setPaymentFailed(false);
 
+    const authHeaders: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (session?.access_token) {
+      authHeaders['Authorization'] = `Bearer ${session.access_token}`;
+    }
+    if (activeUserId) {
+      authHeaders['x-user-id'] = activeUserId;
+    }
+
     try {
       // Step A: Create order and Razorpay order server-side with verified database price
       const createRes = await fetch('/api/payments/create-order', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify({
           serviceId: service.id,
+          buyerId: activeUserId,
           requirements: requirements.trim(),
           paymentMethod,
           orderType: service.service_type === 'consultation' ? 'consultation' : 'fixed_gig',
@@ -203,9 +221,10 @@ function CheckoutContent() {
       // Step C: Verify payment signature authoritatively on the server
       const verifyRes = await fetch('/api/payments/verify', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify({
           orderId: orderData.orderId,
+          buyerId: activeUserId,
           razorpayOrderId: orderData.razorpayOrderId,
           razorpayPaymentId: testPaymentId,
           razorpaySignature: testSignature,
@@ -231,12 +250,23 @@ function CheckoutContent() {
 
   async function handleCancelCheckout() {
     if (createdOrderId) {
+      const activeUserId = user?.id || session?.user?.id;
+      const authHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (session?.access_token) {
+        authHeaders['Authorization'] = `Bearer ${session.access_token}`;
+      }
+      if (activeUserId) {
+        authHeaders['x-user-id'] = activeUserId;
+      }
       try {
         await fetch('/api/payments/cancel', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: authHeaders,
           body: JSON.stringify({
             orderId: createdOrderId,
+            buyerId: activeUserId,
             reason: 'Buyer abandoned checkout.',
           }),
         });

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { extractAuthToken, getServerSupabaseClient } from '@/lib/auth/server-seller';
+import { extractAuthToken, getServerSupabaseClient, verifyUserRequest } from '@/lib/auth/server-seller';
 import { reportReview } from '@/lib/services/reviews';
 import { isValidUUID } from '@/lib/services/services';
 
@@ -13,13 +13,13 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const token = extractAuthToken(req);
-    const supabase = getServerSupabaseClient(token);
-
-    const { data: { user }, error: authErr } = await supabase.auth.getUser();
-    if (authErr || !user) {
+    const auth = await verifyUserRequest(req);
+    if (!auth.ok || !auth.user) {
       return NextResponse.json({ error: 'Unauthorized: Please log in to report a review.' }, { status: 401 });
     }
+    const user = auth.user;
+    const token = auth.token || extractAuthToken(req);
+    const supabase = getServerSupabaseClient(token);
 
     const reviewId = params.id;
     if (!reviewId || !isValidUUID(reviewId)) {

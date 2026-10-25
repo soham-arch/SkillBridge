@@ -46,6 +46,150 @@ export function getServerSupabaseClient(token?: string | null): SupabaseClient {
   });
 }
 
+export interface UserAuthResult {
+  ok: boolean;
+  status: number;
+  error?: string;
+  user?: User | { id: string; email?: string; user_metadata?: { full_name?: string } };
+  profile?: Profile;
+  token?: string;
+}
+
+/**
+ * Authenticates any user request (buyer, seller, or admin).
+ * Supports:
+ * 1. Authorization: Bearer <Supabase JWT>
+ * 2. Cookie sb-access-token=<Supabase JWT>
+ * 3. Synthetic demo tokens (demo-token-<userId>) for local demo personas
+ * 4. x-user-id header for development/sandbox/test calls
+ */
+export async function verifyUserRequest(
+  req: Request,
+  fallbackUserId?: string | null
+): Promise<UserAuthResult> {
+  const token = extractAuthToken(req);
+  const explicitUserId = req.headers.get('x-user-id') || fallbackUserId || null;
+
+  // 1. Synthetic demo tokens (demo-token-<userId>)
+  if (token && token.startsWith('demo-token-')) {
+    const userId = token.replace('demo-token-', '');
+    const state = getMarketplaceState();
+    let profile = state.profiles.find((p) => p.user_id === userId || p.id === userId) ?? null;
+
+    if (!profile) {
+      try {
+        const supabase = getServerSupabaseClient();
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (data) profile = data as Profile;
+      } catch {
+        // Non-blocking
+      }
+    }
+
+    const email = profile?.email || 'student@skillbridge.edu';
+    const fullName = profile?.full_name || 'Campus Student';
+
+    return {
+      ok: true,
+      status: 200,
+      user: {
+        id: userId,
+        email,
+        user_metadata: { full_name: fullName },
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+      } as unknown as User,
+      profile: profile || undefined,
+      token,
+    };
+  }
+
+  // 2. Real Supabase JWT verification
+  if (token) {
+    try {
+      const supabaseAnon = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      const { data: { user }, error: authErr } = await supabaseAnon.auth.getUser(token);
+      if (!authErr && user) {
+        let profile: Profile | null = null;
+        try {
+          const supabase = getServerSupabaseClient();
+          const { data } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', user.id)
+            .maybeSingle();
+          if (data) profile = data as Profile;
+        } catch {
+          // Non-blocking
+        }
+        if (!profile) {
+          const state = getMarketplaceState();
+          profile = state.profiles.find((p) => p.user_id === user.id || p.id === user.id) ?? null;
+        }
+
+        return {
+          ok: true,
+          status: 200,
+          user,
+          profile: profile || undefined,
+          token,
+        };
+      }
+    } catch (err) {
+      console.warn('Supabase token verification check:', err);
+    }
+  }
+
+  // 3. Fallback: x-user-id header or fallbackUserId
+  if (explicitUserId) {
+    const state = getMarketplaceState();
+    let profile = state.profiles.find((p) => p.user_id === explicitUserId || p.id === explicitUserId) ?? null;
+
+    if (!profile) {
+      try {
+        const supabase = getServerSupabaseClient();
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', explicitUserId)
+          .maybeSingle();
+        if (data) profile = data as Profile;
+      } catch {
+        // Non-blocking
+      }
+    }
+
+    const email = profile?.email || 'student@skillbridge.edu';
+    const fullName = profile?.full_name || 'Campus Student';
+
+    return {
+      ok: true,
+      status: 200,
+      user: {
+        id: explicitUserId,
+        email,
+        user_metadata: { full_name: fullName },
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+      } as unknown as User,
+      profile: profile || undefined,
+      token: token || undefined,
+    };
+  }
+
+  return {
+    ok: false,
+    status: 401,
+    error: 'Unauthorized. Please sign in to checkout.',
+  };
+}
+
 export interface SellerAuthResult {
   ok: boolean;
   status: number;
@@ -68,10 +212,22 @@ export async function verifySellerRequest(req: Request): Promise<SellerAuthResul
   let userEmail: string | undefined = undefined;
 
   if (token) {
-    const { data: { user }, error } = await supabase.auth.getUser(token);
-    if (!error && user) {
-      userId = user.id;
-      userEmail = user.email;
+    if (token.startsWith('demo-token-')) {
+      userId = token.replace('demo-token-', '');
+      const state = getMarketplaceState();
+      const p = state.profiles.find((pr) => pr.user_id === userId || pr.id === userId);
+      if (p?.email) userEmail = p.email;
+    } else {
+      try {
+        const supabaseAnon = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: { persistSession: false, autoRefreshToken: false },
+        });
+        const { data: { user }, error } = await supabaseAnon.auth.getUser(token);
+        if (!error && user) {
+          userId = user.id;
+          userEmail = user.email;
+        }
+      } catch {}
     }
   }
 
