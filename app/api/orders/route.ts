@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getMarketplaceState } from '@/lib/store/marketplace-store';
+import { extractAuthToken, getServerSupabaseClient } from '@/lib/auth/server-seller';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://eldmwjkolqqdhfqcawvg.supabase.co';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -277,6 +279,68 @@ export async function POST(req: NextRequest) {
     );
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Order creation failed';
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('userId');
+    const role = searchParams.get('role'); // 'buyer' | 'seller' | 'all'
+
+    if (!userId) {
+      return NextResponse.json({ error: 'userId parameter is required' }, { status: 400 });
+    }
+
+    const token = extractAuthToken(req);
+    const supabase = getServerSupabaseClient(token);
+
+    let query = supabase
+      .from('orders')
+      .select(`
+        *,
+        service:services(*, category:categories(*)),
+        buyer:profiles!orders_buyer_id_fkey(id, user_id, full_name, avatar_url, college),
+        seller:profiles!orders_seller_id_fkey(id, user_id, full_name, avatar_url, college)
+      `);
+
+    if (role === 'buyer') {
+      query = query.eq('buyer_id', userId);
+    } else if (role === 'seller') {
+      query = query.eq('seller_id', userId);
+    } else {
+      query = query.or(`buyer_id.eq.${userId},seller_id.eq.${userId}`);
+    }
+
+    const { data: dbOrders, error: dbErr } = await query.order('created_at', { ascending: false });
+    if (dbErr) {
+      console.warn('Database orders fetch note in GET /api/orders:', dbErr.message);
+    }
+
+    // In-memory marketplace state orders fallback
+    const state = getMarketplaceState();
+    const memOrders = state.orders.filter((o) => {
+      if (role === 'buyer') return o.buyer_id === userId;
+      if (role === 'seller') return o.seller_id === userId;
+      return o.buyer_id === userId || o.seller_id === userId;
+    });
+
+    // Merge and deduplicate by id
+    const orderMap = new Map<string, any>();
+    if (dbOrders && Array.isArray(dbOrders)) {
+      dbOrders.forEach((o) => orderMap.set(o.id, o));
+    }
+    memOrders.forEach((o) => {
+      if (!orderMap.has(o.id)) {
+        orderMap.set(o.id, o);
+      }
+    });
+
+    const combined = Array.from(orderMap.values());
+    return NextResponse.json({ success: true, orders: combined });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Failed to fetch user orders';
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

@@ -58,7 +58,7 @@ export default function DashboardPage() {
     requireStudentVerified: false,
   });
 
-  const userId = session?.user?.id || '';
+  const userId = user?.id || session?.user?.id || profile?.user_id || '';
 
   const initialMode =
     (searchParams?.get('mode') as 'seller' | 'buyer') ||

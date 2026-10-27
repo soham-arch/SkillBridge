@@ -86,6 +86,26 @@ export async function fetchOrderById(id: string): Promise<Order | null> {
  * Fetches all orders for an authenticated user, optionally filtered by role ('buyer' or 'seller').
  */
 export async function fetchUserOrders(userId: string, role?: 'buyer' | 'seller'): Promise<Order[]> {
+  if (!userId) return [];
+
+  const orderMap = new Map<string, Order>();
+
+  // 1. Try server API /api/orders (runs with server credentials to bypass client RLS limits)
+  if (typeof window !== 'undefined') {
+    try {
+      const res = await fetch(`/api/orders?userId=${encodeURIComponent(userId)}&role=${role || 'all'}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.success && Array.isArray(json.orders)) {
+          json.orders.forEach((o: Order) => orderMap.set(o.id, o));
+        }
+      }
+    } catch {
+      // Non-blocking fallback to direct Supabase query
+    }
+  }
+
+  // 2. Query Supabase directly
   try {
     const supabase = getSupabaseClient();
     let query = supabase
@@ -106,39 +126,63 @@ export async function fetchUserOrders(userId: string, role?: 'buyer' | 'seller')
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });
-
-    if (error) {
-      console.warn('Database error in fetchUserOrders:', error.message);
-      return [];
+    if (!error && data && Array.isArray(data)) {
+      data.forEach((o: Order) => orderMap.set(o.id, o));
     }
-
-    const ordersList = (data as Order[]) || [];
-    if (ordersList.length > 0) {
-      try {
-        const orderIds = ordersList.map((o) => o.id);
-        const { data: reviewsData } = await supabase
-          .from('reviews')
-          .select('id, order_id, rating, comment')
-          .in('order_id', orderIds);
-
-        if (reviewsData && reviewsData.length > 0) {
-          const reviewMap = new Map(reviewsData.map((r: any) => [r.order_id, r]));
-          ordersList.forEach((o) => {
-            if (!o.review) {
-              o.review = (reviewMap.get(o.id) as any) || null;
-            }
-          });
-        }
-      } catch {
-        // Non-fatal review join fallback
-      }
-    }
-
-    return ordersList;
   } catch (err) {
-    console.error('Failed to fetch user orders:', err);
-    return [];
+    console.warn('Direct Supabase fetchUserOrders error:', err);
   }
+
+  // 3. Fallback: Inspect local browser cache (sb_order_*)
+  if (typeof window !== 'undefined') {
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('sb_order_')) {
+          const raw = localStorage.getItem(key);
+          if (raw) {
+            const ord = JSON.parse(raw) as Order;
+            const matchesRole =
+              role === 'buyer'
+                ? ord.buyer_id === userId
+                : role === 'seller'
+                ? ord.seller_id === userId
+                : ord.buyer_id === userId || ord.seller_id === userId;
+            if (matchesRole && !orderMap.has(ord.id)) {
+              orderMap.set(ord.id, ord);
+            }
+          }
+        }
+      }
+    } catch {
+      // Non-blocking
+    }
+  }
+
+  // 4. Fallback: In-memory marketplace state
+  try {
+    const state = getMarketplaceState();
+    const memOrders = state.orders.filter((o) =>
+      role === 'buyer'
+        ? o.buyer_id === userId
+        : role === 'seller'
+        ? o.seller_id === userId
+        : o.buyer_id === userId || o.seller_id === userId
+    );
+    memOrders.forEach((o) => {
+      if (!orderMap.has(o.id)) {
+        orderMap.set(o.id, o as Order);
+      }
+    });
+  } catch {
+    // Non-blocking
+  }
+
+  const combined = Array.from(orderMap.values()).sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+
+  return combined;
 }
 
 /**

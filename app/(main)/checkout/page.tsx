@@ -28,6 +28,7 @@ import { useAuth } from '@/lib/auth/auth-context';
 import { useRequireAuth } from '@/lib/auth/use-require-auth';
 import { getServiceById, isValidUUID } from '@/lib/services/services';
 import { generateTestSignature, formatINR } from '@/lib/payments/razorpay';
+import { getMarketplaceState } from '@/lib/store/marketplace-store';
 import { Reveal } from '@/components/motion/reveal';
 import { editorialEase } from '@/components/motion/motion-tokens';
 import type { Service, PaymentMethod } from '@/types';
@@ -207,6 +208,17 @@ function CheckoutContent() {
       }
 
       setCreatedOrderId(orderData.orderId);
+
+      // Save order snapshot locally so both buyer and seller immediately have it in their dashboards
+      if (typeof window !== 'undefined' && orderData.order) {
+        try {
+          localStorage.setItem(`sb_order_${orderData.order.id}`, JSON.stringify(orderData.order));
+          const state = getMarketplaceState();
+          state.orders = [orderData.order, ...state.orders.filter((o) => o.id !== orderData.order.id)];
+        } catch {
+          // Non-blocking
+        }
+      }
 
       // If Mode is Direct Escrow (Without Razorpay): already secured in escrow!
       if (gatewayMode === 'direct_escrow' || orderData.paymentConfirmed) {

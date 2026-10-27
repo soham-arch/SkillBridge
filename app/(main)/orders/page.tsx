@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import {
   ShoppingBag,
   Inbox,
@@ -34,15 +35,33 @@ const STATUS_BADGES: Record<OrderStatus, { label: string; class: string }> = {
 };
 
 export default function OrdersPage() {
-  const { session, user, loading: authLoading } = useRequireAuth({
+  const searchParams = useSearchParams();
+  const { session, user, profile, activeRole, isSeller } = useRequireAuth({
     requireStudentVerified: false,
   });
-  const userId = session?.user?.id || '';
+  const userId = user?.id || session?.user?.id || profile?.user_id || '';
 
-  const [tab, setTab] = useState<'buyer' | 'seller'>('buyer');
+  const initialTab =
+    (searchParams?.get('tab') as 'buyer' | 'seller') ||
+    (searchParams?.get('mode') === 'seller' || activeRole === 'seller' || (isSeller && profile?.active_role === 'seller')
+      ? 'seller'
+      : 'buyer');
+
+  const [tab, setTab] = useState<'buyer' | 'seller'>(initialTab);
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Sync tab if url search param specifies tab
+  useEffect(() => {
+    const urlTab = searchParams?.get('tab') as 'buyer' | 'seller' | null;
+    const urlMode = searchParams?.get('mode') as 'buyer' | 'seller' | null;
+    if (urlTab === 'buyer' || urlTab === 'seller') {
+      setTab(urlTab);
+    } else if (urlMode === 'seller') {
+      setTab('seller');
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!userId) return;

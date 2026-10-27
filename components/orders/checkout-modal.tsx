@@ -20,6 +20,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { generateTestSignature, formatINR } from '@/lib/payments/razorpay';
 import { useAuth } from '@/lib/auth/auth-context';
+import { getMarketplaceState } from '@/lib/store/marketplace-store';
 import { Service, PaymentMethod } from '@/types';
 
 interface CheckoutModalProps {
@@ -118,6 +119,17 @@ export function CheckoutModal({ service, buyerId, open, onClose }: CheckoutModal
       }
 
       setCreatedOrderId(orderData.orderId);
+
+      // Save order snapshot locally so both buyer and seller immediately have it in their dashboards
+      if (typeof window !== 'undefined' && orderData.order) {
+        try {
+          localStorage.setItem(`sb_order_${orderData.order.id}`, JSON.stringify(orderData.order));
+          const state = getMarketplaceState();
+          state.orders = [orderData.order, ...state.orders.filter((o) => o.id !== orderData.order.id)];
+        } catch {
+          // Non-blocking
+        }
+      }
 
       // If Mode is Direct Escrow (Without Razorpay), funds are already locked in escrow!
       if (gatewayMode === 'direct_escrow' || orderData.paymentConfirmed) {

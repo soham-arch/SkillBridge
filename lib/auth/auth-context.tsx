@@ -56,7 +56,18 @@ function getCachedProfile(userId: string): Profile | null {
   if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem(`sb_profile_${userId}`);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Auto-heal cached profile if seed database college was updated
+      const state = getMarketplaceState();
+      const seed = state.profiles.find((p) => p.user_id === userId || p.id === userId);
+      if (seed && seed.college && parsed.college !== seed.college) {
+        parsed.college = seed.college;
+        parsed.location = seed.location || parsed.location;
+        localStorage.setItem(`sb_profile_${userId}`, JSON.stringify(parsed));
+      }
+      return parsed;
+    }
   } catch {
     // Ignore JSON errors
   }
@@ -83,7 +94,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const state = getMarketplaceState();
 
     let targetProfile = state.profiles.find(
-      (p) => p.email?.toLowerCase() === clean || (clean === 'admin' && p.is_admin)
+      (p) =>
+        p.email?.toLowerCase() === clean ||
+        p.full_name?.toLowerCase().includes(clean) ||
+        (clean === 'admin' && p.is_admin)
     );
 
     if (!targetProfile) {
@@ -355,6 +369,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 try {
                   const demoS = JSON.parse(demoRaw);
                   const demoP = JSON.parse(demoProfRaw);
+
+                  // Auto-heal demo profile college if outdated
+                  const state = getMarketplaceState();
+                  const seed = state.profiles.find((p) => p.user_id === demoP.user_id || p.email === demoP.email);
+                  if (seed && seed.college && demoP.college !== seed.college) {
+                    demoP.college = seed.college;
+                    demoP.location = seed.location || demoP.location;
+                    localStorage.setItem('sb_demo_profile', JSON.stringify(demoP));
+                  }
+
                   setSession(demoS);
                   setUser(demoS.user);
                   setProfile(demoP);

@@ -14,6 +14,9 @@ import {
   AlertCircle,
   CheckCircle2,
   UserCheck,
+  Music,
+  GraduationCap,
+  Video,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -81,7 +84,7 @@ export default function LoginPage() {
     }
   }
 
-  async function handleDemoQuickLogin(demoAccount: 'admin' | 'alex' | 'priya') {
+  async function handleDemoQuickLogin(demoAccount: 'admin' | 'alex' | 'priya' | 'kabir' | 'rohan' | string) {
     setLoading(true);
     try {
       const targetEmail =
@@ -89,6 +92,14 @@ export default function LoginPage() {
           ? 'admin@skillbridge.edu'
           : demoAccount === 'priya'
           ? 'priya.design@example.com'
+          : demoAccount === 'sneha'
+          ? 'sneha.video@example.com'
+          : demoAccount === 'kabir'
+          ? 'kabir.music@example.com'
+          : demoAccount === 'rohan'
+          ? 'rohan.student@example.com'
+          : demoAccount.includes('@')
+          ? demoAccount
           : 'alex.tech@example.com';
 
       const res = await signInDemo(targetEmail);
@@ -102,7 +113,7 @@ export default function LoginPage() {
           router.push(`/dashboard?mode=${res.profile.active_role || 'seller'}`);
         }
       }
-    } catch (err: unknown) {
+    } catch {
       toast.error('Demo authentication failed');
     } finally {
       setLoading(false);
@@ -273,7 +284,7 @@ export default function LoginPage() {
             >
               <UserCheck className="h-4 w-4 mb-1" />
               <span className="text-[11px] font-bold">Alex</span>
-              <span className="text-[9px] text-blue-200">Seller Studio</span>
+              <span className="text-[9px] text-blue-200">Web Dev</span>
             </button>
 
             <button
@@ -284,8 +295,45 @@ export default function LoginPage() {
             >
               <Sparkles className="h-4 w-4 mb-1 text-[#004ac6]" />
               <span className="text-[11px] font-bold">Priya</span>
-              <span className="text-[9px] text-neutral-500">Buyer Hub</span>
+              <span className="text-[9px] text-neutral-500">UI/UX Design</span>
             </button>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleDemoQuickLogin('sneha')}
+              className="flex flex-col items-center justify-center p-2.5 rounded-2xl border border-purple-300 bg-purple-50/70 text-purple-950 hover:bg-purple-100 transition-all shadow-2xs text-center disabled:opacity-50"
+            >
+              <Video className="h-4 w-4 mb-1 text-purple-600" />
+              <span className="text-[11px] font-bold">Sneha Patil</span>
+              <span className="text-[9px] text-purple-800">Video Editing</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleDemoQuickLogin('kabir')}
+              className="flex flex-col items-center justify-center p-2.5 rounded-2xl border border-amber-300 bg-amber-50/70 text-amber-950 hover:bg-amber-100 transition-all shadow-2xs text-center disabled:opacity-50"
+            >
+              <Music className="h-4 w-4 mb-1 text-amber-600" />
+              <span className="text-[11px] font-bold">Kabir Das</span>
+              <span className="text-[9px] text-amber-800">Guitar & Music</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleDemoQuickLogin('rohan')}
+              className="flex flex-col items-center justify-center p-2.5 rounded-2xl border border-emerald-300 bg-emerald-50/70 text-emerald-950 hover:bg-emerald-100 transition-all shadow-2xs text-center disabled:opacity-50"
+            >
+              <GraduationCap className="h-4 w-4 mb-1 text-emerald-600" />
+              <span className="text-[11px] font-bold">Rohan</span>
+              <span className="text-[9px] text-emerald-800">DSA & Tutoring</span>
+            </button>
+          </div>
+
+          <div className="mt-2.5 rounded-xl bg-neutral-100/80 px-3 py-1.5 text-center text-[10px] text-neutral-600">
+            Default Password for all demo accounts: <code className="font-mono font-bold text-neutral-900 bg-white px-1.5 py-0.5 rounded border border-neutral-200">Password123!</code>
           </div>
         </div>
 

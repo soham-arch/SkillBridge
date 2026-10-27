@@ -285,6 +285,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       orderId: orderRecord.id,
+      order: orderRecord,
       gatewayMode,
       paymentConfirmed: isDirectEscrow,
       razorpayOrderId: razorpayOrder.id,
