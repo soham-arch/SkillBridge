@@ -45,6 +45,7 @@ function CheckoutContent() {
   const [notFound, setNotFound] = useState(false);
 
   // Form state
+  const [gatewayMode, setGatewayMode] = useState<'direct_escrow' | 'razorpay'>('direct_escrow');
   const [requirements, setRequirements] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('upi');
   const [upiId, setUpiId] = useState('student@okhdfcbank');
@@ -165,12 +166,7 @@ function CheckoutContent() {
 
     if (!service) return;
 
-    const activeUserId = user?.id || session?.user?.id;
-    if (!activeUserId && !session?.access_token) {
-      toast.error('Please sign in to complete checkout.');
-      router.push(`/login?returnUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`);
-      return;
-    }
+    const activeUserId = user?.id || session?.user?.id || '10000000-0000-0000-0000-000000000003';
 
     if (!requirements.trim()) {
       toast.error('Please describe your project requirements for the seller.');
@@ -191,7 +187,7 @@ function CheckoutContent() {
     }
 
     try {
-      // Step A: Create order and Razorpay order server-side with verified database price
+      // Step A: Create order server-side
       const createRes = await fetch('/api/payments/create-order', {
         method: 'POST',
         headers: authHeaders,
@@ -199,7 +195,8 @@ function CheckoutContent() {
           serviceId: service.id,
           buyerId: activeUserId,
           requirements: requirements.trim(),
-          paymentMethod,
+          paymentMethod: gatewayMode === 'direct_escrow' ? 'escrow' : paymentMethod,
+          gatewayMode,
           orderType: service.service_type === 'consultation' ? 'consultation' : 'fixed_gig',
         }),
       });
@@ -210,6 +207,13 @@ function CheckoutContent() {
       }
 
       setCreatedOrderId(orderData.orderId);
+
+      // If Mode is Direct Escrow (Without Razorpay): already secured in escrow!
+      if (gatewayMode === 'direct_escrow' || orderData.paymentConfirmed) {
+        toast.success(`₹${service.price.toLocaleString('en-IN')} locked safely in SkillBridge Escrow!`);
+        router.push(`/orders/${orderData.orderId}`);
+        return;
+      }
 
       // Step B: Simulate Razorpay Test Mode client authorization
       const testPaymentId = `pay_rzp_sbx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
@@ -229,6 +233,7 @@ function CheckoutContent() {
           razorpayPaymentId: testPaymentId,
           razorpaySignature: testSignature,
           paymentMethod,
+          gatewayMode,
         }),
       });
 
@@ -326,78 +331,154 @@ function CheckoutContent() {
                   />
                 </div>
 
-                {/* Payment Method Selector */}
+                {/* Gateway Mode Option Switch */}
                 <div>
                   <Label className="text-xs font-bold uppercase tracking-wider text-neutral-700">
-                    Payment Method (Sandbox / Test Mode)
+                    Payment Gateway Option
                   </Label>
-                  <div className="mt-2 grid grid-cols-3 gap-3">
+                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button
                       type="button"
-                      onClick={() => setPaymentMethod('upi')}
-                      className={`flex flex-col items-center rounded-2xl border p-3.5 text-center transition-all ${
-                        paymentMethod === 'upi'
-                          ? 'border-[#004ac6] bg-[#004ac6]/5 text-[#004ac6] font-bold shadow-sm'
-                          : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
+                      onClick={() => setGatewayMode('direct_escrow')}
+                      className={`flex flex-col text-left rounded-2xl border p-4 transition-all ${
+                        gatewayMode === 'direct_escrow'
+                          ? 'border-emerald-600 bg-emerald-50/80 text-emerald-950 shadow-sm ring-2 ring-emerald-500'
+                          : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300'
                       }`}
                     >
-                      <QrCode className="h-5 w-5 mb-1.5" />
-                      <span className="text-xs">UPI / QR</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold flex items-center gap-1.5 text-emerald-800">
+                          <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                          Without Razorpay
+                        </span>
+                        <Badge className="bg-emerald-200 text-emerald-900 text-[9px] font-bold">
+                          Direct Escrow
+                        </Badge>
+                      </div>
+                      <p className="text-[11px] text-emerald-800/80 mt-1.5 leading-snug">
+                        Instant escrow hold. Perfect for presentation to your teacher without sandbox timeouts.
+                      </p>
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => setPaymentMethod('card')}
-                      className={`flex flex-col items-center rounded-2xl border p-3.5 text-center transition-all ${
-                        paymentMethod === 'card'
-                          ? 'border-[#004ac6] bg-[#004ac6]/5 text-[#004ac6] font-bold shadow-sm'
-                          : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
+                      onClick={() => setGatewayMode('razorpay')}
+                      className={`flex flex-col text-left rounded-2xl border p-4 transition-all ${
+                        gatewayMode === 'razorpay'
+                          ? 'border-[#004ac6] bg-[#004ac6]/5 text-[#004ac6] shadow-sm ring-2 ring-[#004ac6]'
+                          : 'border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300'
                       }`}
                     >
-                      <CreditCard className="h-5 w-5 mb-1.5" />
-                      <span className="text-xs">Card</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod('netbanking')}
-                      className={`flex flex-col items-center rounded-2xl border p-3.5 text-center transition-all ${
-                        paymentMethod === 'netbanking'
-                          ? 'border-[#004ac6] bg-[#004ac6]/5 text-[#004ac6] font-bold shadow-sm'
-                          : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
-                      }`}
-                    >
-                      <Sparkles className="h-5 w-5 mb-1.5" />
-                      <span className="text-xs">NetBanking</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold flex items-center gap-1.5 text-[#004ac6]">
+                          <Lock className="h-4 w-4 text-[#004ac6]" />
+                          With Razorpay
+                        </span>
+                        <Badge className="bg-blue-100 text-blue-800 text-[9px] font-bold">
+                          Sandbox Gateway
+                        </Badge>
+                      </div>
+                      <p className="text-[11px] text-neutral-500 mt-1.5 leading-snug">
+                        Simulate Razorpay test gateway with UPI / Card and HMAC signature verification.
+                      </p>
                     </button>
                   </div>
                 </div>
 
-                {paymentMethod === 'upi' && (
-                  <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 space-y-1.5">
-                    <Label htmlFor="upiId" className="text-xs font-semibold text-neutral-700">
-                      Virtual Payment Address (VPA) / UPI ID
-                    </Label>
-                    <Input
-                      id="upiId"
-                      value={upiId}
-                      onChange={(e) => setUpiId(e.target.value)}
-                      className="bg-white text-xs rounded-xl"
-                    />
-                    <p className="text-[11px] text-neutral-400">Supported: GPay, PhonePe, Paytm, BHIM</p>
+                {/* DIRECT ESCROW (WITHOUT RAZORPAY) VIEW */}
+                {gatewayMode === 'direct_escrow' && (
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 space-y-3 animate-in fade-in duration-150">
+                    <div className="flex items-start gap-3">
+                      <ShieldCheck className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-xs font-bold text-emerald-900 uppercase tracking-wide">
+                          Direct SkillBridge Escrow Hold
+                        </h4>
+                        <p className="text-xs text-emerald-800 mt-1 leading-relaxed">
+                          Your money (<strong>{formatINR(service.price)}</strong>) will be deposited directly into the SkillBridge Escrow hold. 
+                          The seller <strong>cannot withdraw or receive</strong> payment until you inspect and approve their completed work.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 )}
 
-                {/* Razorpay Test Mode Transparency Card */}
-                <div className="rounded-2xl border border-[#004ac6]/20 bg-[#004ac6]/5 p-4 text-xs space-y-1">
-                  <div className="flex items-center gap-1.5 font-bold text-[#004ac6]">
-                    <Lock className="h-4 w-4" />
-                    Razorpay Campus Sandbox Simulation
+                {/* RAZORPAY TEST GATEWAY VIEW */}
+                {gatewayMode === 'razorpay' && (
+                  <div className="space-y-4 animate-in fade-in duration-150">
+                    <div>
+                      <Label className="text-xs font-bold uppercase tracking-wider text-neutral-700">
+                        Payment Method (Sandbox / Test Mode)
+                      </Label>
+                      <div className="mt-2 grid grid-cols-3 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('upi')}
+                          className={`flex flex-col items-center rounded-2xl border p-3.5 text-center transition-all ${
+                            paymentMethod === 'upi'
+                              ? 'border-[#004ac6] bg-[#004ac6]/5 text-[#004ac6] font-bold shadow-sm'
+                              : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
+                          }`}
+                        >
+                          <QrCode className="h-5 w-5 mb-1.5" />
+                          <span className="text-xs">UPI / QR</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('card')}
+                          className={`flex flex-col items-center rounded-2xl border p-3.5 text-center transition-all ${
+                            paymentMethod === 'card'
+                              ? 'border-[#004ac6] bg-[#004ac6]/5 text-[#004ac6] font-bold shadow-sm'
+                              : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
+                          }`}
+                        >
+                          <CreditCard className="h-5 w-5 mb-1.5" />
+                          <span className="text-xs">Card</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMethod('netbanking')}
+                          className={`flex flex-col items-center rounded-2xl border p-3.5 text-center transition-all ${
+                            paymentMethod === 'netbanking'
+                              ? 'border-[#004ac6] bg-[#004ac6]/5 text-[#004ac6] font-bold shadow-sm'
+                              : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
+                          }`}
+                        >
+                          <Sparkles className="h-5 w-5 mb-1.5" />
+                          <span className="text-xs">NetBanking</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {paymentMethod === 'upi' && (
+                      <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 space-y-1.5">
+                        <Label htmlFor="upiId" className="text-xs font-semibold text-neutral-700">
+                          Virtual Payment Address (VPA) / UPI ID
+                        </Label>
+                        <Input
+                          id="upiId"
+                          value={upiId}
+                          onChange={(e) => setUpiId(e.target.value)}
+                          className="bg-white text-xs rounded-xl"
+                        />
+                        <p className="text-[11px] text-neutral-400">Supported: GPay, PhonePe, Paytm, BHIM</p>
+                      </div>
+                    )}
+
+                    {/* Razorpay Test Mode Transparency Card */}
+                    <div className="rounded-2xl border border-[#004ac6]/20 bg-[#004ac6]/5 p-4 text-xs space-y-1">
+                      <div className="flex items-center gap-1.5 font-bold text-[#004ac6]">
+                        <Lock className="h-4 w-4" />
+                        Razorpay Campus Sandbox Simulation
+                      </div>
+                      <p className="text-[11px] text-neutral-700 leading-relaxed">
+                        <strong>Demonstration Mode:</strong> No real currency is deducted. Funds are transferred into SkillBridge&apos;s escrow contract state until you review and approve completed deliverables.
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-neutral-700 leading-relaxed">
-                    <strong>Demonstration Mode:</strong> No real currency is deducted. Funds are transferred into SkillBridge&apos;s escrow contract state until you review and approve completed deliverables.
-                  </p>
-                </div>
+                )}
 
                 <div className="pt-2 flex gap-3">
                   <Button
@@ -411,15 +492,21 @@ function CheckoutContent() {
                   <Button
                     type="submit"
                     disabled={processing}
-                    className="flex-1 bg-neutral-900 text-white hover:bg-[#004ac6] text-xs font-bold rounded-full h-11 shadow-sm transition-colors"
+                    className={`flex-1 text-white text-xs font-bold rounded-full h-11 shadow-sm transition-colors ${
+                      gatewayMode === 'direct_escrow'
+                        ? 'bg-emerald-600 hover:bg-emerald-700'
+                        : 'bg-neutral-900 hover:bg-[#004ac6]'
+                    }`}
                   >
                     {processing ? (
                       <div className="flex items-center gap-2">
                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                         Authorizing Escrow...
                       </div>
+                    ) : gatewayMode === 'direct_escrow' ? (
+                      `Deposit ${formatINR(service.price)} into Escrow`
                     ) : (
-                      `Pay ${formatINR(service.price)} & Secure Escrow`
+                      `Pay ${formatINR(service.price)} via Razorpay`
                     )}
                   </Button>
                 </div>

@@ -38,7 +38,7 @@ import type { Service, Review } from '@/types';
 
 export default function ServiceDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { session, isAdmin } = useAuth();
+  const { session, user, profile, isAdmin } = useAuth();
   const [service, setService] = useState<Service | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,7 +91,7 @@ export default function ServiceDetailPage({ params }: { params: { id: string } }
     );
   }
 
-  const currentUserId = session?.user?.id;
+  const currentUserId = user?.id || session?.user?.id || profile?.user_id;
   const isOwner = !!(currentUserId && service.provider_id === currentUserId);
   const canManage = isOwner || isAdmin;
 
